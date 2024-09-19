@@ -1,19 +1,198 @@
 % Encoding: UTF-8
 
 
-@Book{WSPA,
-  Title                    = {Web Services Platform Architecture: SOAP, WSDL, WS-Policy, WS-Addressing, WS-BPEL, WS-Reliable Messaging, and More},
-  Author                   = {Sanjiva Weerawarana and Francisco Curbera and Frank Leymann and Tony Storey and Donald F. Ferguson},
-  Publisher                = {Prentice Hall PTR},
-  Year                     = {2005},
-  ISBN                     = {0131488740},
-  Price                    = {$31.49}
+%%%% OWN PAPER %%%
+
+@inproceedings{own_sycl_kernel_invocation_types,
+    author = {{Breyer, Marcel and Van Craen, Alexander and Pfl\"{u}ger, Dirk}},
+    title = {{Evaluation of SYCL’s Different Data Parallel Kernels}},
+    year = {2024},
+    isbn = {9798400717901},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3648115.3648130},
+    doi = {10.1145/3648115.3648130},
+    abstract = {SYCL provides programmers with four, and in the case of AdaptiveCpp even five, ways for calling and writing a device kernel. This paper analyzes the performance of these diverse kernel invocation types for DPC++ and AdaptiveCpp as SYCL implementations on an NVIDIA A100 GPU, an AMD Instinct MI210 GPU, and a dual-socket AMD EPYC 9274F CPU. Using the example of a kernel matrix assembly, we show why the performance can differ by a factor of 100 in the worst case on the same hardware for the same problem using different SYCL implementations and kernel invocation types.},
+    booktitle = {Proceedings of the 12th International Workshop on OpenCL and SYCL},
+    articleno = {10},
+    numpages = {4},
+    keywords = {CPU, GPU, Performance Evaluation, SVM, SYCL},
+    location = {Chicago, IL, USA},
+    series = {IWOCL '24}
 }
 
-@InProceedings{zMR2005,
-  Title                    = {Integrating Risks in Business Process Models},
-  Author                   = {zur Muehlen, Michael and Michael Rosemann},
-  Booktitle                = {16\textsuperscript{th} Australasian Conference on Information Systems},
-  Year                     = {2005}
+@inproceedings{own_sycl_compiler_evolution,
+    author = {{Breyer, Marcel and Van Craen, Alexander and Pfl\"{u}ger, Dirk}},
+    title = {{Performance Evolution of Different SYCL Implementations based on the Parallel Least Squares Support Vector Machine Library}},
+    year = {2023},
+    isbn = {9798400707452},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3585341.3585369},
+    doi = {10.1145/3585341.3585369},
+    abstract = {In machine learning and scientific computing, some of the biggest challenges are efficient and performant portable computing. With our Parallel Least Squares Support Vector Machine (PLSSVM) library, we have not only developed an unrivaled Support Vector Machine (SVM) implementation for huge dense data sets, but we have also created a representative benchmark for a frequently encountered task in scientific computing, a (implicit) matrix-vector multiplication. PLSSVM supports multiple backends—OpenMP, CUDA, HIP, OpenCL, and SYCL—to be able to target the most widely used hardware platforms in machine learning and scientific computing. In this paper, we use PLSSVM to compare different DPC++ and Open SYCL (formerly known as hipSYCL) versions over the period of one year. Furthermore, we compared two versions (one from February and the other from November 2022) with each other and report their respective performance evolution in depth. We also put these results in relation to our other implemented backends and report their performance portability on three different hardware platforms, an NVIDIA and AMD GPU and an Intel CPU. Our results show that installing new DPC++ and Open SYCL versions can have surprisingly vast impacts in both directions. In our case, the nd_range kernel runtimes were up to faster on an NVIDIA GPU when using a newer DPC++ compiler. Also for Open SYCL, using the new omp.accelerated compilation flow improves the nd_range performance on CPUs by over . When compared to OpenCL, in our results, SYCL also offers a better performance portability while being easier to use, indicated by drastically fewer lines of code needed in our PLSSVM library. While OpenCL only has a performance portability of , DPC++ achieved the highest value with within the performance metric provided by&nbsp;Pennycook et&nbsp;al. [23]. The code, utility scripts, and documentation are all publicly available on GitHub: https://github.com/SC-SGS/PLSSVM.},
+    booktitle = {Proceedings of the 2023 International Workshop on OpenCL},
+    articleno = {24},
+    numpages = {12},
+    keywords = {SYCL, SVM, Performance Portability, Performance Evaluation, OpenMP, OpenCL, Machine Learning, HIP, GPU, CUDA, CPU},
+    location = {Cambridge, United Kingdom},
+    series = {IWOCL '23}
 }
 
+@inproceedings{own_plssvm_backends,
+    author = {{Breyer, Marcel and Van Craen, Alexander and Pfl\"{u}ger, Dirk}},
+    title = {{A Comparison of SYCL, OpenCL, CUDA, and OpenMP for Massively Parallel Support Vector Machine Classification on Multi-Vendor Hardware}},
+    year = {2022},
+    isbn = {9781450396585},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3529538.3529980},
+    doi = {10.1145/3529538.3529980},
+    abstract = {In scientific computing and Artificial Intelligence (AI), which both rely on massively parallel tasks, frameworks like the Compute Unified Device Architecture (CUDA) and the Open Computing Language (OpenCL) are widely used to harvest the computational power of accelerator cards, in particular of Graphics Processing Units (GPUs). A few years ago, GPUs from NVIDIA were used almost exclusively for these tasks but meanwhile, AMD and Intel are increasing their shares of the GPUs market. This introduces many new challenges for code development, as the prevailing CUDA code can only run on NVIDIA hardware and must be adapted or even completely rewritten to run on GPUs from AMD or Intel. In this paper, we compare the different competing programming frameworks OpenMP, CUDA, OpenCL, and SYCL, paying special attention to the two SYCL implementations hipSYCL and DPC++. Thereby, we investigate the different frameworks with respect to their usability, performance, and performance portability on a variety of hardware platforms from different vendors, i.e., GPUs from NVIDIA, AMD, and Intel and Central Processing Units (CPUs) from AMD and Intel. Besides discussing the runtimes of these frameworks on the different hardware platforms, we also focus our comparison on the differences between the nd_range kernel formulation and the SYCL specific hierarchical kernels. Our Parallel Least Squares Support Vector Machine (PLSSVM) library implements backends for the four previously mentioned programming frameworks for a Least Squares Support Vector Machines (LS-SVMs). At its example, we show which of the frameworks is best suited for a standard workload that is frequently employed in scientific computing and AI, depending on the target hardware: The most computationally intensive part of our PLSSVM library is solving a system of linear equations using the Conjugate Gradient (CG) method. Specifically, we parallelize the implicit matrix-vector multiplication inside the CG method, a workload common in many scientific codes. The PLSSVM code, utility scripts, and documentation are all available on GitHub: https://github.com/SC-SGS/PLSSVM.},
+    booktitle = {Proceedings of the 10th International Workshop on OpenCL},
+    articleno = {2},
+    numpages = {12},
+    keywords = {CPU, CUDA, GPU, Machine Learning, OpenCL, OpenMP, Performance Evaluation, Performance Portability, SVM, SYCL},
+    location = {Bristol, United Kingdom, United Kingdom},
+    series = {IWOCL '22}
+}
+
+@article{own_plssvm_software_impacts,
+    author={{Van Craen, Alexander and Breyer, Marcel and Pfl{\"u}ger, Dirk}},
+    title={{PLSSVM-Parallel Least Squares Support Vector Machine}},
+    journal={Software Impacts},
+    year={2022},
+    month={Dec},
+    day={01},
+    publisher={Elsevier},
+    volume={14},
+    issn={2665-9638},
+    doi={10.1016/j.simpa.2022.100343},
+    url={https://doi.org/10.1016/j.simpa.2022.100343}
+}
+
+@inproceedings{own_plssvm,
+    author={{Van Craen, Alexander and Breyer, Marcel and Pflüger, Dirk}},
+    booktitle={2022 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
+    title={{PLSSVM: A (multi-)GPGPU-accelerated Least Squares Support Vector Machine}}, 
+    year={2022},
+    volume={},
+    number={},
+    pages={818-827},
+    keywords={Support vector machines;Training;Machine learning algorithms;Instruction sets;Supervised learning;Hardware;Libraries;Machine Learning;SVM;Optmuzation;Per-formance Evaluation;Graphics Processors;OpenMP;CUDA;OpenCL;SYCL},
+    doi={10.1109/IPDPSW55747.2022.00138}
+}
+
+
+@mastersthesis{own_opendihu_first,
+    title={{Porting a Simulation of the Activation of Muscle Fibers from OpenMP Offloading to SYCL}},
+    author={{Strack, Alexander}},
+    type={{SimTech Forschungsmodul I}},
+    school={{University of Stuttgart}},
+    year={2021}
+}
+
+@mastersthesis{own_opendihu_second,
+    title={{Node-level Parallelization of a GPU Simulation of the Activation of Muscle Fibers}},
+    author={{Strack, Moritz}},
+    type={{SimTech Projektarbeit}},
+    school={{University of Stuttgart}},
+    year={2021}
+}
+
+
+@inproceedings{own_nbody,
+    author = {{Th\"{u}ring, Tim and Breyer, Marcel and Pfl\"{u}ger, Dirk}},
+    title = {{Comparing a Naive and a Tree-Based N-Body Algorithm using Different Standard SYCL Implementations on Various Hardware}},
+    year = {2023},
+    isbn = {9798400707858},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3624062.3624604},
+    doi = {10.1145/3624062.3624604},
+    abstract = {N-body algorithms aim to calculate the interactions between n different bodies with the goal of obtaining their trajectories. Algorithms that solve the n-body problem can leverage significant amounts of parallelism. Today, GPUs are commonly used besides CPUs for the execution of parallel algorithms. However, targeting several hardware platforms at once often requires using different programming languages. In this work, we have implemented a naive and tree-based Barnes-Hut n-body algorithm using SYCL to target CPUs and GPUs with the same programming language. We compare both algorithms on heterogeneous hardware platforms and for different SYCL implementations, with respect to their runtime behavior and support for several performance optimizations. Our results show that some optimizations reveal unexpected behavior for different SYCL implementations. And even though data center GPUs have a clear performance advantage for the naive algorithm, surprisingly consumer GPUs offer competitive runtimes for the Barnes-Hut algorithm.},
+    booktitle = {Proceedings of the SC '23 Workshops of The International Conference on High Performance Computing, Network, Storage, and Analysis},
+    pages = {1906–1917},
+    numpages = {12},
+    keywords = {CPU, GPU, Performance Comparison, SYCL, n-body},
+    location = {Denver, CO, USA},
+    series = {SC-W '23}
+}
+
+% TODO: use correct bib entry
+@inproceedings{own_nbody_edu,
+    author = {{Van Craen, Alexander and Breyer, Marcel and Pflüger, Dirk}},
+    title = {{Introduction to Parallel and Distributed Programming using N-Body Simulations}},
+    booktitle = {Proceedings of the SC '24 Workshops of The International Conference on High Performance Computing, Network, Storage, and Analysis},
+    year = {2024}
+}
+
+@inproceedings{own_lsh_knn,
+    author = {{Breyer, Marcel and Dai\ss{}, Gregor and Pfl\"{u}ger, Dirk}},
+    title = {{Performance-Portable Distributed k-Nearest Neighbors using Locality-Sensitive Hashing and SYCL}},
+    year = {2021},
+    isbn = {9781450390330},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3456669.3456692},
+    doi = {10.1145/3456669.3456692},
+    abstract = {In the age of data collection, machine learning algorithms have to be able to efficiently cope with vast data sets. This requires scalable algorithms and efficient implementations that can cope with heterogeneous hardware. We propose a new, performance-portable implementation of a well-known, robust, and versatile multi-class classification method that supports multiple Graphics Processing Units (GPUs) from different vendors. It is based on a performance-portable implementation of the approximate k-nearest neighbors (k-NN) algorithm in SYCL. The k-NN assigns a class to a data point based on a majority vote of its neighborhood. The naive approach compares a data point x to all other data points in the training data to identify the k nearest ones. However, this has quadratic runtime and is infeasible for large data sets. Therefore, approximate variants have been developed. Such an algorithm is the Locality-Sensitive Hashing (LSH) algorithm, which uses hash tables together with locality-sensitive hash functions to reduce the data points that have to be examined to compute the k-NN. To the best of our knowledge, there is no distributed LSH version supporting multiple GPUs from different vendors available so far despite the fact that k-NNs are frequently employed. Therefore, we have developed the library. It provides the first hardware-independent, yet efficient and distributed implementation of the LSH algorithm that is suited for modern supercomputers. The implementation uses C++17 together with SYCL 1.2.1, which is an abstraction layer for OpenCL that allows targeting different hardware with a single implementation. To support large data sets, we utilize multiple GPUs using the Message Passing Interface (MPI) to enable the usage of both shared and distributed memory systems. We have tested different parameter combinations for two locality-sensitive hash function implementations, which we compare. Our results show that our library can easily scale on multiple GPUs using both hash function types, achieving a nearly optimal parallel speedup of up to 7.6 on 8 GPUs. Furthermore, we demonstrate that the library supports different SYCL implementations—ComputeCpp, hipSYCL, and DPC++—to target different hardware architectures without significant performance differences.},
+    booktitle = {Proceedings of the 9th International Workshop on OpenCL},
+    articleno = {4},
+    numpages = {12},
+    keywords = {HPC, LSH, SYCL, k-NN, machine learning, multi-GPU, portability},
+    location = {Munich, Germany},
+    series = {IWOCL '21}
+}
+
+@mastersthesis{own_master_thesis,
+    title={{Distributed k-nearest neighbors using Locality Sensitive Hashing and SYCL}},
+    author={{Breyer, Marcel}},
+    type={{M.S.} thesis},
+    school={{University of Stuttgart}},
+    year={2020}
+}
+
+@mastersthesis{own_bachelor_thesis,
+    title={{Ein hoch-performanter (approximierter) k-N{\"a}chste-Nachbarn Algorithmus f{\"u}r GPUs}},
+    author={{Breyer, Marcel}},    
+    type={{B.S.} thesis},
+    school={{University of Stuttgart}},
+    year={2018}
+}
+
+
+% TODO: use correct bib entry
+@inproceedings{own_hws_hpo,
+    author = {{Breyer, Marcel and Van Craen, Alexander and Domanksi, Peter and Pflüger, Dirk}},
+    title = {{hws: A Tool for Monitoring Hardware Metrics Across Diverse Vendors: A Case Study on Hyperparameter Optimization Algorithms}},
+    booktitle = {Proceedings of the SC '24 Workshops of The International Conference on High Performance Computing, Network, Storage, and Analysis},
+    year = {2024}
+}
+
+% TODO: use correct bib entry
+@inproceedings{own_hws_poster,
+    author = {{Breyer, Marcel and Van Craen, Alexander and Pflüger, Dirk}},
+    title = {{Poster: Hardware-independent sampling library for CPUs and (mulit-)GPUs: hws}},
+    booktitle = {TODO},
+    year = {2024}
+}
+
+
+@inproceedings{own_discotec,
+    author = {{Pollinger, Theresa and Van Craen, Alexander and Niethammer, Christoph and Breyer, Marcel and Pfl\"{u}ger, Dirk}},
+    title = {{Leveraging the Compute Power of Two HPC Systems for Higher-Dimensional Grid-Based Simulations with the Widely-Distributed Sparse Grid Combination Technique}},
+    year = {2023},
+    isbn = {9798400701092},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3581784.3607036},
+    doi = {10.1145/3581784.3607036},
+    abstract = {Grid-based simulations of hot fusion plasmas are often severely limited by computational and memory resources; the grids live in four- to six-dimensional space and thus suffer the curse of dimensionality. However, high resolutions are required to fully capture the physics of interest. The sparse grid combination technique is a multi-scale method in which many anisotropically coarse resolved grids are used to approximate a fine-scale solution---and it alleviates the curse of dimensionality.This paper presents the core concepts of the widely-distributed combination technique, which allows us to use the compute power and memory of more than one HPC system for the same simulation. We apply the sparse grid combination technique to a six-dimensional advection problem serving as a proxy for plasma simulations. The full-grid solution approximated by the combination technique would contain ≈ 5 ZB if computed with conventional grid-based methods. Even the combination technique simulation operates on ≈ 1 \texttimes{} 1011 double-precision degrees of freedom, or 988 GB, plus the supporting sparse grid data structures. We propose a new approach to divide the compute load between the two HPC systems, requiring only 76 GB to be exchanged. Based on this, we have realized the first synchronous combination technique simulation using two HPC systems, in our case the two German Tier-0 supercomputers HAWK and SuperMUC-NG. On two systems, the simulation can be computed at an average overhead of ≈ 35 \% (108 s per combination step) for file I/O and transfer. The presented concepts apply to any pair of HPC systems if high-speed data transfer is possible.},
+    booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis},
+    articleno = {84},
+    numpages = {14},
+    keywords = {coupling HPC systems, combination technique, multi-level methods, higher-dimensional simulation, plasma turbulence, UFTP},
+    location = {Denver, CO, USA},
+    series = {SC '23}
+}

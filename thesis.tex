@@ -8,11 +8,32 @@
 %See https://www.ctan.org/pkg/nag
 \RequirePackage[l2tabu, orthodox]{nag}
 % TODO: b5?
-\documentclass[paper=a5,twoside,fontsize=10pt, DIV=calc, headings=small, bibliography=totoc, listof=totoc]{scrbook}
+% \documentclass[paper=a5,twoside,fontsize=10pt, DIV=calc, headings=small, bibliography=totoc, listof=totoc]{scrbook}
+\documentclass[paper=a4,twoside,fontsize=10pt, DIV=calc, headings=small, bibliography=totoc, listof=totoc]{scrbook}
 \usepackage[utf8]{inputenc}
+
+\usepackage[acronym,indexonlyfirst,nomain]{glossaries}
+\makeglossaries
+\input{acronyms}
 
 \input{shared/template}
 \usepackage{shared/titlepage}
+
+\usepackage{geometry}
+\geometry{
+    paper=b5paper,
+    inner=16mm,         % Inner margin
+    outer=24mm,         % Outer margin
+    bindingoffset=10mm, % Binding offset
+    top=20mm,           % Top margin
+    bottom=28mm,        % Bottom margin
+    %showframe,         % show how the type block is set on the page
+}
+
+
+\usepackage{lipsum}  
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 
 % binding correction
 \setlength{\evensidemargin}{-24pt}
@@ -96,18 +117,27 @@
 \pagestyle{scrheadings}
 
 %% --- Zusammenfassung ---------------------------------------------
-\input{content/00_Zusammenfassung}
+\input{content/_01_Zusammenfassung}
 
 %% --- Abstract Page---------------------------------------------
-\input{content/00_abstract}
+\input{content/_02_abstract}
 
 %% --- Acknowledgements page------------------------------------
-\input{content/01_acknowledgements}
+\input{content/_03_acknowledgements}
 
 \pagestyle{scrheadings}
 
 %% --- CONTENT ---
-\input{content/000_dummy_content}
+
+\input{content/01_introduction}
+\input{content/02_performance_portability}
+\input{content/03_problem_category_blas_like}
+\input{content/04_problem_category_tree_based}
+\input{content/05_problem_category_hashing_based}
+\input{content/06_true_performance_portability}
+\input{content/07_conclusion}
+
+%% --- References/Bibliography ---
 
 \printbibliography
 \noindent
@@ -115,12 +145,16 @@ All URLs were last checked 2025.01.01.
 % Alle URLs wurden zuletzt am 17.01.2014 gepr\"uft.
 
 \clearpage
+%% --- Lists of ... ---
 \listoffigures
 \listoftables
 
-\chapter*{List of Definitions}
-\addcontentsline{toc}{chapter}{List of Definitions}
+\chapter*{List of Theorems}
+\addcontentsline{toc}{chapter}{List of Theorems}
 \listtheorems{definition}
+
+\printglossary[type=\acronymtype,title=Acronyms]
+\addcontentsline{toc}{chapter}{Acronyms}
 
 \appendix
 
@@ -129,7 +163,7 @@ All URLs were last checked 2025.01.01.
 %\addcontentsline{toc}{part}{Anhang}
 
 %% --- Appendix ---
-\input{content/99_appendix}
+% \input{content/99_appendix}
 
 %\input{content/Z-Anhang}
 
