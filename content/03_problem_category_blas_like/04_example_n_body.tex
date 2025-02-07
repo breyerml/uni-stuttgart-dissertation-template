@@ -1,0 +1,75 @@
+\section{Example Application: n-Body Simulation using the Naive Algorithm}
+
+\cite{own_nbody}
+\cite{own_nbody_edu}
+
+\begin{equation}\label{eq:acceleration}
+    \Vec{a}_i = \sum\limits_{i \neq j} \frac{G m_j (\Vec{r}_j - \Vec{r}_i)}{(\norm{\Vec{r}_j - \Vec{r}_i}^2_2 + \epsilon^2)^\frac{2}{3}}
+\end{equation}
+with the gravitational constant $G = \SI{6.67430e-11}{\meter\cubed\per\kilo\gram\per\second\squared}$, the softening factor $\epsilon = \num{1e-11}$ and $\norm{\Vec{x}}^2_2$ the squared Euclidean distance of the vector $\Vec{x}$.
+
+\begin{equation}\label{eq:kinetic_energy}
+    E_{\text{kinetic}} = \sum\limits_i \frac{1}{2} m_i \norm{\Vec{v}_i}^2_2
+\end{equation}
+
+\begin{equation}\label{eq:potential_energy}
+    E_{\text{potential}} = -\sum\limits_{i < j} \frac{H m_i m_j}{\norm{\Vec{r}_j - \Vec{r}_i}_2}
+\end{equation}
+
+\begin{equation}\label{eq:total_energy}
+    E_{\text{total}} = E_{\text{kinetic}} + E_{\text{potential}}
+\end{equation}
+
+virial equilibrium
+\begin{equation}\label{eq:virial_equilibrium}
+    \frac{2E_{\text{kinetic}}}{\abs{E_{\text{potential}}}} \approx \num{1.0}
+\end{equation}
+
+leapfrog integration from time step $k \rightarrow k + 1$
+\begin{equation}\label{eq:leapfrog}
+    \begin{split}
+      (SE1) &\left\lbrace
+      \begin{array}{rcl}
+        \vec{v}^{k+\frac{1}{2}} & = & \vec{v}^k + \vec{a}^k \frac{\Delta t}{2}               \\
+        \vec{r}^{k+\frac{1}{2}} & = & \vec{r}^k + \vec{v}^{k + \frac{1}{2}} \frac{\Delta t}{2}
+      \end{array}\right.\\[.5em]
+      (SE2) &\left\lbrace
+      \begin{array}{rcl}
+        \vec{r}^{k+1} & = & \vec{r}^{k + \frac{1}{2}} + \vec{v}^{k + \frac{1}{2}} \frac{\Delta t}{2} \\
+        \vec{v}^{k+1} & = & \vec{v}^{k + \frac{1}{2}} + \vec{a}^{k+1} \frac{\Delta t}{2}
+      \end{array}\right.\\
+    \end{split}
+\end{equation}
+
+
+\begin{algorithm}
+    \begin{algorithmic}[1]
+        \State adjust initial velocities: $\vec{u} = \frac{\sum_j m_j \vec{v}_j}{\sum_j m_j}; \vec{v}_i = \vec{v}_i - \vec{u}$
+        \State \Call{update\_accelerations}{$\dots$}
+        \State visualize initial state
+        \While{simulation no finished yet: $t \leq t\_end$}
+            \State perform leapfrog $(SE1)$
+            \State \Call{update\_accelerations}{$\dots$}
+            \State perform leapfrog $(SE2)$
+            \If{time step should be visualized}
+                \State compute energies according to \cref{eq:kinetic_energy} and \cref{eq:potential_energy}
+                \State visualize time step
+            \EndIf
+            \State update time step: $t \gets t + \Delta t$
+        \EndWhile
+        \State save state of the final time step
+    \end{algorithmic}
+    \label{alg:n_body}
+    \caption{A full n-body simulation}
+\end{algorithm}
+
+\begin{algorithm}
+    \begin{algorithmic}[1]
+        \Function{update\_accelerations}{}
+            \State FOO
+        \EndFunction
+    \end{algorithmic}
+    \label{alg:acc_naive}
+    \caption{Function for updating the acceleration using the naive algorithm.}
+\end{algorithm}
+

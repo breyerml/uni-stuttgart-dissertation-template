@@ -3,3 +3,76 @@
 \begin{itemize}
     \item different available frameworks (like, Kokkos, OpenCL, OpenMP target offloading, OpenACC, RAJA)
 \end{itemize}
+
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|c|c|c|c|c}
+    \toprule
+         & \acrshort{cuda} & \acrshort{hip} & \acrshort{opencl} & SYCL & Kokkos \\\midrule
+         & shared memory & shared memory & local memory & local memory & scratch memory \\
+         & \code{cudaMalloc} & \code{hipMalloc} & \code{clCreateBuffer} & \code{sycl::malloc_device} & \code{Kokkos::View} \\
+     \bottomrule
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
+
+% https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html
+% https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html
+\begin{itemize}
+    \item \code{cudaError_t cudaMalloc(void** devPtr, size_t size)}
+    \item \code{cudaError_t cudaMallocManaged(void** devPtr, size_t size, unsigned int  flags = cudaMemAttachGlobal)}
+    \item \code{cudaError_t cudaFree(void* devPtr)}
+    \item \code{cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, cudaMemcpyKind kind)}
+    \item \code{cudaError_t cudaDeviceSynchronize(void)}
+
+    \item \code{kernel<<<..., ...>>>(...)}
+\end{itemize}
+
+% https://rocm.docs.amd.com/projects/HIP/en/latest/reference/hip_runtime_api/modules/memory_management.html#memory-management-reference
+% https://rocm.docs.amd.com/projects/HIP/en/latest/reference/hip_runtime_api/modules/device_management.html#device-management-reference
+\begin{itemize}
+    \item \code{hipError_t hipMalloc(void **ptr, size_t size)}
+    \item \code{hipError_t hipMallocManaged(void **dev_ptr, size_t size, unsigned int flags)}
+    \item \code{hipError_t hipFree(void *ptr)}
+    \item \code{hipError_t hipMemcpy(void *dst, const void *src, size_t sizeBytes, hipMemcpyKind kind)}
+    \item \code{hipError_t hipDeviceSynchronize(void)}
+
+    \item \code{kernel<<<..., ...>>>(...)}
+\end{itemize}
+
+% https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html
+\begin{itemize}
+    \item \code{cl_mem clCreateBuffer(cl_context context, cl_mem_flags flags, size_t size, void* host_ptr, cl_int* errcode_ret);}
+    \item \code{void* clSVMAlloc(cl_context context, cl_svm_mem_flags flags, size_t size, cl_uint alignment);}
+    \item \code{cl_int clReleaseMemObject(cl_mem memobj);}; \code{void clSVMFree(cl_context context, void* svm_pointer);}
+    \item \code{cl_int clEnqueueWriteBuffer(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_write, size_t offset, size_t size, const void* ptr, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);}
+    \item \code{cl_int clFinish(cl_command_queue command_queue);}
+    
+    \item \code{cl_int clEnqueueNDRangeKernel(cl_command_queue command_queue, cl_kernel kernel, cl_uint work_dim, const size_t* global_work_offset, const size_t* global_work_size, const size_t* local_work_size, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);}
+\end{itemize}
+
+% https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
+\begin{itemize}
+    \item \code{template <typename T> T* sycl::malloc_device(size_t count, const queue& syclQueue, const property_list& propList = {})}
+    \item \code{template <typename T> T* sycl::malloc_shared(size_t count, const queue& syclQueue, const property_list& propList = {})}
+    \item \code{void sycl::free(void* ptr, const queue& syclQueue)}
+    \item \code{template <typename T> event copy(const T* src, T* dest, size_t count, event depEvent)}
+    \item \code{void wait_and_throw()}
+
+    \item \code{template <typename KernelName, int Dims, typename... Rest> event parallel_for(nd_range<Dims> executionRange, Rest&&... rest);}
+\end{itemize}
+
+
+% https://kokkos.org/kokkos-core-wiki/API/core-index.html#
+\begin{itemize}
+    \item \code{template <class DataType [, class LayoutType] [, class MemorySpace] [, class MemoryTraits]> class View;}
+    \item TODO
+    \item View destructor
+    \item \code{template<class ExecSpace, class ViewDest, class ViewSrc> void Kokkos::deep_copy(const ExecSpace &exec_space, const ViewDest &dest, const ViewSrc &src);}
+    \item TODO
+
+    \item \code{template<class ExecPolicy, class FunctorType> Kokkos::parallel_for(const std::string &name, const ExecPolicy &policy, const FunctorType &functor)}
+\end{itemize}

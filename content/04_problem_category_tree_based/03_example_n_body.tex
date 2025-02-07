@@ -2,3 +2,20 @@
 
 \cite{own_nbody}
 \cite{own_nbody_edu}
+
+\begin{algorithm}
+    \begin{algorithmic}[1]
+        \Function{update\_accelerations}{\textit{body}, \textit{node}}
+            \State calculate direction vector $\vec{d}$ of \textit{body} and the center of mass of \textit{node}
+            \If{pseudo-body can be used $\vee$ \textit{node} is leaf}
+                \State update acceleration of $\vec{a}_{\textit{body}}$ // TODO: formula?
+            \Else
+                \ForAll{each \textit{child} of \textit{node}}
+                    \State \Call{update\_accelerations}{\textit{body}, \textit{child}}
+                \EndFor
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+    \label{alg:acc_bh}
+    \caption{Function for updating the acceleration using the Barnes-Hut algorithm.}
+\end{algorithm}

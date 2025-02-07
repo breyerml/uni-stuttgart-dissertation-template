@@ -30,10 +30,32 @@
     %showframe,         % show how the type block is set on the page
 }
 
+\usepackage[newfloat]{minted}
+% Add the following lines, wherever you want.
+\makeatletter
+\AddToHook{begindocument/before}{\@ifpackageloaded{minted}{\removefromtoclist[float]{lol}}{}}
+\makeatother
+\usepackage{siunitx}
+\sisetup{
+  per-mode=fraction,
+  fraction-function=\tfrac
+}
+\DeclareSIUnit{\flop}{FLOP}
 
-\usepackage{lipsum}  
+\usepackage[amsmath, hyperref]{ntheorem}
+\usepackage{csquotes}
+\usepackage{mathrsfs}
+\usepackage{phoenician}
+
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Command to use in Math Mode
+\newcommand{\pp}{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}
+% Command to use in text
+\newcommand{\ppm}{$\pp$\xspace}
+
+\newcommand{\code}[1]{\mintinline{c++}{#1}}
 
 % binding correction
 \setlength{\evensidemargin}{-24pt}
@@ -128,6 +150,8 @@
 \pagestyle{scrheadings}
 
 %% --- CONTENT ---
+
+% TODO: which hardware used where
 
 \input{content/01_introduction}
 \input{content/02_performance_portability}

@@ -1,9 +1,41 @@
 \section{Performance + Portability}
 
-\[ P(a, p, H) = \begin{cases}
-    \frac{\abs{H}}{\sum\limits_{i \in H} \frac{1}{e_i(a, p)}} & \text{if }i\text{ is supported} \forall i \in H \\
-    0 & \text{otherwise}
-\end{cases} \]
+\cite{PENNYCOOK2019947}
+
+\begin{definition}[Performance Portability]\label{def:pp_original}
+    Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \ppm is defined as:
+
+    \[ \pp(a, p, H) = 
+        \begin{cases}
+            \frac{\abs{H}}{\sum\limits_{i \in H} \frac{1}{e_i(a, p)}} & \text{if }i\text{ is supported } \forall i \in H \\
+            0                                                         & \text{otherwise}
+        \end{cases} 
+    \]
+
+    where $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
+\end{definition}
+
+\begin{definition}[Performance Portability 2]\label{def:pp_new}
+    Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of supported platforms $\mathbf{S \subseteq H}$ from the same architecture class, the performance portability metric $\overline{\pp}$ is defined as:
+
+    \[ \overline{\pp}(a, p, S, H) = 
+        \begin{cases}
+            \frac{\sum\limits_{i \in S} e_i(a, p)}{\abs{S}} & \text{if }\abs{S} > 0 \\
+            0                                               & \text{otherwise}
+        \end{cases} 
+    \]
+
+    where $S \coloneqq \{ i \in H | e_i(a, p) > 0 \}$ and $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
+\end{definition}
+
+\begin{definition}[Application Efficiency]\label{def:app_eff}
+    The achieved performance as a fraction of the \enquote{best} observed performance. 
+\end{definition}
+
+\begin{definition}[Architectural Efficiency]\label{def:arch_eff}
+    The achieved performance as a fraction of the \enquote{peak} theoretical hardware performance, being it the achieved \si{\flop\per\second} or memory bandwidth.
+\end{definition}
+
 \begin{itemize}
     \item other formula
     \item pros and cons
