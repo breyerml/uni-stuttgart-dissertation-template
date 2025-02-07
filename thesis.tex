@@ -35,6 +35,12 @@
 \makeatletter
 \AddToHook{begindocument/before}{\@ifpackageloaded{minted}{\removefromtoclist[float]{lol}}{}}
 \makeatother
+\setminted[c++]{
+    breaklines,%
+    linenos,%
+    escapeinside=@@,%
+}
+
 \usepackage{siunitx}
 \sisetup{
   per-mode=fraction,
@@ -57,9 +63,16 @@
 
 \newcommand{\code}[1]{\mintinline{c++}{#1}}
 
+\newcommand{\cpp}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}}
+\newcommand{\dpcpp}{DPC\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}}
+
+\renewcommand{\listingautorefname}{Listing}
+
 % binding correction
 \setlength{\evensidemargin}{-24pt}
 \setlength{\oddsidemargin}{-24pt}
+\renewcommand{\lstlistingname}{Code}
+\renewcommand{\listingname}{Code}
 
 %\input{commands}
 
@@ -152,6 +165,7 @@
 %% --- CONTENT ---
 
 % TODO: which hardware used where
+% http://www.weinelt.de/latex/includeonly.html
 
 \input{content/01_introduction}
 \input{content/02_performance_portability}
