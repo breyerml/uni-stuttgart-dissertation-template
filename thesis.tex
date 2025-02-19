@@ -35,7 +35,7 @@
 \makeatletter
 \AddToHook{begindocument/before}{\@ifpackageloaded{minted}{\removefromtoclist[float]{lol}}{}}
 \makeatother
-\setminted[c++]{
+\setminted{
     breaklines,%
     linenos,%
     escapeinside=@@,%
@@ -47,6 +47,18 @@
   fraction-function=\tfrac
 }
 \DeclareSIUnit{\flop}{FLOP}
+
+\usepackage{tikz}
+\usetikzlibrary{external}
+\tikzexternalize[prefix=tikz/]
+
+%use TODO with \todo{}
+\setlength {\marginparwidth }{2cm}
+\usepackage{todonotes}
+\LetLtxMacro{\oldtodo}{\todo}
+\renewcommand{\todo}[2][]{\tikzexternaldisable\oldtodo[inline, #1]{#2}\tikzexternalenable}
+
+
 
 \usepackage[amsmath, hyperref]{ntheorem}
 \usepackage{csquotes}
@@ -63,8 +75,10 @@
 
 \newcommand{\code}[1]{\mintinline{c++}{#1}}
 
-\newcommand{\cpp}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}}
-\newcommand{\dpcpp}{DPC\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}}
+\newcommand{\cpp}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
+\newcommand{\dpcpp}{DPC\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
+
+\newcommand{\setfontsize}[1]{\fontsize{#1pt}{1.2\dimexpr#1pt\relax}\selectfont}
 
 \renewcommand{\listingautorefname}{Listing}
 
@@ -73,6 +87,8 @@
 \setlength{\oddsidemargin}{-24pt}
 \renewcommand{\lstlistingname}{Code}
 \renewcommand{\listingname}{Code}
+
+\includeonly{content/02_performance_portability}
 
 %\input{commands}
 
@@ -152,28 +168,27 @@
 \pagestyle{scrheadings}
 
 %% --- Zusammenfassung ---------------------------------------------
-\input{content/_01_Zusammenfassung}
+\include{content/_01_Zusammenfassung}
 
 %% --- Abstract Page---------------------------------------------
-\input{content/_02_abstract}
+\include{content/_02_abstract}
 
 %% --- Acknowledgements page------------------------------------
-\input{content/_03_acknowledgements}
+\include{content/_03_acknowledgements}
 
 \pagestyle{scrheadings}
 
 %% --- CONTENT ---
 
 % TODO: which hardware used where
-% http://www.weinelt.de/latex/includeonly.html
 
-\input{content/01_introduction}
-\input{content/02_performance_portability}
-\input{content/03_problem_category_blas_like}
-\input{content/04_problem_category_tree_based}
-\input{content/05_problem_category_hashing_based}
-\input{content/06_true_performance_portability}
-\input{content/07_conclusion}
+\include{content/01_introduction}
+\include{content/02_performance_portability}
+\include{content/03_problem_category_blas_like}
+\include{content/04_problem_category_tree_based}
+\include{content/05_problem_category_hashing_based}
+\include{content/06_true_performance_portability}
+\include{content/07_conclusion}
 
 %% --- References/Bibliography ---
 

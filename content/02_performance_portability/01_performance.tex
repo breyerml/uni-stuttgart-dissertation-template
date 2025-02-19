@@ -1,4 +1,4 @@
-\section{Performance}
+\section{What Is Performance?}
 
 Understanding the meaning of \enquote{performance} is key to be able to assess performance portability. 
 When we look at the Cambridge Dictionary entry of the word performance, we can see a few different definitions based on the context\footnote{\url{https://dictionary.cambridge.org/dictionary/english/performance}}:
@@ -84,10 +84,10 @@ if (zesDeviceEnumPowerDomains(device_handle, &num_power_domains, nullptr) == ZE_
     \caption{
     Example library function calls to gather the total power consumption since the last driver reload from an NVIDIA \gls{gpu} using \gls{nvml}, an AMD \gls{gpu} using \gls{rocmsmi}, and Intel \gls{gpu} using Level Zero.
     Note that the respective environments must be initialized beforehand and that the \code{device_handle} points to a supported and available device.}
-    \label{code:vendor_labrier_calls}
+    \label{code:vendor_library_calls}
 \end{listing}
 
-\autoref{code:vendor_labrier_calls} shows too major problems in gathering such information in a vendor independent way. 
+\autoref{code:vendor_library_calls} shows too major problems in gathering such information in a vendor independent way. 
 First, as already mentioned, the \glspl{api} greatly differ between the different vendors. 
 For example, using \gls{nvml} collecting the total power consumption can be done in two lines of code, when using Intel's Level Zero on the other hand, we at least need eight lines of code. 
 Second, the libraries do not even agree to the same physical unit: While \gls{rocmsmi} and Level Zero both report the total power consumption in \si{\mu\joule}, NVIDIA's \gls{nvml} library reports it in \si{\milli\joule}.
