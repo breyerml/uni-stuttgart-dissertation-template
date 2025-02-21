@@ -10,7 +10,7 @@ When we look at the Cambridge Dictionary entry of the word performance, we can s
 \end{description}
 From these short examples, we can already see that \endquote{a good performance} heavily depends on the context. 
 This is also true for performance in the computer science domain. 
-For example, when asking Machine Learners about the performance of their \gls{ml} models, they will answer with different model metrics showing how good their model performs on new, unseen data. 
+For example, when asking Machine Learners about the performance of their \gls{ml} models, they will answer with different model metrics showing how well their model performs on new, unseen data. 
 On the other hand, if you ask a member of the \gls{hpc} community about the performance of their, e.g., simulation, you will most likely get an answer regarding the total wall time the simulation needed to complete. 
 If I talk about performance in the remainder of this thesis, I will stick to the context of \gls{hpc}. 
 However, even in this context, there is no single widely agreed definition or metric to describe the performance of some code. 
@@ -31,8 +31,8 @@ Second, when looking at the metrics, most of the time we look at the relative pe
 As an example, if we analyze the energy efficiency of an application, we most likely say that it is X\si{\percent} more or less efficient than some baseline we want to compare our implementation to. 
 In this example, it is rather difficult or outright impossible to determine what the absolutely best energy efficiency would be. 
 
-In the remainder of this thesis, I will focus mostly on the \textbf{walltime} and \textbf{efficiency} mainly with respect to energy efficiency of the code examples when I talk about performance portability. 
-Thereby, gathering basic \textbf{walltime} information is possible in a straight forward way with normal tools directly provided by \cpp as shown in \autoref{code:walltime_measurement}.
+In the remainder of this thesis, I will focus mostly on the \textbf{walltime} and \textbf{efficiency} mainly with respect to the energy efficiency of the code examples when I talk about performance portability. 
+Thereby, gathering basic \textbf{walltime} information is possible in a straightforward way with normal tools directly provided by \cpp as shown in \autoref{code:walltime_measurement}.
 
 \begin{listing}
     \begin{minted}{c++}
@@ -47,8 +47,8 @@ auto walltime = std::chrono::duration_cast<std::chrono::milliseconds>(end - star
     \label{code:walltime_measurement}
 \end{listing}
 
-However, gathering efficiency metrics like energy consumption, but also memory or compute utilization poses more challenges especially if we want to get this information in a vendor independent way for NVIDIA, AMD, and Intel \glspl{gpu} and \glspl{cpu}. 
-While all hardware vendors provide some form of gathering this information through custom libraries, collecting all this information in a vendor independent way is far from trivial since these libraries do not agree to a standardized interface. 
+However, gathering efficiency metrics like energy consumption, but also memory or compute utilization poses more challenges especially if we want to get this information in a vendor-independent way for NVIDIA, AMD, and Intel \glspl{gpu} and \glspl{cpu}. 
+While all hardware vendors provide some form of gathering this information through custom libraries, collecting all this information in a vendor-independent way is far from trivial since these libraries do not agree to a standardized interface. 
 As an example, to gather the total power consumption (since the last driver reload) for NVIDIA, AMD, and Intel \glspl{gpu}, the library functions shown in \autoref{code:vendor_labrier_calls} must be used.
 
 \begin{listing}
@@ -87,7 +87,7 @@ if (zesDeviceEnumPowerDomains(device_handle, &num_power_domains, nullptr) == ZE_
     \label{code:vendor_library_calls}
 \end{listing}
 
-\autoref{code:vendor_library_calls} shows too major problems in gathering such information in a vendor independent way. 
+\autoref{code:vendor_library_calls} shows too major problems in gathering such information in a vendor-independent way. 
 First, as already mentioned, the \glspl{api} greatly differ between the different vendors. 
 For example, using \gls{nvml} collecting the total power consumption can be done in two lines of code, when using Intel's Level Zero on the other hand, we at least need eight lines of code. 
 Second, the libraries do not even agree to the same physical unit: While \gls{rocmsmi} and Level Zero both report the total power consumption in \si{\mu\joule}, NVIDIA's \gls{nvml} library reports it in \si{\milli\joule}.
@@ -101,7 +101,7 @@ For example, the smaller libraries all support only a small subset of the possib
 
 The larger libraries do support more different hardware, but with one exception they also do not support all hardware I am interested in. 
 PAPI~\cite{mucci_papi_1999} supports low-level performance counters to get various information from different \glspl{cpu} as well as NVIDIA and AMD \glspl{gpu}. 
-Likwid~\cite{thomas_gruber_likwid_2023} is similar to PAPI in that it also supports low level performance counters for different hardware. 
+Likwid~\cite{thomas_gruber_likwid_2023} is similar to PAPI in that it also supports low-level performance counters for different hardware. 
 Its main focus lies on \glspl{cpu}, but NVIDIA and AMD \glspl{gpu} are also supported although officially only in an experimental state. 
 The PowerAPI~\cite{fieni_powerapi_2024} is a collection of different tools that can be used to measure and analyze the power consumption of applications. 
 It supports \glspl{cpu} and \glspl{gpu} from Intel and NVIDIA \glspl{gpu}. 

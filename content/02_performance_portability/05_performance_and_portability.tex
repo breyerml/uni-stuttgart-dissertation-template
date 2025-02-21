@@ -1,8 +1,68 @@
 \section{Performance + Portability}
 
-\cite{pennycook_implications_2019}
+Until now, I looked at performance and portability separately which is OK since sometimes one is only interested in one of these aspects. 
+One may know that the code will only ever be executed on one specific hardware platform, and it is important to achieve the best performance possible down to the assembly level. 
+On the other hand, for some, it may be enough to write code that can be executed everywhere but that must not necessarily be performant. 
+However, for many achieving a combination of both is also important: writing code that can be executed on a variety of different hardware, without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware. 
+By reasonable here I mean that it achieves a high enough fraction of the possible achievable performance. 
+It should be clear that it is extremely difficult or even impossible to achieve the same performance with code that can run on all \glspl{gpu} and \glspl{cpu} there are compared to highly optimized vendor-specific solutions that may even be implemented by the vendors themselves with special closed-source knowledge of the underlying hardware. 
 
-\begin{definition}[Performance Portability]\label{def:pp_original}
+Assessing performance portability is an ongoing research topic. 
+Over the years, many definitions emerged starting with more informal definitions of performance portability. 
+Note that the following definitions aren't exhaustive but only serve as examples.
+
+In 2013 in their original Kokkos paper \citet{edwards_kokkos_2013} defined performance portability as:
+\begin{definition}[\citet{edwards_kokkos_2013}]\label{def:pp_informal_2013}
+Our performance portability objective is to maximize the amount of user code that can be compiled for diverse devices and obtain the same (or nearly the same) performance as a variant of the code that is written specifically for that device.
+\end{definition}
+While this definition was already quite good, the problem is that \enquote{\textit{nearly the same}} can and will be interpreted differently by different people. 
+Therefore, this definition is not feasible to use as an object performance portability metric.
+
+In 2014 \citet{kunkel_performance_2014} defined performance portability as:
+\begin{definition}[\citet{kunkel_performance_2014}]\label{def:pp_informal_2014}
+A code is performance portable if it can achieve a similar fraction of peak hardware performance on a range of different target architectures.
+\end{definition}
+As with \cref{def:pp_informal_2013} the problem is the objectivity of the definition namely how big the \enquote{\textit{similar fraction of}} should be. 
+Although \citet{kunkel_performance_2014} stated that for them it is \SI{20}{\percent} of the \enquote{best achievable performance} with respect to a hand-optimized native implementation, another person could argue that it should be \SI{15}{\percent} or \SI{25}{\percent} making this metric also highly subjective. 
+
+In 2016 \citet{larkin_performance_2016} defined performance portability as:
+\begin{definition}[\citet{larkin_performance_2016}]\label{def:pp_informal_2016}
+The same source code will run productively on a variety of different architectures.
+\end{definition}
+Again, \enquote{\textit{productively}} is highly subjective not only in a performance but also in a portable way. 
+This definition can include that maintaining custom code paths for better performance may be ok as long as it is not too much work. 
+
+Also in 2016, the \gls{doe} conducted a meeting \cite{doe_doe_2016} specifically regarding performance portability. 
+There, a few attendees were asked to define performance portability in their own words:
+\begin{definition}[\citet{doe_doe_2016} - Attendees]\label{def:pp_informal_2016_doe}
+For purposes of this meeting, it is the ability to run an application with acceptable performance across KNL and GPU-based systems with a single version of source code.\\
+(Rob Neely)
+\newline\newline
+An application is performance portable if it achieves a consistent level of performance (e.g. defined by execution time or other figure of merit, not percentage of peak flops across platforms relative to the best known implementation on each platform\\
+(Simon Pennycook)
+\newline\newline
+Hard portability = no code changes and no tuning. Software portability = simple code mods with no algorithmic changes. Non-portable = algorithmic changes\\
+(Adrian Pope, Vitali Morozov)
+\newline\newline
+The same source code will run productively on a variety of different architectures\\
+(Jeff Larkin; same as earlier \cref{def:pp_informal_2016})
+\newline\newline
+A code is performance portable when the application team says its performance portable!\\
+(David Richards)
+\end{definition}
+
+As with all other previous definitions, all of these contain some objective part in one way or another.
+However, to discuss performance portability objectively, these subjective definitions can not be used if it is expected that everyone should agree on the same values. 
+
+% TODO: cite this?: https://performanceportability.org/perfport/definition/
+% \begin{definition}[\citet{doe_doe_2016} - Working Definition]\label{def:pp_informal_2016_doe_working_definition}
+% An application is performance portable if it achieves a consistent ratio of the actual time to solution to either the best-known or the theoretical best time to solution on each platform with minimal platform specific code required.
+% \end{definition}
+
+Therefore, the first objective performance portability metric was introduced by \citet{pennycook_implications_2019} at the end of 2016 published on arXiv, and finally submitted as a full paper at the beginning of 2017. 
+It was the first formal definition that can be used to objectively assess the performance portability of an application.
+
+\begin{definition}[\citet{pennycook_implications_2019}]\label{def:pp_original}
     Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \ppm is defined as:
 
     \[ \pp(a, p, H) = 
@@ -15,12 +75,17 @@
     where $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
 \end{definition}
 
-\cite{marowka_inorrect_2024}
+Therefore, the performance portability metric \ppm is the harmonic mean over the performance efficiency of an application solving a specific problem on all tested hardware platforms. 
+Note that \ppm heavily emphasizes the \textit{portability} aspect of performance portability: If only one hardware platform is not supported the result of \ppm will directly be \SI{0}{\percent} regardless of the performance on all other hardware platforms. 
+Depending on your target audience, this property of \ppm may be desirable or not. 
 
-\begin{definition}[Performance Portability 2]\label{def:pp_new}
+\todo{Übergang}
+\cite{marowka_inorrect_2024, marowka_toward_2021, marowka_comparison_2023}
+
+\begin{definition}[\citet{marowka_comparison_2023}]\label{def:pp_new}
     Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of supported platforms $\mathbf{S \subseteq H}$ from the same architecture class, the performance portability metric $\overline{\pp}$ is defined as:
 
-    \[ \overline{\pp}(a, p, S, H) = 
+    \[ \mpp(a, p, S, H) = 
         \begin{cases}
             \frac{\sum\limits_{i \in S} e_i(a, p)}{\abs{S}} & \text{if }\abs{S} > 0 \\
             0                                               & \text{otherwise}
@@ -30,17 +95,54 @@
     where $S \coloneqq \{ i \in H | e_i(a, p) > 0 \}$ and $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
 \end{definition}
 
+In contrast to \ppm, \mppm is defined as the normal mean across all \textbf{supported} platforms. 
+The value of \mppm is \SI{0}{\percent} if and only if \textbf{no} hardware platform in $\mathbf{H}$ is supported by the current application $\mathbf{a}$. 
+This also shows us the main emphasis of \mppm in contrast to \ppm: For \mppm the \textit{performance} aspect of performance portability is heavily emphasized since an application that does not run on all hardware platforms is not penalized at all. 
+
+Both formal performance portability definitions---\ppm and \mppm---use a \textit{performance efficiency} $\mathbf{e_i(a, p)}$ in their definition. 
+In general, two different definitions defining the performance efficiency of an application $\mathbf{a}$ solving problem $\mathbf{p}$ on the hardware $\mathbf{i \in H}$ are used. 
+
+\todo{where to put?}
+\todo{Quelle}
 \begin{definition}[Application Efficiency]\label{def:app_eff}
     The achieved performance as a fraction of the \enquote{best} observed performance. 
 \end{definition}
 
+\todo{Quelle}
 \begin{definition}[Architectural Efficiency]\label{def:arch_eff}
     The achieved performance as a fraction of the \enquote{peak} theoretical hardware performance, being it the achieved \si{\flop\per\second} or memory bandwidth.
 \end{definition}
 
-\begin{itemize}
-    \item other formula
-    \item pros and cons
-    \item must add analysis to the other, different problem categories!
-\end{itemize}
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|c|c}
+        Platform Set $\mathbf{H}$ & Architectural Efficiency & Application Efficiency \\\midrule
+        A & \SI{90}{\percent} & \SI{100}{\percent} \\
+        B & \SI{75}{\percent} & \SI{85}{\percent}  \\
+        C & \SI{16}{\percent} & \SI{60}{\percent}  \\
+        D & --                & -- 
+    \end{tabular}
+    \caption{%
+    Example architectural and application efficiencies for an example application on four different hardware platforms. 
+    Note that the application does not support the architecture D. 
+    }
+    \label{tab:platforms_example}
+\end{table}
 
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rr|rr}
+        \multirow{2}{*}{Subsets of $\mathbf{H}$} & \multicolumn{2}{c|}{$\pp(a, p, H)$} & \multicolumn{2}{c}{$\mpp(a, p, S, H)$} \\
+                         & Arch. Eff.           & App. Eff.            & Arch. Eff.           & App. Eff.        \\\midrule
+        \{ A \}          & \SI{90}{\percent}    & \SI{100}{\percent}   & \SI{90}{\percent}    & \SI{100}{\percent}   \\
+        \{ A, B \}       & \SI{81.82}{\percent} & \SI{91.89}{\percent} & \SI{82.5}{\percent}  & \SI{92.5}{\percent}  \\
+        \{ A, B, C \}    & \SI{34.50}{\percent} & \SI{78.06}{\percent} & \SI{60.33}{\percent} & \SI{81.67}{\percent} \\
+        \{ A, B, C, D \} & \SI{0.0}{\percent}   & \SI{0.0}{\percent}   & \SI{60.33}{\percent} & \SI{81.67}{\percent} 
+    \end{tabular}
+    \caption{%
+    The calculated values for \ppm and \mppm using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \ppm and \mppm if the unsupported hardware platform D is added to the platform set $\mathbf{H}$.
+    }
+    \label{tab:pp_example}
+\end{table}
