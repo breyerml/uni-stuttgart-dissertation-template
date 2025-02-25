@@ -62,7 +62,9 @@ However, to discuss performance portability objectively, these subjective defini
 Therefore, the first objective performance portability metric was introduced by \citet{pennycook_implications_2019} at the end of 2016 published on arXiv, and finally submitted as a full paper at the beginning of 2017. 
 It was the first formal definition that can be used to objectively assess the performance portability of an application.
 
-\begin{definition}[\citet{pennycook_implications_2019}]\label{def:pp_original}
+\cite{pennycook_metric_2016}
+
+\begin{definition}[Performance Portability $\pp$~(Pennycook et al.~\cite{pennycook_implications_2019})]\label{def:pp_original}
     Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \ppm is defined as:
 
     \[ \pp(a, p, H) = 
@@ -76,13 +78,17 @@ It was the first formal definition that can be used to objectively assess the pe
 \end{definition}
 
 Therefore, the performance portability metric \ppm is the harmonic mean over the performance efficiency of an application solving a specific problem on all tested hardware platforms. 
+The only difference to the harmonic mean is that \ppm is also defined if the input data, i.e., the performance efficiency, also includes a $0$.
+
+\todo{range [0, 1] $\rightarrow$ 0 = did not run, 1 = best performance possible}
+
 Note that \ppm heavily emphasizes the \textit{portability} aspect of performance portability: If only one hardware platform is not supported the result of \ppm will directly be \SI{0}{\percent} regardless of the performance on all other hardware platforms. 
 Depending on your target audience, this property of \ppm may be desirable or not. 
 
 \todo{Übergang}
 \cite{marowka_inorrect_2024, marowka_toward_2021, marowka_comparison_2023}
 
-\begin{definition}[\citet{marowka_comparison_2023}]\label{def:pp_new}
+\begin{definition}[Performance Portability $\mpp$~(\citet{marowka_comparison_2023})]\label{def:pp_new}
     Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of supported platforms $\mathbf{S \subseteq H}$ from the same architecture class, the performance portability metric $\overline{\pp}$ is defined as:
 
     \[ \mpp(a, p, S, H) = 
@@ -99,12 +105,15 @@ In contrast to \ppm, \mppm is defined as the normal mean across all \textbf{supp
 The value of \mppm is \SI{0}{\percent} if and only if \textbf{no} hardware platform in $\mathbf{H}$ is supported by the current application $\mathbf{a}$. 
 This also shows us the main emphasis of \mppm in contrast to \ppm: For \mppm the \textit{performance} aspect of performance portability is heavily emphasized since an application that does not run on all hardware platforms is not penalized at all. 
 
-Both formal performance portability definitions---\ppm and \mppm---use a \textit{performance efficiency} $\mathbf{e_i(a, p)}$ in their definition. 
+Both formal performance portability definitions---\ppm and \mppm---use a \textit{performance efficiency} $\mathbf{e_i(a, p)}$ in their definition which describes the relation between the achieved performance with respect to some proven expected performance. 
 In general, two different definitions defining the performance efficiency of an application $\mathbf{a}$ solving problem $\mathbf{p}$ on the hardware $\mathbf{i \in H}$ are used. 
+
+\todo{way more complex metric}
+\cite{pennycook_revisiting_2021}
 
 \todo{where to put?}
 \todo{Quelle}
-\begin{definition}[Application Efficiency]\label{def:app_eff}
+\begin{definition}[Application Efficiency~(\citet{satish_can_2012})]\label{def:app_eff}
     The achieved performance as a fraction of the \enquote{best} observed performance. 
 \end{definition}
 
@@ -115,34 +124,87 @@ In general, two different definitions defining the performance efficiency of an 
 
 \begin{table}[]
     \centering
-    \begin{tabular}{c|c|c}
-        Platform Set $\mathbf{H}$ & Architectural Efficiency & Application Efficiency \\\midrule
-        A & \SI{90}{\percent} & \SI{100}{\percent} \\
-        B & \SI{75}{\percent} & \SI{85}{\percent}  \\
-        C & \SI{16}{\percent} & \SI{60}{\percent}  \\
-        D & --                & -- 
+    \begin{tabular}{c|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}}
+        \multirow{2}{*}{Platform Set $\mathbf{H}$} & \multicolumn{2}{c|}{Application 1}     & \multicolumn{2}{c}{Application 2}     \\
+                                                   & Arch. Eff.        & App. Eff.          & Arch. Eff.        & App. Eff.         \\\midrule
+        A                                          & \SI{40}{\percent} & \SI{100}{\percent} & \SI{30}{\percent} & \SI{90}{\percent} \\
+        B                                          & \SI{20}{\percent} & \SI{85}{\percent}  & \SI{30}{\percent} & \SI{85}{\percent} \\
+        C                                          & \SI{15}{\percent} & \SI{60}{\percent}  & \SI{15}{\percent} & \SI{40}{\percent} \\
+        D                                          & --                & --                 & \SI{40}{\percent} & \SI{70}{\percent}
     \end{tabular}
     \caption{%
-    Example architectural and application efficiencies for an example application on four different hardware platforms. 
-    Note that the application does not support the architecture D. 
+    Example architectural (arch. eff.) and application (app. eff.) efficiencies for two example applications on four different hardware platforms. 
+    Note that the application 1 does not support the architecture D. 
     }
     \label{tab:platforms_example}
+\end{table}
+
+\todo{update table}
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rrrr}
+        
+        Application 1           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}   \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.        & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{40}{\percent}    & \SI{100}{\percent}   & \SI{40}{\percent} & \SI{100}{\percent}    \\
+        \{ A, B \}              & \SI{26.67}{\percent} & \SI{91.89}{\percent} & \SI{30}{\percent} & \SI{92.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{21.18}{\percent} & \SI{78.06}{\percent} & \SI{25}{\percent} & \SI{81.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{0.0}{\percent}   & \SI{0.0}{\percent}   & \SI{25}{\percent} & \SI{81.67}{\percent} 
+    \end{tabular}
+    \caption{%
+    The calculated values for \ppm and \mppm for application 1 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \ppm and \mppm if the unsupported hardware platform D is added to the platform set $\mathbf{H}$.
+    }
+    \label{tab:pp_app_1_example}
 \end{table}
 
 \begin{table}[]
     % https://www.programiz.com/online-compiler/0apVuVZDNe38e
     \centering
-    \begin{tabular}{c|rr|rr}
-        \multirow{2}{*}{Subsets of $\mathbf{H}$} & \multicolumn{2}{c|}{$\pp(a, p, H)$} & \multicolumn{2}{c}{$\mpp(a, p, S, H)$} \\
-                         & Arch. Eff.           & App. Eff.            & Arch. Eff.           & App. Eff.        \\\midrule
-        \{ A \}          & \SI{90}{\percent}    & \SI{100}{\percent}   & \SI{90}{\percent}    & \SI{100}{\percent}   \\
-        \{ A, B \}       & \SI{81.82}{\percent} & \SI{91.89}{\percent} & \SI{82.5}{\percent}  & \SI{92.5}{\percent}  \\
-        \{ A, B, C \}    & \SI{34.50}{\percent} & \SI{78.06}{\percent} & \SI{60.33}{\percent} & \SI{81.67}{\percent} \\
-        \{ A, B, C, D \} & \SI{0.0}{\percent}   & \SI{0.0}{\percent}   & \SI{60.33}{\percent} & \SI{81.67}{\percent} 
+    \begin{tabular}{c|rrrr}
+        Application 2           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}      \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.           & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{30}{\percent}    & \SI{90}{\percent}    & \SI{30}{\percent}    & \SI{90}{\percent}    \\
+        \{ A, B \}              & \SI{30}{\percent}    & \SI{87.43}{\percent} & \SI{30}{\percent}    & \SI{87.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{25}{\percent}    & \SI{62.66}{\percent} & \SI{25}{\percent}    & \SI{71.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{25.26}{\percent} & \SI{64.35}{\percent} & \SI{28.75}{\percent} & \SI{71.25}{\percent}
     \end{tabular}
     \caption{%
-    The calculated values for \ppm and \mppm using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
-    This example shows the differences between \ppm and \mppm if the unsupported hardware platform D is added to the platform set $\mathbf{H}$.
+    The calculated values for \ppm and \mppm for application 2 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \ppm and \mppm if all hardware platforms in the platform set $\mathbf{H}$ are supported.
     }
-    \label{tab:pp_example}
+    \label{tab:pp_app_2_example}
 \end{table}
+
+\todo{Plot script anpassen und für mich unnötiges Zeug rauswerfen.}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/02_performance_portability/example_diss_eff_cascade.pdf}
+    \caption{%
+    An example visualization of the performance efficiencies of \autoref{tab:platforms_example} and performance portability metrics of the two example applications from \autoref{tab:pp_app_1_example} and \autoref{tab:pp_app_2_example} as proposed by \citet{sewall_interpreting_2020}. 
+    TODO: further describtion
+    }
+    \label{fig:pp-example-visualization}
+\end{figure}
+
+
+\citet{harrell_effective_2018} extended the performance portability even further to an \textit{effective performance portability} that does not only include the above-discussed performance portability but also the productivity, i.e., the effort a programmer has to make to achieve said performance portability. 
+This metric also penalizes frameworks that indeed achieve good performance portability but only by drastically increasing the programmer's effort, e.g. by introducing special code paths for some hardware platforms. 
+However, in the remainder of this thesis, I will mainly focus on \textit{performance portability} only. \todo{Begründung?}
+
+
+\citet{sewall_interpreting_2020} 
+different visualization strategies:
+\begin{itemize}
+    \item Box Plots: obscures the "did not run" case (large boxes); no number of supported platforms; only median to compare in case of "did not run" (boxes cover whole range)
+    \item Histograms: distribution of bins ("did not run" must be own bin; how many bins?); areas of low density $\rightarrow$ difficult to "see" the distribution
+    \item Probability Density Function: primary problem choosing a good kernel bandwidth; PP sparse and uneven distributed data $\rightarrow$ no fixed bandwidth guaranteed to yield satisfactory results $\rightarrow$ adaptive methods; problems on [0, 1] boundaries $\rightarrow$ there may be many points there for PP making this problem even worse; but better than Histograms (better tendencies; less crowded bars)
+    \item Violin Plots: a combination of kernel density estimation and Box Plots
+
+    % Impact of Platform Selection
+    \item plotting \ppm against $\mathcal{H}$ $\rightarrow$ other paper \cite{deakin_performance_2019}
+    \item Efficiency Cascade Plots + Platform Charts: minimum efficiency and H $\rightarrow$ remove platform with minimum efficiency and start again; independent for each application; platform sets at the bottom may not be the same for each application; monotonic decreasing
+\end{itemize}
+
+
