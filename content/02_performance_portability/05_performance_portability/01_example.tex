@@ -1,0 +1,56 @@
+\subsection{Examples}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}}
+        \multirow{2}{*}{Platform Set $\mathbf{H}$} & \multicolumn{2}{c|}{Application 1}     & \multicolumn{2}{c}{Application 2}     \\
+                                                   & Arch. Eff.        & App. Eff.          & Arch. Eff.        & App. Eff.         \\\midrule
+        A                                          & \SI{40}{\percent} & \SI{100}{\percent} & \SI{30}{\percent} & \SI{90}{\percent} \\
+        B                                          & \SI{20}{\percent} & \SI{85}{\percent}  & \SI{30}{\percent} & \SI{85}{\percent} \\
+        C                                          & \SI{15}{\percent} & \SI{60}{\percent}  & \SI{15}{\percent} & \SI{40}{\percent} \\
+        D                                          & --                & --                 & \SI{40}{\percent} & \SI{70}{\percent}
+    \end{tabular}
+    \caption{%
+    Example architectural (arch. eff.) and application (app. eff.) efficiencies for two example applications on four different hardware platforms. 
+    Note that the application 1 does not support the architecture D. 
+    }
+    \label{tab:platforms_example}
+\end{table}
+
+\todo{update table}
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rrrr}
+        
+        Application 1           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}   \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.        & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{40}{\percent}    & \SI{100}{\percent}   & \SI{40}{\percent} & \SI{100}{\percent}    \\
+        \{ A, B \}              & \SI{26.67}{\percent} & \SI{91.89}{\percent} & \SI{30}{\percent} & \SI{92.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{21.18}{\percent} & \SI{78.06}{\percent} & \SI{25}{\percent} & \SI{81.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{0.0}{\percent}   & \SI{0.0}{\percent}   & \SI{25}{\percent} & \SI{81.67}{\percent} 
+    \end{tabular}
+    \caption{%
+    The calculated values for \pp and \mpp for application 1 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \pp and \mpp if the unsupported hardware platform D is added to the platform set $\mathbf{H}$.
+    }
+    \label{tab:pp_app_1_example}
+\end{table}
+
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rrrr}
+        Application 2           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}      \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.           & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{30}{\percent}    & \SI{90}{\percent}    & \SI{30}{\percent}    & \SI{90}{\percent}    \\
+        \{ A, B \}              & \SI{30}{\percent}    & \SI{87.43}{\percent} & \SI{30}{\percent}    & \SI{87.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{25}{\percent}    & \SI{62.66}{\percent} & \SI{25}{\percent}    & \SI{71.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{25.26}{\percent} & \SI{64.35}{\percent} & \SI{28.75}{\percent} & \SI{71.25}{\percent}
+    \end{tabular}
+    \caption{%
+    The calculated values for \pp and \mpp for application 2 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \pp and \mpp if all hardware platforms in the platform set $\mathbf{H}$ are supported.
+    }
+    \label{tab:pp_app_2_example}
+\end{table}

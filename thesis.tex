@@ -64,19 +64,25 @@
 \usepackage{csquotes}
 \usepackage{mathrsfs}
 \usepackage{phoenician}
+\usepackage{interval}
 
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 
-% Command to use in Math Mode
-\newcommand{\pp}{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}
-% Command to use in text
-\newcommand{\ppm}{$\pp$\xspace}
+% % Command to use in Math Mode
+% \newcommand{\pp}{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}
+% % Command to use in text
+% \newcommand{\ppm}{$\pp$\xspace}
 
-% Command to use in Math Mode
-\newcommand{\mpp}{\overline{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}}
-% Command to use in text
-\newcommand{\mppm}{$\mpp$\xspace}
+% % Command to use in Math Mode
+% \newcommand{\mpp}{\overline{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}}
+% % Command to use in text
+% \newcommand{\mppm}{$\mpp$\xspace}
+
+% Performance Portability Metric
+\newcommand{\pp}{\ensuremath{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}\xspace}
+% Marowka Performance Portability Metric
+\newcommand{\mpp}{\ensuremath{\overline{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}}\xspace}
 
 \newcommand{\code}[1]{\mintinline{c++}{#1}}
 
@@ -88,6 +94,20 @@
 \renewcommand{\listingautorefname}{Listing}
 
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\NewDocumentEnvironment{quotebox}{m b}
+{%
+    \vspace{0.2\baselineskip} % Top margin
+    \begin{quote}\itshape
+      \enquote{#2} % Main content (third argument)
+      \newline\raggedleft --- #1 % Mandatory author (first argument)
+    \end{quote}
+    \vspace{0.2\baselineskip} % Bottom margin
+}%
+{%
+}%
+
+\newcommand{\autoquotename}{Quote}
 
 % binding correction
 \setlength{\evensidemargin}{-24pt}
