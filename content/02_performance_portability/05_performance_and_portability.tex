@@ -444,20 +444,236 @@ $$d(a_i, a_j) = \frac{\abs{\text{LOC}(a_i) - \text{LOC}(a_j)}}{\min(\text{LOC}(a
     
 \end{definition}
 
+question: can I single problem accept different input data and produce different output data? $\rightarrow$ new definition of a problem:
+\begin{itemize}
+    \item \enquote{a problem is a proposed question that requires an algorithm to be solved correctly}
+\end{itemize}
+
+\begin{definition}[Performance Distance~\cite{daniel_applying_2019}]\label{def:perf_dist}
+Given a set of applications $\mathbf{A_p}$ that solve problem $\mathbf{p}$, let $f_i(a, p, s)$ be a measure of performance of application $\mathbf{a}$ on solving $\mathbf{p}$ on platform $\mathbf{i}$ with input size $\mathbf{s}$. 
+The performance distance $\mathbf{\delta(a, \alpha}$ between applications $a$ and $\alpha$ is the relative error in performance.
+
+$$\delta(a, \alpha) = \frac{\abs{f_i(a, p, s) - f_i(\alpha, p, s}}{f_i(\alpha, p, s)}$$
+
+Note that $f_i(\alpha, p, s)$ is the observed result or the theoretical hardware performance. 
+\end{definition}
+
+\begin{definition}[Divergence RMS~\cite{daniel_applying_2019}]\label{def:div_rms}
+The Divergence RMS $\Delta_{RMS}$ is the root mean square of performance distances between a set of input sizes of interest $S$:
+
+$$\Delta_{RMS} = \sqrt{\frac{\sum\limits_{s \in S} \delta(a, \alpha)^2}{\abs{S}}}$$
+
+\end{definition}
+
+\begin{definition}[Performance Portability Divergence $\mathcal{P_D}$~\cite{daniel_applying_2019}]\label{def:pp_div}
+The Performance Portability Divergence $\mathcal{P_D}$ is the arithmetic mean of RMS divergences across a set of platforms $H$:
+
+$$\mathcal{P_D} = \frac{\sum\limits_{i \in H} \Delta_{RMS}}{\abs{H}}$$
+
+\end{definition}
+
+\begin{itemize}
+    \item optimal $\mathcal{P_D}$ would be $\SI{0}{\percent}$
+    \item penalizes large performance distances severely
+    \item can be larger than $\SI{100}{\percent}$
+    \item easy to reach $\SI{0}{\percent}$, than $\SI{100}{\percent}$ in \pp
+\end{itemize}
 
 \newpage
 \cite{sedova_high-performance_2018}
 
 \enquote{The $PP_{MD}$ metric purports to evaluate performance portability but in practice it measures the price in performance that must be paid to make the application portable.} -- \cite{marowka_comparison_2023}
 
+\begin{definition}[Portability \citet{sedova_high-performance_2018, mooney_bringing_1997}]
+An application can be said to be portable if the cost of porting is less than the cost of re-writing:
+$$DP = 1 - (\frac{C_P}{C_R}$$
+where $C_P$ is the cost to port and $C_R$ the cost to rewrite the program. 
+\end{definition}
+
+\begin{itemize}
+    \item $1$ $\rightarrow$ completely portable
+    \item positive $\rightarrow$ porting is more profitable
+    \item binary vs source code portability
+\end{itemize}
+
+\begin{definition}[MD Performance Portability~\citet{sedova_high-performance_2018}]
+
+$$PP_{MD_c}(a, p, Q) = 
+    \begin{cases}
+        \frac{\abs{Q}}{\sum\limits_{i \in Q} S_i(a, p)} & \text{if }\abs{G} - \abs{Q} \neq 0\text{ and }\abs{G} - \abs{Q} \neq \abs{G} \\
+        1  & \text{if }\abs{G} - \abs{Q} = \abs{G}\\
+        0  & \text{if }\abs{G} - \abs{Q} = 0
+    \end{cases}
+$$
+
+where $\abs{G}$ is the the cardinality of the set $G$ of algorithmic or programmatic components that significantly accelerate a best-performing application $a$, $\abs{Q}$ is the cardinality of the set $Q$ of all non-portable such accelerating components of $a$, $p$ are the parameters used in $a$, and $S$ is the speedup that this non-portable component $i$ of the application provides to the program: $S_i = \frac{T_0}{T_i}$, with $T_i$ as the time-to-solution with the use of $i$, and $T_0$ the time-to-solution without $i$.
+\end{definition}
+
+\begin{itemize}
+    \item $G$: instruction-level, thread-level, process-level, or library-level
+    \item $PP_{MD_c}$ not close to $\SI{100}{\percent}$: viele optimierte Teile eines Codes müssten getauscht werden mit portable Code (mit ähnlicher Performance)
+    \item $PP_{MD_c}$ does not support multiple platforms
+\end{itemize}
+
+Summary of recommendations for portability (copied verbatim)
+\begin{itemize}
+    \item High-level programming interface with re-targetable back end that is standardized and supported by a number of both commercial and open-source initiatives.
+    \item Encapsulation of machine specific sections of the program.
+    \item An agreement about the worthiness of the portability effort.
+    \item Modularity of the algorithm sections and the data structures, with an ability to rearrange data storage and even to change the algorithm if required.
+    \item Use of only the portable subset of the standard language.
+    \item A dedicated portable design effort and clear portability goals.
+\end{itemize}
+
 \newpage
 \cite{bertoni_performance_2020}
 
 \pp insufficient (same \pp values for vastly different behavior) $\rightarrow$ also use standard deviation to accomplice \pp 
 
+\begin{itemize}
+    \item roofline schwierig zu erlangen 
+    \item teilweise hier schon inconsistent
+    \item durch haminic mean: gleiches \pp, trotz drastisch unterschiedlichen verhalten (einmal alle ungefähr gleich; einmal in schwacher und in sehr starker run)
+    \item geben zusätzlich Standardabweichung an
+\end{itemize}
+
+
+\newpage
+\cite{yang_empirical_2018}
+
+\begin{itemize}
+    \item Roofline model as \textit{performance efficiency metric}
+    \item Paper hauptsächlich wie man in "gutes" Roofline Model aufbaut
+    \item 
+\end{itemize}
+
+\begin{definition}[Roofline Performance Efficiency~\citet{yang_empirical_2018}]\label{def:roof_eff}
+Given the observed code performance in floating point operations per second (\si{\flop\per\second}) $P_i(a, p)$, the peak \si{\flop\per\second} $F_i$ of architecture $i$, the peak bandwidth $B_i$ of architecture $i$, and the arithmetic intensity $I_i(a, p)$ of application $a$ on architecture $i$, the Roofline performance efficiency is defined as:
+
+$$e_i(a, p) = \frac{P_i(a, p)}{\min(F_i, B_i \times I_i(a, p))}$$
+\end{definition}
+The denominator accounts for when the application is compute or bandwidth bound.
+
+
+\newpage
+\cite{harrell_effective_2018}
+
+\begin{itemize}
+    \item not only performance portability, but productivity 
+    \item critic: \pp does not penalize "heroic" optimizations efforts to increase its score (i.e., optimized code paths for specific architectures) $\rightarrow$ wouldn't be productive
+\end{itemize}
 
 
 
+\newpage
+\cite{zhu_performance_2007} (before the age of GPUs)
 
+\begin{quotebox}{\citet{zhu_performance_2007}}
+    If one parallel implementation of one application already achieves good performance on one platform, can this implementation also achieve the same or similar performance on other platforms?
+\end{quotebox}
+
+\begin{definition}[Performance Portablity $P^\mathcal{P}_n(b \rightarrow t$~\citet{zhu_performance_2007}]
+Given a parallel program $\mathcal{P}$ developed on the \textbf{base system}, let $S^B_n$ denote the absolute speedup achieved by $\mathcal{P}$ on $n$ computing nodes of the \textbf{base system}, and $S^T_n$ denote the absolute speedup achieved by $\mathcal{P}$ on $n$ computing nodes of the \textbf{taregt system}, then the \textbf{performance portability} on $n$ computing nodes for porting the program $\mathcal{P}$ from the \textbf{base system} to the \textbf{target system} is:
+
+$$P^\mathcal{P}_n(b \rightarrow t) = \frac{S^T_n}{S^B_n} \times \SI{100}{\percent}$$
+\end{definition}
+
+\begin{itemize}
+    \item may be greater than $\SI{100}{\percent}$
+    \item \enquote{Speedup, which is a measurement of the scalability of a parallel program, also reflects the performance portability of a parallel program in the sense that performance is portable with the increase of number of processors.}
+\end{itemize}
+
+
+
+\newpage
+\cite{marowka_performance_2022}
+
+\begin{itemize}
+    \item new PP metric that is not application but programming model centric
+    \item again based on \mpp
+    \item achieved performance of a portable programming model $M$ as a fraction of the performance of a non-portable architecture-specific parallel programming model
+    \item the better, the more case studies are included
+    \item again, removes outliers (ist das WIRKLICH sinnvoll?)
+    
+\end{itemize}
+
+\begin{definition}[Performance Portability of a Model~\citet{marowka_performance_2022}]
+The arithmetic mean of the performance efficiencies, which are the achieved performance values of a given portable model as a fraction of the performance values of a non-portable architecture-specific model, obtained from collections of case studies carried out on platforms of the same class of pairs (application, problem).
+\end{definition}
+
+\begin{definition}[Performance Portability of a Model~\citet{marowka_performance_2022}]
+The performance portability metric $\mpp_M$ of a high-level portable parallel model $M$ executing a set of case studies $T$, where each $t \in T$ corresponds to application $a$ solving problem $b$  on platform $c$ is: 
+
+$$\mpp_m = \frac{\sum\limits_{i \in T} e_(a, b, c)}{\abs{T}}$$
+
+where $e_i(a, b, c$ is the performance efficiency of application $a$ solving problem $p$ on platform $c$.
+\end{definition}
+
+
+
+\newpage
+\cite{pennycook_navigating_2021}
+
+
+\newpage
+\cite{yokota_beginners_2018}
+
+
+\newpage
+\cite{hoefler_scientific_2015}
+
+\begin{itemize}
+    \item experimental design (for reproducibility): application, input, compiler, runtime environment, machine, and measurement methodology
+    \item interpretability: \enquote{We call an experiment interpretable if it provides enough information to allow scientists to understand the experiment, draw own conclusions, assess their certainty, and possibly generalize results}
+\end{itemize}
+
+Rules:
+\begin{enumerate}
+    \item When publishing parallel speedup, report if the base case is a single parallel process or best serial execution, as well as the absolute execution performance of the base case.
+    \item Specify the reason for only reporting subsets of standard benchmarks or applications or not using all system resources.
+    \item Use the arithmetic mean only for summarizing costs. Use the harmonic mean for summarizing rates.
+    \item Avoid summarizing ratios; summarize the costs or rates that the ratios base on instead. Only if these are not available use the geometric mean for summarizing ratios.
+    \item Report if the measurement values are deterministic. For nondeterministic data, report confidence intervals of the measurement.
+    \item Do not assume normality of collected data (e.g., based on the number of samples) without diagnostic checking.
+    \item Compare nondeterministic data in a statistically sound way, e.g., using non-overlapping confidence intervals or ANOVA.
+    \item Carefully investigate if measures of central tendency such as mean or median are useful to report. Some problems, such as worst-case latency, may require other percentiles.
+    \item Document all varying factors and their levels as well as the complete experimental setup (e.g., software, hardware, techniques) to facilitate reproducibility and provide interpretability.
+    \item For parallel time measurements, report all measurement, (optional) synchronization, and summarization techniques.
+    \item If possible, show upper performance bounds to facilitate interpretability of the measured results.
+    \item Plot as much information as needed to interpret the experimental results. Only connect measurements by lines if they indicate trends and the interpolation is valid.
+\end{enumerate}
+
+Additional: 
+\begin{itemize}
+    \item report units unambiguously
+    \item costs: metrics with a direct semantic (runtime, energy consumption, number of instructions)
+    \item rates: derived from costs (\enquote{if the denominator has the primary semantic meaning, the harmonic mean provides correct results})
+    \item ratios (unitless): should never be averaged
+    \item statistical methods instead of arithmetic ones (samples must be normal distributed and either costs or rates): 
+    \begin{itemize}
+        \item standard variation
+        \item coefficient of variation (good for performance consistency of a system over longer time)
+        \item confidence interval of the mean
+    \end{itemize}
+    \item median and quartiles
+    \item confidence intervals of the median
+    \item recommend not to remove outliers
+    \item analysis of variance (ANOVA)
+    \item quantile regression
+    \item factorial design
+    \item warm-up, warm vs cold cache
+    \item power-of-two best case for some algorithms (e.g., MPI\_Reduce)
+    \item string vs weak scaling
+    \item full benchmarks vs kernel benchmarks
+    \item measure single events
+    \item in general more than $5$ runs
+    \item three cases of bounds models:
+    \begin{itemize}
+        \item ideal linear speedup
+        \item serial overheads (Amdahls's law)
+        \item parallel overheads
+    \end{itemize}
+    \item Points should only be connected if they indicate a trend and values between two points are expected to follow the line
+\end{itemize}
 
 % https://intel.github.io/p3-analysis-library/
