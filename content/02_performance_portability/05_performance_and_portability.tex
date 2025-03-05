@@ -37,18 +37,18 @@ In 2016 \citet{larkin_performance_2016} defined performance portability as:
 Again, \enquote{\textit{productively}} is highly subjective not only in a performance but also in a portable way. 
 This definition can include that maintaining custom code paths for better performance may be ok as long as it is not too much work. 
 
-Also in 2016, the \gls{doe} conducted a meeting \cite{doe_meeting_attendees_doe_2016} specifically regarding performance portability. 
+Also in 2016, the \gls{doe} conducted a meeting \cite{neely_doe_2016} specifically regarding performance portability. 
 There, a few attendees were asked to define performance portability in their own words:
-\begin{quotebox}{Rob Neely~\cite{doe_meeting_attendees_doe_2016}}
+\begin{quotebox}{Rob Neely~\cite{neely_doe_2016}}
     For purposes of this meeting, it is the ability to run an application with acceptable performance across KNL and GPU-based systems with a single version of source code.
 \end{quotebox}
-\begin{quotebox}{Simon Pennycook~\cite{doe_meeting_attendees_doe_2016}}
+\begin{quotebox}{Simon Pennycook~\cite{neely_doe_2016}}
     An application is performance portable if it achieves a consistent level of performance (e.g. defined by execution time or other figure of merit, not percentage of peak flops across platforms relative to the best known implementation on each platform.
 \end{quotebox}
-\begin{quotebox}{Adrian Pope, Vitali Morozov~\cite{doe_meeting_attendees_doe_2016}}
+\begin{quotebox}{Adrian Pope, Vitali Morozov~\cite{neely_doe_2016}}
     Hard portability = no code changes and no tuning. Software portability = simple code mods with no algorithmic changes. Non-portable = algorithmic changes.
 \end{quotebox}
-\begin{quotebox}{David Richards~\cite{doe_meeting_attendees_doe_2016}}
+\begin{quotebox}{David Richards~\cite{neely_doe_2016}}
     A code is performance portable when the application team says its performance portable!
 \end{quotebox}
 
@@ -138,9 +138,6 @@ The \textit{architectural efficiency}
 The \textit{application efficiency}
 
 \todo{3-P challenge: performance, portability, and productivity}
-\todo{other metric \citet{daniel_applying_2019}}
-\todo{Roofline for architectural efficiency \citet{yang_empirical_2018}}
-\todo{3P tools \citet{pennycook_navigating_2021}}
 
 \input{content/02_performance_portability/05_performance_portability/01_example}
 \input{content/02_performance_portability/05_performance_portability/02_visualization}
@@ -614,10 +611,67 @@ where $e_i(a, b, c$ is the performance efficiency of application $a$ solving pro
 \newpage
 \cite{pennycook_navigating_2021}
 
+\begin{itemize}
+    \item it should be clear what is part of the application and what of the platform (e.g., third-party libraries)
+    \item Cascade plots: \enquote{applications extending further to the right support more platforms (portability), and if they do so with higher efficiency, are more performance portable.}
+    \item Productivity: subjective, approximation sufficient; they use \cite{harrell_effective_2018} code divergence with the Jaccard distance
+    \item dendrogram for visualizing code divergence (by clustering)
+    \item \pp-CC charts: $2D$-plane, top-right corner is the goal
+    \item track performance portability and productivity yas early as possible in the development process
+    \begin{enumerate}
+        \item identify the destination
+        \item get your bearings
+        \item chart the course
+        \item set sail
+    \end{enumerate}
+\end{itemize}
+
+\begin{definition}[Jaccard Distance SLOC~\citet{pennycook_navigating_2021}]
+Given $c_i(a, p)$ as the set of source lines required to compile application $a$ and execute problem $p$ for platform $i$, the dissimilarity of the source code can be expressed as:
+
+$$d_{i, j}(a, p) = 1 - \frac{\abs{c_i(a, p) \cap c_j(a, p)}}{\abs{c_i(a, p) \cup c_j(a, p)}}$$
+\end{definition}
+Here, $0$ means \enquote{single-source}, i.e., everything is shared by both platforms, and $1$ means nothing is shared. 
+
+\begin{definition}[\pp-CC Metric~\citet{pennycook_navigating_2021}]
+    $$M(a, p, H) = \min(\pp(a, p, H), CC(a, p, H))$$
+\end{definition}
 
 \newpage
 \cite{yokota_beginners_2018}
 
+\begin{itemize}
+    \item tension between performance improvement and performance portability improvement
+    \item \enquote{we empirically analyze the usability and usefulness of PPM, applied for OpenACC applications}
+    \begin{enumerate}
+        \item calculating PPM for multiple applications and platforms
+        \item interpreting the results from the perspective of performance portability across devices
+        \item attempting to improve the performance portability, i.e., increase PPM
+    \end{enumerate}
+    \item arch eff: compute-bound $\rightarrow$ operational throughput; memory-bound $\rightarrow$ bandwidth
+    \item Problem arch eff: does not show whether the implementation \textbf{is actual efficient} (e.g., unnecessary memory loads, floptimization)
+    \item same problem as in other studies: \pp heavily penalizes even one small performance efficiency value
+    \item also points out the problem with different architecture (CPUs vs GPUs)
+    \item low \pp: low efficiencies overall or big differences among platform-specific performance efficiencies
+    \item how to improve low \pp?: add more platforms, use fewer platforms, improve performance efficiency
+    \item \pp should be extended to include some kind of heterogeneity score
+    \item trying to improve the performance efficiency $\rightarrow$ tension
+    \begin{enumerate}
+        \item performance \enquote{increases on all platforms}
+        \item performance \enquote{increases on one platform, but decreases on another platform}
+    \end{enumerate}
+    \item did optimize the OpenACC code but it seems that not the baseline CUDA code $\rightarrow$ does the app eff still make sense?
+    \item 
+\end{itemize}
+
+\begin{definition}[Architectural Efficiency~\citet{yokota_beginners_2018}]
+    $$e\_arch_i(a, p) = 
+    \begin{cases}
+        \frac{OpT^{app}}{OpT^{HW}} & \text{if } OI^{app} \geq OI^{HW} \\
+        \frac{BW^{app}}{BW^{HW}} & \text{otherwise}
+    \end{cases}$$
+    
+\end{definition}
 
 \newpage
 \cite{hoefler_scientific_2015}
