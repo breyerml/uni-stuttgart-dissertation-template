@@ -1,156 +1,17 @@
 \section{What Is Portability?}
 
+
+\input{content/02_performance_portability/03_portability/01_openmp}
+\input{content/02_performance_portability/03_portability/02_cuda}
+\input{content/02_performance_portability/03_portability/03_opencl}
+\input{content/02_performance_portability/03_portability/04_sycl}
+\input{content/02_performance_portability/03_portability/05_kokkos}
+\input{content/02_performance_portability/03_portability/06_hip}
+\input{content/02_performance_portability/03_portability/07_standard_cpp}
+
+
+Other Frameworks:
 \begin{itemize}
-    \item different available frameworks (like, Kokkos, OpenCL, OpenMP target offloading, OpenACC, RAJA)
-\end{itemize}
-
-
-% \begin{table}[]
-%     \centering
-%     \begin{tabular}{l|c|c|c|c|c}
-%     \toprule
-%          & \acrshort{cuda} & \acrshort{hip} & \acrshort{opencl} & SYCL & Kokkos \\\midrule
-%          & shared memory & shared memory & local memory & local memory & scratch memory \\
-%          & \code{cudaMalloc} & \code{hipMalloc} & \code{clCreateBuffer} & \code{sycl::malloc_device} & \code{Kokkos::View} \\
-%      \bottomrule
-%     \end{tabular}
-%     \caption{Caption}
-%     \label{tab:my_label}
-% \end{table}
-
-
-% % https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html
-% % https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html
-% \begin{itemize}
-%     \item \code{cudaError_t cudaMalloc(void** devPtr, size_t size)}
-%     \item \code{cudaError_t cudaMallocManaged(void** devPtr, size_t size, unsigned int  flags = cudaMemAttachGlobal)}
-%     \item \code{cudaError_t cudaFree(void* devPtr)}
-%     \item \code{cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, cudaMemcpyKind kind)}
-%     \item \code{cudaError_t cudaDeviceSynchronize(void)}
-
-%     \item \code{kernel<<<..., ...>>>(...)}
-% \end{itemize}
-
-% % https://rocm.docs.amd.com/projects/HIP/en/latest/reference/hip_runtime_api/modules/memory_management.html#memory-management-reference
-% % https://rocm.docs.amd.com/projects/HIP/en/latest/reference/hip_runtime_api/modules/device_management.html#device-management-reference
-% \begin{itemize}
-%     \item \code{hipError_t hipMalloc(void **ptr, size_t size)}
-%     \item \code{hipError_t hipMallocManaged(void **dev_ptr, size_t size, unsigned int flags)}
-%     \item \code{hipError_t hipFree(void *ptr)}
-%     \item \code{hipError_t hipMemcpy(void *dst, const void *src, size_t sizeBytes, hipMemcpyKind kind)}
-%     \item \code{hipError_t hipDeviceSynchronize(void)}
-
-%     \item \code{kernel<<<..., ...>>>(...)}
-% \end{itemize}
-
-% % https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html
-% \begin{itemize}
-%     \item \code{cl_mem clCreateBuffer(cl_context context, cl_mem_flags flags, size_t size, void* host_ptr, cl_int* errcode_ret);}
-%     \item \code{void* clSVMAlloc(cl_context context, cl_svm_mem_flags flags, size_t size, cl_uint alignment);}
-%     \item \code{cl_int clReleaseMemObject(cl_mem memobj);}; \code{void clSVMFree(cl_context context, void* svm_pointer);}
-%     \item \code{cl_int clEnqueueWriteBuffer(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_write, size_t offset, size_t size, const void* ptr, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);}
-%     \item \code{cl_int clFinish(cl_command_queue command_queue);}
-    
-%     \item \code{cl_int clEnqueueNDRangeKernel(cl_command_queue command_queue, cl_kernel kernel, cl_uint work_dim, const size_t* global_work_offset, const size_t* global_work_size, const size_t* local_work_size, cl_uint num_events_in_wait_list, const cl_event* event_wait_list, cl_event* event);}
-% \end{itemize}
-
-% % https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
-% \begin{itemize}
-%     \item \code{template <typename T> T* sycl::malloc_device(size_t count, const queue& syclQueue, const property_list& propList = {})}
-%     \item \code{template <typename T> T* sycl::malloc_shared(size_t count, const queue& syclQueue, const property_list& propList = {})}
-%     \item \code{void sycl::free(void* ptr, const queue& syclQueue)}
-%     \item \code{template <typename T> event copy(const T* src, T* dest, size_t count, event depEvent)}
-%     \item \code{void wait_and_throw()}
-
-%     \item \code{template <typename KernelName, int Dims, typename... Rest> event parallel_for(nd_range<Dims> executionRange, Rest&&... rest);}
-% \end{itemize}
-
-
-% % https://kokkos.org/kokkos-core-wiki/API/core-index.html#
-% \begin{itemize}
-%     \item \code{template <class DataType [, class LayoutType] [, class MemorySpace] [, class MemoryTraits]> class View;}
-%     \item TODO
-%     \item View destructor
-%     \item \code{template<class ExecSpace, class ViewDest, class ViewSrc> void Kokkos::deep_copy(const ExecSpace &exec_space, const ViewDest &dest, const ViewSrc &src);}
-%     \item TODO
-
-%     \item \code{template<class ExecPolicy, class FunctorType> Kokkos::parallel_for(const std::string &name, const ExecPolicy &policy, const FunctorType &functor)}
-% \end{itemize}
-
-\newpage
-
-Frameworks:
-\begin{itemize}
-    \item OpenCL:
-    \begin{itemize}
-        \item \enquote{OpenCL is a trademark of Apple Inc. used under license to the Khronos Group Inc}
-        \item working group created 2008~\cite{khronos_opencl_working_group_khronos_2008}
-        \item first speciifcation published 2009~\cite{munshi_opencl_2009}
-        \item current standard OpenCL 3.0 revision 17 October 24, 2024~\cite{khronos_opencl_working_group_opencl_2024}
-        \item Implementations OpenCL 3.0 (\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl})
-        \begin{itemize}
-            \item Intel
-            \item Imagination Technologies
-            \item QUALCOMM
-            \item Google, Inc. 
-            \item Software Freedom Conservancy
-            \item Arm Limited
-            \item NVIDIA
-            \item Software in the Public Interest, Inc.
-            \item Verisilicon, Inc.
-            \item pocl
-        \end{itemize}
-        \item many more for OpenCL 2.0 (like AMD, Samsung Electronics, etc.)
-    \end{itemize}
-
-    \item SYCL:
-    \begin{itemize}
-        \item first provisional specification March 19, 2014~\cite{khronos_sycl_working_group_khronos_2014}
-        \item first official release of SYCL 1.2 specification May 11, 2015~\cite{khronos_sycl_working_group_khronos_2015}
-        \item current standard SYCL 2020 Rev 9 August 18, 2024~\cite{khronos_sycl_working_group_sycl_2024}
-        \item Implementations (\url{https://www.khronos.org/sycl/#sycl-implementations})
-        \begin{itemize}
-            \item Intel oneAPI \dpcpp/icpx
-            \item AdaptiveCpp
-            \item triSYCL
-            \item neoSYCL
-            \item SimSYCL
-        \end{itemize}
-    \end{itemize}
-
-    \item Kokkos:
-    \begin{itemize}
-        \item first release May 2015~\cite{trott_kokkos_2015}
-        \item original Kokkos paper 2024~\cite{carter_edwards_kokkos_2014}
-        \item please cite~\cite{trott_kokkos_2022}
-        \item current release v 4.5.1 December 23, 2024~\cite{noauthor_release_2024}
-    \end{itemize}
-
-    \item RAJA:
-    \begin{itemize}
-        \item first release v0.1.0 June 22, 2016~\cite{llnl_release_2016}
-        \item first publication 2019~\cite{beckingsale_raja_2019}
-        \item current release v2024.07.0 July 24, 2024~\cite{llnl_release_2024}
-    \end{itemize}
-
-    \item OpenMP (Target Offloading)
-    \begin{itemize}
-        \item first OpenMP specification version 1.0 (C/\cpp) October 1998~\cite{openmp_architecture_review_board_openmp_1998}
-        \item first OpenMP specification with target offloading version 4.0 July 2013~\cite{openmp_architecture_review_board_openmp_2013}
-        \item current OpenMP specification version 6.0 November 2024~\cite{openmp_architecture_review_board_openmp_2024}
-        \item Implementations (Auszug)(\url{https://www.openmp.org/resources/openmp-compilers-tools/})
-        \begin{itemize}
-            \item AMD
-            \item Intel
-            \item LLVM
-            \item GNU
-            \item ARM
-            \item NVIDIA
-            \item PGI
-            \item $\dots$
-        \end{itemize}
-    \end{itemize}
-
     \item OpenACC
     \begin{itemize}
         \item first specification November 2011~\cite{openacc_standard_openacc_2011}
@@ -167,83 +28,121 @@ Frameworks:
             \item RoseACC (\url{https://github.com/laudarch/RoseACC-workspace})
         \end{itemize}
     \end{itemize}
-
-    \item HIP
+    
+    \item RAJA:
     \begin{itemize}
-        \item first public release 0.82.01 March 08, 2016~\cite{advanced_micro_devices_release_2016}
-        \item current release 6.3.3 February, 19 2025~\cite{advanced_micro_devices_release_2025}
-        \item current HIP documentation~\cite{advanced_micro_devices_hip_nodate}
-        \item HIP for CUDA: \enquote{It’s HIP to be Open}~\cite{advanced_micro_devices_its_2016}
+        \item first release v0.1.0 June 22, 2016~\cite{llnl_release_2016}
+        \item first publication 2019~\cite{beckingsale_raja_2019}
+        \item current release v2024.07.0 July 24, 2024~\cite{llnl_release_2024}
     \end{itemize}
 
-    \item CUDA
+    \item thrust
     \begin{itemize}
-        \item first release of CUDA 1.0 June, 2007~\cite{nvidia_corporation_cuda_2007}
-        \item current release of CUDA 12.8 February, 2025~\cite{nvidia_corporation_cuda_2025-1}
-        \item the current CUDA programming guide February, 2025~\cite{nvidia_corporation_cuda_2025}
-        \item first CUDA version (3.0) deprecating device emulation mode March, 2010~\cite{nvidia_corporation_cuda_2010}
+        \item algorithms for NVIDIA GPU and multi-core CPU~\cite{bell_thrust_2012}
+        \item first thrust release 1.0.0 June, 2009~\cite{nvidia_corporation_thrust_2009}
+        \item current thrust release under the CUDA \cpp Core Libraries 2.8.0 March 03, 2025~\cite{cccl_development_team_release_2023}
     \end{itemize}
 
-    \item standard \cpp
+    \item Charm++
     \begin{itemize}
-        \item \cpp{17} standard~\cite{international_organization_for_standardization_isoiec_2017}
-        \item execution policies introduced with \cpp{17} P0024R2~\cite{hoberock_p0024r2_2016}
-        \item \code{std::execution::par_unseq} added in \cpp{20} P1001R2~\cite{meredith_p1001r2_2019}
-        \item sender and receiver added in \cpp{26}~\cite{dominiak_p2300r10_2024, baker_p3396r0_2024, niebler_p3325r5_2024}
-        \item Implementations:
-        \begin{itemize}
-            \item GNU GCC + TBB
-            \item NVIDIA nvhpc
-            \item rocstdpar
-            \item AdaptiveCpp
-            \item \dpcpp/icpx
-        \end{itemize}
-
-
-
-        \item thrust
-        \begin{itemize}
-            \item algorithms for NVIDIA GPU and multi-core CPU~\cite{bell_thrust_2012}
-            \item first thrust release 1.0.0 June, 2009~\cite{nvidia_corporation_thrust_2009}
-            \item current thrust release under the CUDA \cpp Core Libraries 2.8.0 March 03, 2025~\cite{cccl_development_team_release_2023}
-        \end{itemize}
-
-        \item Charm++
-        \begin{itemize}
-            \item GPU Manager library and Hybrid API (HAPI)
-            \item source repo~\cite{kale_uiuc-pplcharm_2021}
-            \item first release and paper October 1993~\cite{kale_charm_1993}
-            \item added support for GPUs~\cite{wesolowski_application_2008}
-            \item current release v8.0.0 June 4, 2024~\cite{noauthor_release_2024}
-        \end{itemize}
-
-        \item Legion
-        \begin{itemize}
-            \item \enquote{Legion is a data-centric parallel programming system for writing portable high performance programs targeted at distributed heterogeneous architectures.}
-            \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
-            \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
-        \end{itemize}
-
-        \item Domain Specific Languages (DSLs)
+        \item GPU Manager library and Hybrid API (HAPI)
+        \item source repo~\cite{kale_uiuc-pplcharm_2021}
+        \item first release and paper October 1993~\cite{kale_charm_1993}
+        \item added support for GPUs~\cite{wesolowski_application_2008}
+        \item current release v8.0.0 June 4, 2024~\cite{noauthor_release_2024}
     \end{itemize}
+
+    \item Legion
+    \begin{itemize}
+        \item \enquote{Legion is a data-centric parallel programming system for writing portable high performance programs targeted at distributed heterogeneous architectures.}
+        \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
+        \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
+    \end{itemize}
+
+    \item Domain Specific Languages (DSLs)
 \end{itemize}
-
 
 \newpage
 
 \begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
     \centering
-    \begin{tabular}{C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}}
-        CUDA & HIP & OpenCL & SYCL & Kokkos \\\midrule
-        \multicolumn{2}{c|}{thread} & \multicolumn{2}{c|}{work-item} &  \\\hline
-        warp & wavefront & \multicolumn{2}{c|}{sub-group} &  \\\hline
-        \multicolumn{2}{c|}{thread block} & \multicolumn{2}{c|}{work-group} &  \\\hline
-        \multicolumn{2}{c|}{grid} & \multicolumn{2}{c|}{nd-range} &  \\\hline
-        streaming multiprocessor & \multicolumn{3}{c|}{compute unit} & \\\hline
-        \multicolumn{2}{c|}{register} & \multicolumn{2}{c|}{private memory} &  \\\hline
-        \multicolumn{2}{c|}{shared memory} & \multicolumn{2}{c|}{local memory} &  \\\hline
-        \multicolumn{4}{c|}{global memory} &  \\
-    \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
+    \begin{tblr}{colspec = {Q[l,m] *{6}{X[c,m]}},
+                 row{1,2} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+                      & \SetCell[c=3]{c}\glspl{cpu} &&             & \SetCell[c=3]{c}\glspl{gpu} &&             \\
+                      & x86\_64      & POWER9       & ARM          & NVIDIA       & AMD          & Intel        \\\midrule
+        OpenMP        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+        CUDA          & \unsupported & \unsupported & \unsupported & \supported   & \unsupported & \unsupported \\
+        OpenCL        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+        SYCL          & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+        Kokkos        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+        HIP           & \unsupported & \unsupported & \unsupported & \supported   & \supported   & \unsupported \\
+        Standard \cpp & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    Either we can use two categories, simply splitting the hardware platforms in \glspl{cpu} and \glspl{gpu}, or split it into more fine-grain categories like different \gls{cpu} and \gls{gpu} architectures. 
+    Additional, other hardware platforms inside these categories, e.g., RISC-V \glspl{cpu} or ARM \glspl{gpu} or even completely new categories like \glspl{fpga} or \glspl{tpu} are also possible. 
+    Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
+    }
+    \label{tab:portability_categories}
 \end{table}
+
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] Q[l,m] Q[l,m] Q[l,m] Q[l,m] Q[l,m]},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        CUDA             & HIP              & OpenCL            & SYCL              & Kokkos                    & OpenMP \\\midrule
+        thread           & thread           & work-item         & work-item         & thread                    & thread \\
+        warp             & wavefront        & sub-group         & sub-group         & --                        & -- \\
+        {thread\\block}  & {thread\\block}  & work-group        & work-group        & team                      & team \\
+        grid             & grid             & nd-range          & nd-range          & league                    & league \\
+        register         & register         & {private\\memory} & {private\\memory} & register                  & register \\
+        {shared\\memory} & {shared\\memory} & {local\\memory}   & {local\\memory}   & {scratchpad\\memory}      & shared \\
+        {global\\memory} & {global\\memory} & {global\\memory}  & {global\\memory}  & \makecell{memory\\spaces} & -- \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    The different naming conventions for the different portability languages and frameworks. 
+    Since my greatest focus lies on SYCL, I will use its naming convention going forward. 
+    For Standard \cpp, these notations do not apply since the \cpp standard has no notion of the underlying hardware because it is only defined on an abstract state machine. 
+    }
+    \label{tab:portability_naming}
+\end{table}
+
+\todo{does it make sense?}
+
+\begin{definition}[Heterogeneity Score]
+Given different platform categories $C$, where $c \in C$ contains the respective platforms of the set of all platforms $H$, let the heterogeneity score be defined as:
+
+$$HS(C, H) = \begin{cases}
+                \frac{-\sum\limits_{c \in C} p_c \log p_c}{\log\abs{C}} & \text{if } \abs{C} > 1 \\
+                0                                                       & \text{otherwise}
+              \end{cases}$$
+
+where
+
+$$p_c = \begin{cases}
+            \frac{\abs{c}}{\abs{H}} & \text{if } \abs{c} > 0 \\
+            1 & \text{otherwise}
+        \end{cases}$$ 
+
+is the ratio of number of platforms belonging to the current category relative to the total number of platforms. 
+\end{definition}
+
+\begin{itemize}
+    \item there is only one category $\rightarrow$ HS is 0 since we do not have a heterogeneous platform set
+    \item if there are the same amount of platforms in all categories $\rightarrow$ HS is 1 since our tested platforms have perfect heterogeneity 
+    \item if we have two categories $c_1$ and $c_2$ with $\abs{c_1} = 1$ and $\abs{c_2} = 3$ and we add a new platform to set $\abs{c_2}$ $\rightarrow$ HS decreases $\rightarrow$ good since we penalize cases where a new GOOD supported platform is added to increase \pp but reduce the overall tested heterogeneity 
+\end{itemize}
+\todo{example?}
