@@ -32,7 +32,7 @@ As an example, if we analyze the energy efficiency of an application, we most li
 In this example, it is rather difficult or outright impossible to determine what the absolutely best energy efficiency would be. 
 
 In the remainder of this thesis, I will focus mostly on the \textbf{walltime} and \textbf{efficiency} mainly with respect to the energy efficiency of the code examples when I talk about performance portability. 
-Thereby, gathering basic \textbf{walltime} information is possible in a straightforward way with normal tools directly provided by \cpp as shown in \autoref{code:walltime_measurement}.
+Thereby, gathering basic \textbf{walltime} information is possible in a straightforward way with normal tools directly provided by \cpp, as shown in \autoref{code:walltime_measurement}.
 
 \begin{listing}
     \begin{minted}{c++}
@@ -47,7 +47,7 @@ auto walltime = std::chrono::duration_cast<std::chrono::milliseconds>(end - star
     \label{code:walltime_measurement}
 \end{listing}
 
-However, gathering efficiency metrics like energy consumption, but also memory or compute utilization poses more challenges especially if we want to get this information in a vendor-independent way for NVIDIA, AMD, and Intel \glspl{gpu} and \glspl{cpu}. 
+However, gathering efficiency metrics like energy consumption, but also memory, or compute utilization poses more challenges, especially if we want to get this information in a vendor-independent way for NVIDIA, AMD, and Intel \glspl{gpu} and \glspl{cpu}. 
 While all hardware vendors provide some form of gathering this information through custom libraries, collecting all this information in a vendor-independent way is far from trivial since these libraries do not agree to a standardized interface. 
 As an example, to gather the total power consumption (since the last driver reload) for NVIDIA, AMD, and Intel \glspl{gpu}, the library functions shown in \autoref{code:vendor_labrier_calls} must be used.
 

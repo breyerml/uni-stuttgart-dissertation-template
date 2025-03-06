@@ -1,0 +1,41 @@
+\subsection{SYCL}
+
+SYCL:
+\begin{itemize}
+    \item first provisional specification March 19, 2014~\cite{khronos_sycl_working_group_khronos_2014}
+    \item first official release of SYCL 1.2 specification May 11, 2015~\cite{khronos_sycl_working_group_khronos_2015}
+    \item current standard SYCL 2020 Rev 9 August 18, 2024~\cite{khronos_sycl_working_group_sycl_2024}
+    \item Implementations (\url{https://www.khronos.org/sycl/#sycl-implementations})
+    \begin{itemize}
+        \item Intel oneAPI \dpcpp/icpx
+        \item AdaptiveCpp
+        \item triSYCL
+        \item neoSYCL
+        \item SimSYCL
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+    \item SYCL
+    \item standardized
+    \item sinlge-source standard \cpp
+    \item \cpp API
+    \item easy builtin interoperability with backend specific libraries
+    \item different ways to express parallelism
+    \item programming model/kernel structure close to \gls{cuda} ($\rightarrow$ automatic \gls{cuda} to SYCL migration tools available)
+    \item originally tightly coupled with \gls{opencl}
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item some low-level optimizations not possible directly in SYCL
+    \end{itemize}
+\end{disadvantagebox}

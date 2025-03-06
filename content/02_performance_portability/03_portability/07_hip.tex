@@ -1,0 +1,35 @@
+\subsection{HIP -- Heterogeneous-computing Interface for Portability}
+
+HIP
+\begin{itemize}
+    \item first public release 0.82.01 March 08, 2016~\cite{advanced_micro_devices_release_2016}
+    \item current release 6.3.3 February, 19 2025~\cite{advanced_micro_devices_release_2025}
+    \item current HIP documentation~\cite{advanced_micro_devices_hip_nodate}
+    \item HIP for CUDA: \enquote{It’s HIP to be Open}~\cite{advanced_micro_devices_its_2016}
+\end{itemize}
+
+
+\begin{itemize}
+    \item \acrfull{hip}
+    \item AMD's own vendor-specific framework
+    \item C-like API with custom extensions \code{<<<...>>>}
+    \item only for AMD and NVIDIA \glspl{gpu}
+    \item offload compute kernels from host (i.e., classically \glspl{cpu}) to one or more devices
+    \item many vendor-provided, highly optimized libraries available (e.g., hipBLAS, hipSPARSE, hipFFT, $\dots$)
+    \item in most cases, conversion between \gls{cuda} and \gls{hip} via simple regex possible
+    \item NVIDIA \gls{gpu} support via NVIDIA's compiler stack
+\end{itemize}
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item easy to translate from \gls{cuda}
+        \item high optimization potential
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item only AMD and NVIDIA \glspl{gpu}
+    \end{itemize}
+\end{disadvantagebox}

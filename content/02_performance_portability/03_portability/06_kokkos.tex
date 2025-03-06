@@ -1,0 +1,34 @@
+\subsection{Kokkos}
+
+Kokkos:
+\begin{itemize}
+    \item first release May 2015~\cite{trott_kokkos_2015}
+    \item original Kokkos paper 2024~\cite{carter_edwards_kokkos_2014}
+    \item please cite~\cite{trott_kokkos_2022}
+    \item current release v 4.5.1 December 23, 2024~\cite{noauthor_release_2024}
+\end{itemize}
+
+\begin{itemize}
+    \item Kokkos
+    \item open-source
+    \item \cpp API
+    \item interoperability with backend specific libraries
+    \item different ways to express parallelism
+    \item high-level abstractions, making it easier for new programmers
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item supports a wide variety of hardware platforms with different execution spaces
+        \item easy-to-use abstractions like execution and memory spaces
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item abstractions different to \gls{cuda} $\rightarrow$ more difficult to translate from existing \gls{cuda} code
+        \item some low-level optimizations not possible directly in Kokkos
+    \end{itemize}
+\end{disadvantagebox}

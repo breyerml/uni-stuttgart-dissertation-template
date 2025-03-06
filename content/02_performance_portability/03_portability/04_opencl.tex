@@ -1,4 +1,4 @@
-\subsection{OpenCL}
+\subsection{OpenCL -- Open Computing Language}
 
 OpenCL:
 \begin{itemize}
@@ -21,3 +21,28 @@ OpenCL:
     \end{itemize}
     \item many more for OpenCL 2.0 (like AMD, Samsung Electronics, etc.)
 \end{itemize}
+
+\begin{itemize}
+    \item \acrfull{opencl}
+    \item standardized
+    \item kernels are simple strings $\rightarrow$ easy to manipulate, tedious to use
+    \item kernels must be compiled by yourself using OpenCL provided functions
+    \item C API
+    \item \gls{jit} compiled
+    \item programming model/kernel structure close to \gls{cuda}
+\end{itemize}
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms (many implementations)
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item kernels must be compiled by hand
+        \item error prone
+        \item some low-level optimizations not possible
+    \end{itemize}
+\end{disadvantagebox}

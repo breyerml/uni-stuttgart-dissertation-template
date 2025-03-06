@@ -1,4 +1,4 @@
-\subsection{CUDA}
+\subsection{CUDA -- Compute Unified Device Architecture}
 
 CUDA
 \begin{itemize}
@@ -7,3 +7,29 @@ CUDA
     \item the current CUDA programming guide February, 2025~\cite{nvidia_corporation_cuda_2025}
     \item first CUDA version (3.0) deprecating device emulation mode March, 2010~\cite{nvidia_corporation_cuda_2010}
 \end{itemize}
+
+\begin{itemize}
+    \item \acrfull{cuda}
+    \item NVIDIA's own vendor-specific framework
+    \item C-like API with custom extensions \code{<<<...>>>}
+    \item only for NVIDIA \glspl{gpu}
+    \item offload compute kernels from host (i.e., classically \glspl{cpu}) to one or more devices
+    \item many vendor-provided, highly optimized libraries available (e.g., cuBLAS, cuSPARSE, cuFFT, $\dots$)
+    \item interfaces for C, C++, FORTRAN, Python, Matlab, Java
+\end{itemize}
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item practically, the go-to standard to target \glspl{gpu}
+        \item many resources available
+        \item high optimization potential
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item only NVIDIA \glspl{gpu}
+        \item closed-source proprietary
+    \end{itemize}
+\end{disadvantagebox}

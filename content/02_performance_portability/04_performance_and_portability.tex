@@ -731,3 +731,32 @@ Additional:
 \end{itemize}
 
 % https://intel.github.io/p3-analysis-library/
+
+\newpage
+
+\todo{does it make sense?}
+
+\begin{definition}[Heterogeneity Score]
+Given different platform categories $C$, where $c \in C$ contains the respective platforms of the set of all platforms $H$, let the heterogeneity score be defined as:
+
+$$HS(C, H) = \begin{cases}
+                \frac{-\sum\limits_{c \in C} p_c \log p_c}{\log\abs{C}} & \text{if } \abs{C} > 1 \\
+                0                                                       & \text{otherwise}
+              \end{cases}$$
+
+where
+
+$$p_c = \begin{cases}
+            \frac{\abs{c}}{\abs{H}} & \text{if } \abs{c} > 0 \\
+            1 & \text{otherwise}
+        \end{cases}$$ 
+
+is the ratio of number of platforms belonging to the current category relative to the total number of platforms. 
+\end{definition}
+
+\begin{itemize}
+    \item there is only one category $\rightarrow$ HS is 0 since we do not have a heterogeneous platform set
+    \item if there are the same amount of platforms in all categories $\rightarrow$ HS is 1 since our tested platforms have perfect heterogeneity 
+    \item if we have two categories $c_1$ and $c_2$ with $\abs{c_1} = 1$ and $\abs{c_2} = 3$ and we add a new platform to set $\abs{c_2}$ $\rightarrow$ HS decreases $\rightarrow$ good since we penalize cases where a new GOOD supported platform is added to increase \pp but reduce the overall tested heterogeneity 
+\end{itemize}
+\todo{example?}

@@ -70,6 +70,7 @@
 \usepackage{tabularray}
 \UseTblrLibrary{booktabs}
 \usepackage{fontawesome5}
+\usepackage[most]{tcolorbox}
 
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
@@ -96,9 +97,27 @@
 
 \newcommand{\setfontsize}[1]{\fontsize{#1pt}{1.2\dimexpr#1pt\relax}\selectfont}
 
-\renewcommand{\listingautorefname}{Listing}
-
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Define a custom box for advantages
+\newtcolorbox{advantagebox}{
+    colback=green!10!white,
+    colframe=green!50!black,
+    title=\textbf{Advantages},
+    fonttitle=\bfseries,
+    rounded corners,
+    boxrule=0.8pt
+}
+
+% Define a custom box for disadvantages
+\newtcolorbox{disadvantagebox}{
+    colback=red!10!white,
+    colframe=red!50!black,
+    title=\textbf{Disadvantages},
+    fonttitle=\bfseries,
+    rounded corners,
+    boxrule=0.8pt
+}
 
 \NewDocumentEnvironment{quotebox}{m b}
 {%
@@ -112,13 +131,26 @@
 {%
 }%
 
-\newcommand{\autoquotename}{Quote}
 
 % binding correction
 \setlength{\evensidemargin}{-24pt}
 \setlength{\oddsidemargin}{-24pt}
 \renewcommand{\lstlistingname}{Code}
 \renewcommand{\listingname}{Code}
+\renewcommand{\listingautorefname}{Listing}
+\newcommand{\autoquotename}{Quote}
+
+
+
+
+
+
+
+
+
+
+
+
 
 \includeonly{content/02_performance_portability}
 

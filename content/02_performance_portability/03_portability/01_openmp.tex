@@ -1,4 +1,4 @@
-\subsection{OpenMP}
+\subsection{OpenMP -- Open Multi-Processing}
 
 OpenMP (Target Offloading)
 \begin{itemize}
@@ -17,3 +17,31 @@ OpenMP (Target Offloading)
         \item $\dots$
     \end{itemize}
 \end{itemize}
+
+
+\begin{itemize}
+    \item \acrfull{openmp}
+    \item pragma based
+    \item least invasive; pragmas ignored if no OpenMP capable compiler could be found
+    \item but comes also with a runtime library 
+    \item originally meant for CPUs only
+    \item standardized
+    \item uses the fork-join model; initial thread spawns worker threads
+    \item uses a custom OpemMP thread pool
+    \item task- and loop-parallelism (only latter is used)
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms
+        \item non-intrusive and easy-to-use
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item very high-level, i.e., some optimizations not possible
+    \end{itemize}
+\end{disadvantagebox}

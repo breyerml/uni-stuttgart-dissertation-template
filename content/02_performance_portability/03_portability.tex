@@ -1,13 +1,22 @@
 \section{What Is Portability?}
 
 
+\newpage
 \input{content/02_performance_portability/03_portability/01_openmp}
+\newpage
 \input{content/02_performance_portability/03_portability/02_cuda}
-\input{content/02_performance_portability/03_portability/03_opencl}
-\input{content/02_performance_portability/03_portability/04_sycl}
-\input{content/02_performance_portability/03_portability/05_kokkos}
-\input{content/02_performance_portability/03_portability/06_hip}
-\input{content/02_performance_portability/03_portability/07_standard_cpp}
+\newpage
+\input{content/02_performance_portability/03_portability/03_hpx}
+\newpage
+\input{content/02_performance_portability/03_portability/04_opencl}
+\newpage
+\input{content/02_performance_portability/03_portability/05_sycl}
+\newpage
+\input{content/02_performance_portability/03_portability/06_kokkos}
+\newpage
+\input{content/02_performance_portability/03_portability/07_hip}
+\newpage
+\input{content/02_performance_portability/03_portability/08_standard_cpp}
 
 
 Other Frameworks:
@@ -54,18 +63,19 @@ Other Frameworks:
 
     \item Legion
     \begin{itemize}
-        \item \enquote{Legion is a data-centric parallel programming system for writing portable high performance programs targeted at distributed heterogeneous architectures.}
+        \item \enquote{Legion is a data-centric parallel programming system for writing portable high-performance programs targeted at distributed heterogeneous architectures.}
         \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
         \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
     \end{itemize}
 
-    \item Domain Specific Languages (DSLs)
+    \item Domain-Specific Languages (DSLs)
 \end{itemize}
 
 \newpage
 
 \begin{table}[]
     \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
     \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
     \centering
     \begin{tblr}{colspec = {Q[l,m] *{6}{X[c,m]}},
@@ -74,20 +84,22 @@ Other Frameworks:
                  rowsep=4pt
                  }
         \toprule
-                      & \SetCell[c=3]{c}\glspl{cpu} &&             & \SetCell[c=3]{c}\glspl{gpu} &&             \\
-                      & x86\_64      & POWER9       & ARM          & NVIDIA       & AMD          & Intel        \\\midrule
-        OpenMP        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
-        CUDA          & \unsupported & \unsupported & \unsupported & \supported   & \unsupported & \unsupported \\
-        OpenCL        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
-        SYCL          & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
-        Kokkos        & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
-        HIP           & \unsupported & \unsupported & \unsupported & \supported   & \supported   & \unsupported \\
-        Standard \cpp & \supported   & \supported   & \supported   & \supported   & \supported   & \supported   \\
+                      & \SetCell[c=3]{c}\glspl{cpu} &&             & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
+                      & x86\_64      & POWER9       & ARM          & NVIDIA            & AMD               & Intel             \\\midrule
+        OpenMP        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        CUDA          & \unsupported & \unsupported & \unsupported & \supported        & \unsupported      & \unsupported      \\
+        HPX           & \supported   & \supported   & \supported   & \partialsupported & \partialsupported & \partialsupported \\
+        OpenCL        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        SYCL          & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        Kokkos        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        HIP           & \unsupported & \unsupported & \unsupported & \supported        & \supported        & \unsupported      \\
+        Standard \cpp & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
         \bottomrule
     \end{tblr}
     \caption{%
     Either we can use two categories, simply splitting the hardware platforms in \glspl{cpu} and \glspl{gpu}, or split it into more fine-grain categories like different \gls{cpu} and \gls{gpu} architectures. 
     Additional, other hardware platforms inside these categories, e.g., RISC-V \glspl{cpu} or ARM \glspl{gpu} or even completely new categories like \glspl{fpga} or \glspl{tpu} are also possible. 
+    For \gls{hpx}, \glspl{gpu} are supported via executors, but the actual compute kernels must be written using another framework like \gls{cuda}, \gls{hip}, SYCL, or Kokkos.
     Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
     }
     \label{tab:portability_categories}
@@ -120,29 +132,3 @@ Other Frameworks:
     \label{tab:portability_naming}
 \end{table}
 
-\todo{does it make sense?}
-
-\begin{definition}[Heterogeneity Score]
-Given different platform categories $C$, where $c \in C$ contains the respective platforms of the set of all platforms $H$, let the heterogeneity score be defined as:
-
-$$HS(C, H) = \begin{cases}
-                \frac{-\sum\limits_{c \in C} p_c \log p_c}{\log\abs{C}} & \text{if } \abs{C} > 1 \\
-                0                                                       & \text{otherwise}
-              \end{cases}$$
-
-where
-
-$$p_c = \begin{cases}
-            \frac{\abs{c}}{\abs{H}} & \text{if } \abs{c} > 0 \\
-            1 & \text{otherwise}
-        \end{cases}$$ 
-
-is the ratio of number of platforms belonging to the current category relative to the total number of platforms. 
-\end{definition}
-
-\begin{itemize}
-    \item there is only one category $\rightarrow$ HS is 0 since we do not have a heterogeneous platform set
-    \item if there are the same amount of platforms in all categories $\rightarrow$ HS is 1 since our tested platforms have perfect heterogeneity 
-    \item if we have two categories $c_1$ and $c_2$ with $\abs{c_1} = 1$ and $\abs{c_2} = 3$ and we add a new platform to set $\abs{c_2}$ $\rightarrow$ HS decreases $\rightarrow$ good since we penalize cases where a new GOOD supported platform is added to increase \pp but reduce the overall tested heterogeneity 
-\end{itemize}
-\todo{example?}
