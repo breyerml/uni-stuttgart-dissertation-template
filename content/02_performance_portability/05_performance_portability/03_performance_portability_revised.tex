@@ -1,2 +1,224 @@
 \subsection{Performance Portability Metrics Revised (2017 -- 2021)}
+\label{sec:pp_revised}
 
+Many researchers adopted the \pp metric in their work in the following years, further underlining the necessity of such an objective performance portability metric. \todo{cite}
+But the \pp metric was not only used by other researchers; they also tried highlighting potential problems with \pp and solutions, as well as improvements and extensions. 
+
+2018: \cite{harrell_effective_2018}
+
+\begin{itemize}
+    \item not only performance portability, but productivity 
+    \item critic: \pp does not penalize "heroic" optimizations efforts to increase its score (i.e., optimized code paths for specific architectures) $\rightarrow$ wouldn't be productive
+\end{itemize}
+
+\citet{harrell_effective_2018} extended the performance portability even further to an \textit{effective performance portability} that does not only include the above-discussed performance portability but also the productivity, i.e., the effort a programmer has to make to achieve said performance portability. 
+This metric also penalizes frameworks that achieve good performance portability but only by drastically increasing the programmer's effort, e.g., introducing special code paths for some hardware platforms. 
+However, in the remainder of this thesis, I will mainly focus on \textit{performance portability} only. \todo{Begründung?}
+
+
+\newpage
+\cite{sedova_high-performance_2018}
+
+\enquote{The $PP_{MD}$ metric purports to evaluate performance portability but in practice it measures the price in performance that must be paid to make the application portable.} -- \cite{marowka_comparison_2023}
+
+\begin{definition}[Portability \citet{sedova_high-performance_2018, mooney_bringing_1997}]
+An application can be said to be portable if the cost of porting is less than the cost of re-writing:
+$$DP = 1 - (\frac{C_P}{C_R}$$
+where $C_P$ is the cost to port and $C_R$ the cost to rewrite the program. 
+\end{definition}
+
+\begin{itemize}
+    \item $1$ $\rightarrow$ completely portable
+    \item positive $\rightarrow$ porting is more profitable
+    \item binary vs source code portability
+\end{itemize}
+
+\begin{definition}[MD Performance Portability~\citet{sedova_high-performance_2018}]
+
+$$PP_{MD_c}(a, p, Q) = 
+    \begin{cases}
+        \frac{\abs{Q}}{\sum\limits_{i \in Q} S_i(a, p)} & \text{if }\abs{G} - \abs{Q} \neq 0\text{ and }\abs{G} - \abs{Q} \neq \abs{G} \\
+        1  & \text{if }\abs{G} - \abs{Q} = \abs{G}\\
+        0  & \text{if }\abs{G} - \abs{Q} = 0
+    \end{cases}
+$$
+
+where $\abs{G}$ is the the cardinality of the set $G$ of algorithmic or programmatic components that significantly accelerate a best-performing application $a$, $\abs{Q}$ is the cardinality of the set $Q$ of all non-portable such accelerating components of $a$, $p$ are the parameters used in $a$, and $S$ is the speedup that this non-portable component $i$ of the application provides to the program: $S_i = \frac{T_0}{T_i}$, with $T_i$ as the time-to-solution with the use of $i$, and $T_0$ the time-to-solution without $i$.
+\end{definition}
+
+\begin{itemize}
+    \item $G$: instruction-level, thread-level, process-level, or library-level
+    \item $PP_{MD_c}$ not close to $\SI{100}{\percent}$: viele optimierte Teile eines Codes müssten getauscht werden mit portable Code (mit ähnlicher Performance)
+    \item $PP_{MD_c}$ does not support multiple platforms
+\end{itemize}
+
+Summary of recommendations for portability (copied verbatim)
+\begin{itemize}
+    \item High-level programming interface with re-targetable back end that is standardized and supported by a number of both commercial and open-source initiatives.
+    \item Encapsulation of machine specific sections of the program.
+    \item An agreement about the worthiness of the portability effort.
+    \item Modularity of the algorithm sections and the data structures, with an ability to rearrange data storage and even to change the algorithm if required.
+    \item Use of only the portable subset of the standard language.
+    \item A dedicated portable design effort and clear portability goals.
+\end{itemize}
+
+
+\newpage
+\cite{yang_empirical_2018}
+
+\begin{itemize}
+    \item Roofline model as \textit{performance efficiency metric}
+    \item Paper hauptsächlich wie man in "gutes" Roofline Model aufbaut
+\end{itemize}
+
+\begin{definition}[Roofline Performance Efficiency~\citet{yang_empirical_2018}]\label{def:roof_eff}
+Given the observed code performance in floating point operations per second (\si{\flop\per\second}) $P_i(a, p)$, the peak \si{\flop\per\second} $F_i$ of architecture $i$, the peak bandwidth $B_i$ of architecture $i$, and the arithmetic intensity $I_i(a, p)$ of application $a$ on architecture $i$, the Roofline performance efficiency is defined as:
+
+$$e_i(a, p) = \frac{P_i(a, p)}{\min(F_i, B_i \times I_i(a, p))}$$
+\end{definition}
+The denominator accounts for when the application is compute or bandwidth bound.
+
+
+\newpage
+\cite{yokota_beginners_2018}
+
+\begin{itemize}
+    \item tension between performance improvement and performance portability improvement
+    \item \enquote{we empirically analyze the usability and usefulness of PPM, applied for OpenACC applications}
+    \begin{enumerate}
+        \item calculating PPM for multiple applications and platforms
+        \item interpreting the results from the perspective of performance portability across devices
+        \item attempting to improve the performance portability, i.e., increase PPM
+    \end{enumerate}
+    \item arch eff: compute-bound $\rightarrow$ operational throughput; memory-bound $\rightarrow$ bandwidth
+    \item Problem arch eff: does not show whether the implementation \textbf{is actual efficient} (e.g., unnecessary memory loads, floptimization)
+    \item same problem as in other studies: \pp heavily penalizes even one small performance efficiency value
+    \item also points out the problem with different architecture (CPUs vs GPUs)
+    \item low \pp: low efficiencies overall or big differences among platform-specific performance efficiencies
+    \item how to improve low \pp?: add more platforms, use fewer platforms, improve performance efficiency
+    \item \pp should be extended to include some kind of heterogeneity score
+    \item trying to improve the performance efficiency $\rightarrow$ tension
+    \begin{enumerate}
+        \item performance \enquote{increases on all platforms}
+        \item performance \enquote{increases on one platform, but decreases on another platform}
+    \end{enumerate}
+    \item did optimize the OpenACC code but it seems that not the baseline CUDA code $\rightarrow$ does the app eff still make sense?
+    \item 
+\end{itemize}
+
+\begin{definition}[Architectural Efficiency~\citet{yokota_beginners_2018}]
+    $$e\_arch_i(a, p) = 
+    \begin{cases}
+        \frac{OpT^{app}}{OpT^{HW}} & \text{if } OI^{app} \geq OI^{HW} \\
+        \frac{BW^{app}}{BW^{HW}} & \text{otherwise}
+    \end{cases}$$
+    
+\end{definition}
+
+
+\newpage
+2018: \citet{siklosi_heterogeneous_2018}
+
+
+\newpage
+2020: \cite{bertoni_performance_2020}
+
+\pp insufficient (same \pp values for vastly different behavior) $\rightarrow$ also use standard deviation to accomplice \pp 
+
+\begin{itemize}
+    \item roofline schwierig zu erlangen 
+    \item teilweise hier schon inconsistent
+    \item durch haminic mean: gleiches \pp, trotz drastisch unterschiedlichen verhalten (einmal alle ungefähr gleich; einmal in schwacher und in sehr starker run)
+    \item geben zusätzlich Standardabweichung an
+\end{itemize}
+
+
+\newpage
+\cite{daniel_applying_2019}
+
+$P_D$ doesn't capture performance and portability across platforms
+
+$$P_D = \frac{\sum\limits_{i \in H} \Delta_{RMS}}{\abs{H}}$$
+
+\begin{itemize}
+    \item take problem size into account (since performance may depend on it)
+    \item not a measure of productivity, but how smooth or though porting effort can be
+\end{itemize}
+
+\begin{definition}[Code Divergence~\cite{daniel_applying_2019}]\label{def:code_div}
+The code divergence $\mathbf{D}$ is the average of the pairwise distances between applications in the set of codes $\mathbf{A}$:
+
+$$D(A) = \binom{\abs{A}}{2}^{-1} \sum\limits_{\{a_i, a_j\} \subset A} d(a_i, a_j)$$
+
+with $A \subset A_p$, where $A_p$ is the set of all applications which solve $p$. The distance $d(a_i, a_j)$ between applications $a_i$ and $a_j$ is the change in the number of LOC normalized to the smaller (in LOC) application:
+
+$$d(a_i, a_j) = \frac{\abs{\text{LOC}(a_i) - \text{LOC}(a_j)}}{\min(\text{LOC}(a_i), \text{LOC}(a_j))}$$
+    
+\end{definition}
+
+Question: can I single problem accept different input data and produce different output data? $\rightarrow$ new definition of a problem:
+\begin{itemize}
+    \item \enquote{a problem is a proposed question that requires an algorithm to be solved correctly}
+\end{itemize}
+
+\begin{definition}[Performance Distance~\cite{daniel_applying_2019}]\label{def:perf_dist}
+Given a set of applications $\mathbf{A_p}$ that solve problem $\mathbf{p}$, let $f_i(a, p, s)$ be a measure of performance of application $\mathbf{a}$ on solving $\mathbf{p}$ on platform $\mathbf{i}$ with input size $\mathbf{s}$. 
+The performance distance $\mathbf{\delta(a, \alpha}$ between applications $a$ and $\alpha$ is the relative error in performance.
+
+$$\delta(a, \alpha) = \frac{\abs{f_i(a, p, s) - f_i(\alpha, p, s}}{f_i(\alpha, p, s)}$$
+
+Note that $f_i(\alpha, p, s)$ is the observed result or the theoretical hardware performance. 
+\end{definition}
+
+\begin{definition}[Divergence RMS~\cite{daniel_applying_2019}]\label{def:div_rms}
+The Divergence RMS $\Delta_{RMS}$ is the root mean square of performance distances between a set of input sizes of interest $S$:
+
+$$\Delta_{RMS} = \sqrt{\frac{\sum\limits_{s \in S} \delta(a, \alpha)^2}{\abs{S}}}$$
+
+\end{definition}
+
+\begin{definition}[Performance Portability Divergence $\mathcal{P_D}$~\cite{daniel_applying_2019}]\label{def:pp_div}
+The Performance Portability Divergence $\mathcal{P_D}$ is the arithmetic mean of RMS divergences across a set of platforms $H$:
+
+$$\mathcal{P_D} = \frac{\sum\limits_{i \in H} \Delta_{RMS}}{\abs{H}}$$
+
+\end{definition}
+
+\begin{itemize}
+    \item optimal $\mathcal{P_D}$ would be $\SI{0}{\percent}$
+    \item penalizes large performance distances severely
+    \item can be larger than $\SI{100}{\percent}$
+    \item easy to reach $\SI{0}{\percent}$, than $\SI{100}{\percent}$ in \pp
+\end{itemize}
+
+
+\newpage
+\cite{marowka_toward_2021}
+
+\begin{itemize}
+    \item Hauptproblem: harmonic mean
+    \item Criterion 5 verletzt
+    \item Criterion 3 (0 wenn cannot run) only a constrained because of the harmonic mean being undefined for $0$ values
+    \item \pp to broad; research results are therefore unrealistic or biased
+    \item geometric + harmonic mean won't work, arithmetic does 
+    \item new platform, wobei das Verhältnis der Summe aller scores ($e_i$) gleich bleibt, ändert das Verhältnis von \pp
+    \item Hat Probleme mit $0$ wenn nicht unterstützt
+    \item harmonic mean tends to track more the lower values $\rightarrow$ in general smaller \pp than \mpp values
+    \item calculate values for, e.g., CPUs and GPUs separately
+    \item if we have no baseline (except a time that would be included in \pp), exclude it from \mpp
+\end{itemize}
+
+erste Definition:
+\begin{definition}[Performance Portability \mpp~(\citet{marowka_comparison_2023})]\label{def:mpp}
+    Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of supported platforms $\mathbf{H}$ from \textbf{the same architecture class}, the performance portability metric $\overline{\pp}$ is defined as:
+
+    \[ \mpp(a, p, H) = 
+        \begin{cases}
+            \frac{\sum\limits_{i \in H} e_i(a, p)}{\abs{H}} & \text{if }i\text{ is supported }\forall i \in H \\
+            \textit{not applicable}                         & \text{otherwise}
+        \end{cases} 
+    \]
+
+    where $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
+\end{definition}
+$\rightarrow$ update of criterion 3 with \textit{not applicable}

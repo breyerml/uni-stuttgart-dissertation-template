@@ -46,3 +46,50 @@ OpenCL:
         \item some low-level optimizations not possible
     \end{itemize}
 \end{disadvantagebox}
+
+
+\begin{listing}
+    \begin{minted}{cpp}
+const char* kernel_source = R"KS(
+__kernel void saxpy(const double alpha, __global double *X, __global double *X) {
+    const int idx = get_global_id(0);
+    Y[idx] = alpha * X[idx] + Y[idx];
+}
+)KS";
+
+cl_platform_id platform;
+clGetPlatformIDs(1, &platform, nullptr);
+cl_device_id device;
+clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, nullptr);
+cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, nullptr);
+cl_command_queue queue = clCreateCommandQueue(context, device, 0, nullptr);
+
+cl_mem d_X = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, N * sizeof(double), X, nullptr);
+cl_mem d_Y = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, N * sizeof(double), Y, nullptr);
+
+cl_program program = clCreateProgramWithSource(context, 1, &kernel_source, nullptr, nullptr);
+clBuildProgram(program, 1, &device, nullptr, nullptr, nullptr);
+cl_kernel kernel = clCreateKernel(program, "saxpy", nullptr);
+
+clSetKernelArg(kernel, 0, sizeof(double), &alpha);
+clSetKernelArg(kernel, 1, sizeof(cl_mem), &d_X);
+clSetKernelArg(kernel, 2, sizeof(cl_mem), &d_Y);
+
+size_t global_size = N;
+clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, &global_size, nullptr, 0, nullptr, nullptr);
+clEnqueueReadBuffer(queue, d_C, CL_TRUE, 0, N * sizeof(double), C, 0, nullptr, nullptr);
+
+std::cout << "C[0]: " << C[0] << " C[N-1]: " << C[N-1] << "\n";
+
+clReleaseMemObject(d_X); 
+clReleaseMemObject(d_Y);
+clReleaseKernel(kernel); 
+clReleaseProgram(program);
+clReleaseCommandQueue(queue); 
+clReleaseContext(context);
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{opencl}.
+    }
+    \label{code:opencl_example}
+\end{listing}

@@ -29,3 +29,18 @@ HPX
         \item can only launch kernels, other frameworks still \textbf{necessary} to write the actual compute kernels 
     \end{itemize}
 \end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](const int idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+});
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{hpx} parallel loops.
+    }
+    \label{code:hpx_example}
+\end{listing}

@@ -1,2 +1,85 @@
 \subsection{The First Performance Portability Metric \pp (2016 -- 2017)}
+\label{sec:first_pp_metric}
 
+\todo{Übergänge}
+
+The first version of the performance portability metric developed by \citet{pennycook_metric_2016} was developed as a preprint in \citeyear{pennycook_metric_2016}. 
+A revised version of the paper~\cite{pennycook_implications_2019} was submitted to Elsevier Science in 2017 and finally published in the Future Generation Computer Systems Periodical in~\citeyear{pennycook_implications_2019}. 
+
+\citeauthor{pennycook_implications_2019} define the following terms also used in their later definitions and formulas. 
+A \textit{platform} $\mathbf{i}$ is a particular execution environment, mostly interpreted as a specific hardware; the set of all possible platforms is denoted as $\mathbf{H}$. 
+An \textit{application} $\mathbf{a}$ is any software, library, or source code that can accept a \textit{problem} $\mathbf{p}$ as input and produce an output that can be validated against a known ground truth. 
+Based on these terms, \citeauthor{pennycook_implications_2019} define the \textit{performance}  
+\begin{quotebox}{\citet{pennycook_implications_2019}}
+    Any measurable property of an application’s correct execution of a problem on a platform.
+\end{quotebox}
+and the \textit{portability} 
+\begin{quotebox}{\citet{pennycook_implications_2019}}
+    The ability of an application to execute a problem correctly on a given set of platforms.
+\end{quotebox}
+of an application solving a specific problem on a given platform. 
+
+The foundation of the performance portability metric, as described by \citeauthor{pennycook_implications_2019}, is the observation of three key points, also emphasized during the previously mentioned \gls{doe} meeting, that must be fulfilled for any performance portability metric to be feasible:
+\begin{enumerate}
+    \item Reflect the individual meanings of the terms \textit{performance} and \textit{portability};
+    \item Be objective;
+    \item Be measurable (and comparisons of the measured value should be meaningful).
+\end{enumerate}
+Especially points 2. and 3. disqualify all definitions mentioned in the previous \autoref{sec:pre_pp_era}.
+Based on these criteria, \citeauthor{pennycook_implications_2019} devised their own informal definition of performance portability: 
+\begin{quotebox}{\citet{pennycook_implications_2019}}
+    A measurement of an application’s performance efficiency for a given problem that can be executed correctly on all platforms in a given set.
+\end{quotebox}
+In contrast to the previous informal definitions, this one is objective since it specifies that the \textit{performance efficiency} measurement, i.e., the ratio of some observed performance with respect to some known, achievable level of performance, should be used to determine whether an application has \enquote{good} performance or not. 
+
+\citeauthor{pennycook_implications_2019} also directly provide two definitions of performance efficiency that will become important later. 
+Both definitions define the performance efficiency of an application $\mathbf{a}$ solving problem $\mathbf{p}$ on the hardware platform $\mathbf{i \in H}$. 
+Both definitions' values lie in the range $\interval{0}{1}$, where $1$ denotes the observed performance is equal to the best possible performance, and lower values mean that the performance further degrades. 
+
+\begin{definition}[Architectural Efficiency]\label{def:arch_eff}
+    The achieved performance as a fraction of the \enquote{peak} theoretical hardware performance, e.g., the achieved \si{\flop\per\second} or memory bandwidth.
+\end{definition}
+
+The \textit{architectural efficiency} represents an application's ability to utilize the available hardware. 
+Note that an architectural efficiency of $1$, i.e., achieving for example $\SI{100}{\percent}$ of the available peak memory bandwidth, does not mean that an application is perfectly optimized since it is very well possible that the application performs many unnecessary loads artificially increasing the utilized memory bandwidth. 
+
+\begin{definition}[Application Efficiency~\cite{satish_can_2012}]\label{def:app_eff}
+    The achieved performance as a fraction of the \enquote{best} observed performance. 
+\end{definition}
+
+The \textit{application efficiency} represents an application's ability to use the best-known implementation or algorithm for each platform. 
+Again, an application efficiency of $1$ does not mean that an application achieves the best performance possible since the best \textit{known} performance may not be the best performance that \textit{may be possible}.
+Also, both performance efficiencies are complementary, and using both efficiencies achieves the best explainability of the results. 
+The interpretation of the results is straightforward if both performance efficiencies are small or big.
+On the other hand, if an application's architectural efficiency is high while its application efficiency is low, the results indicate that the hardware resources are only used poorly. 
+In contrast, a high application efficiency and a low architectural efficiency may suggest that all implementations, including the best-known implementation, can be further improved. 
+
+Finally, \citeauthor{pennycook_implications_2019} devised five criteria that directly influence the design of their performance portability metric definition.
+\begin{enumerate}
+    \item Be measured specific to a set of platforms of interest $\mathbf{H}$.
+    \item Be independent of the absolute performance across $\mathbf{H}$.
+    \item Be zero if a platform in $\mathbf{H}$ is unsupported, and approach zero as the performance of platforms in $\mathbf{H}$ approaches zero. 
+    \item Increase if performance increases on any platform in $\mathbf{H}$.
+    \item Be directly proportional to the sum of scores across $\mathbf{H}$.
+\end{enumerate}
+These criteria directly led to the first formal, general-purpose performance portability metric:
+
+\begin{definition}[Performance Portability \pp~~\cite{pennycook_implications_2019}]\label{def:pp}
+    Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \pp is defined as:
+
+    \[ \pp(a, p, H) = 
+        \begin{cases}
+            \frac{\abs{H}}{\sum\limits_{i \in H} \frac{1}{e_i(a, p)}} & \text{if }i\text{ is supported } \forall i \in H \\
+            0                                                         & \text{otherwise}
+        \end{cases} 
+    \]
+
+    where $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
+\end{definition}
+
+Therefore, the performance portability metric \pp is the harmonic mean over the performance efficiency of an application solving a specific problem on all tested hardware platforms. 
+The only difference to the harmonic mean is that \pp is also defined if the performance efficiencies include one or more zeros, i.e., an application did not run on one or more hardware platforms in $\mathbf{H}$. 
+The \pp metric has the nice property that, per construction, it is in the interval $\interval{0}{1}$ where $0$ means the application did not run on all hardware platforms and $1$ means the best possible performance on all hardware platforms could be achieved. 
+Note that \pp heavily emphasizes the \textit{portability} aspect of performance portability: If only one hardware platform is not supported, the resulting \pp value will be $0$ regardless of the performance on all other hardware platforms. 
+Depending on your target audience, this property of \pp may or may not be desirable. 
+This \autoref{def:pp} laid the foundation for many researchers in the following years.

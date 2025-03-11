@@ -32,3 +32,23 @@ Kokkos:
         \item some low-level optimizations not possible directly in Kokkos
     \end{itemize}
 \end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+Kokkos::View<double*> d_X("X", N);
+Kokkos::View<double*> d_Y("Y", N);
+Kokkos::deep_copy(d_X, X);
+Kokkos::deep_copy(d_Y, Y);
+
+Kokkos::parallel_for("saxpy", N, KOKKOS_LAMBDA(const int idx) {
+    d_Y(idx) = alpha * d_X(idx) + d_Y(idx);
+});
+Kokkos::fence();
+
+Kokkos::deep_copy(Y, d_Y);
+    \end{minted}
+    \caption{%
+    SAXPY example using Kokkos.
+    }
+    \label{code:kokkos_example}
+\end{listing}

@@ -39,3 +39,26 @@ SYCL:
         \item some low-level optimizations not possible directly in SYCL
     \end{itemize}
 \end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+sycl::queue q{ sycl::default_selector_v, {sycl::property::queue::in_order{}} };
+
+double *d_X = sycl::malloc_device<double>(N, q);
+double *d_Y = sycl::malloc_device<double>(N, q);
+q.copy(X, d_X, N);
+q.copy(Y, d_Y, N);
+
+q.parallel_for(sycl::range<1>{ N }, [](const sycl::id<1> idx) {
+    d_Y[idx] = alpha * d_X[idx] + d_Y[idx];
+});
+
+q.copy(d_Y, Y, N);
+sycl::free(d_X, q);
+sycl::free(d_Y, q);
+    \end{minted}
+    \caption{%
+    SAXPY example using SYCL.
+    }
+    \label{code:sycl_example}
+\end{listing}

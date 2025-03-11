@@ -38,3 +38,18 @@ standard \cpp
         \item very high-level, i.e., some optimizations not possible
     \end{itemize}
 \end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=](const int idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+});
+    \end{minted}
+    \caption{%
+    SAXPY example using standard \cpp stdpar.
+    }
+    \label{code:stdpar_example}
+\end{listing}

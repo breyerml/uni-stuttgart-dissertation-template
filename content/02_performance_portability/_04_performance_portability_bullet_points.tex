@@ -1,0 +1,289 @@
+1994: \citet{hey_portability_1994}
+
+first portability meeting
+
+
+\newpage
+1996: \citet{foster_performance_1996}
+
+\begin{itemize}
+    \item one of the first (?) PP papers
+    \item performance and portability of three different Massively parallel processing computer systems (Intel Paragon, IBM SP2, Cray T3D)
+    \item different algorithms used for the different architectures
+    \item no single approach best on all problem sizes or hardware platforms
+    \item performance portability enhanced by implementing multiple algorithms selectable at runtime
+\end{itemize}
+
+
+\newpage
+2001: \citet{michalakes_performance-portability_2001}
+
+\begin{itemize}
+    \item performance portability on weather apps
+    \item mainly also portability
+    \item also weather code
+    \item impact of storage order on performance and portability (emphasizes code portability)
+    \item hauptsächlich TLB Analysen
+\end{itemize}
+
+
+\newpage
+2007: \cite{zhu_performance_2007} (before the age of GPUs)
+
+\begin{quotebox}{\citet{zhu_performance_2007}}
+    If one parallel implementation of one application already achieves good performance on one platform, can this implementation also achieve the same or similar performance on other platforms?
+\end{quotebox}
+
+\begin{definition}[Performance Portablity $P^\mathcal{P}_n(b \rightarrow t$~\citet{zhu_performance_2007}]
+Given a parallel program $\mathcal{P}$ developed on the \textbf{base system}, let $S^B_n$ denote the absolute speedup achieved by $\mathcal{P}$ on $n$ computing nodes of the \textbf{base system}, and $S^T_n$ denote the absolute speedup achieved by $\mathcal{P}$ on $n$ computing nodes of the \textbf{taregt system}, then the \textbf{performance portability} on $n$ computing nodes for porting the program $\mathcal{P}$ from the \textbf{base system} to the \textbf{target system} is:
+
+$$P^\mathcal{P}_n(b \rightarrow t) = \frac{S^T_n}{S^B_n} \times \SI{100}{\percent}$$
+\end{definition}
+
+\begin{itemize}
+    \item may be greater than $\SI{100}{\percent}$
+    \item \enquote{Speedup, which is a measurement of the scalability of a parallel program, also reflects the performance portability of a parallel program in the sense that performance is portable with the increase of number of processors.}
+\end{itemize}
+
+\newpage
+In 2014 \citeauthor{kunkel_performance_2014} defined performance portability as:
+\begin{quotebox}{\citet{kunkel_performance_2014}}
+    A code is performance portable if it can achieve a similar fraction of peak hardware performance on a range of different target architectures.
+\end{quotebox}
+As with the quote from \citeauthor{edwards_kokkos_2013} the problem is the objectivity of the definition namely how big the \enquote{\textit{similar fraction of}} should be. 
+Although \citeauthor{kunkel_performance_2014} stated that for them it is \SI{20}{\percent} of the \enquote{best achievable performance} with respect to a hand-optimized native implementation, another person could argue that it should be \SI{15}{\percent} or \SI{25}{\percent} making this metric also highly subjective. 
+
+
+\newpage
+In 2013 in their original Kokkos paper \citeauthor{edwards_kokkos_2013} defined performance portability as:
+\begin{quotebox}{\citet{edwards_kokkos_2013}}
+    Our performance portability objective is to maximize the amount of user code that can be compiled for diverse devices and obtain the same (or nearly the same) performance as a variant of the code that is written specifically for that device.
+\end{quotebox}
+While this definition was already quite good, the problem is that \enquote{\textit{nearly the same}} can and will be interpreted differently by different people. 
+Therefore, this definition is not feasible to use as an object performance portability metric.
+
+
+\newpage 
+In 2016 \citet{larkin_performance_2016} defined performance portability as:
+\begin{quotebox}{\citet{larkin_performance_2016}}
+    The same source code will run productively on a variety of different architectures.
+\end{quotebox}
+Again, \enquote{\textit{productively}} is highly subjective not only in a performance but also in a portable way. 
+This definition can include that maintaining custom code paths for better performance may be ok as long as it is not too much work. 
+
+
+\newpage
+Also in 2016, the \gls{doe} conducted a meeting \cite{neely_doe_2016} specifically regarding performance portability. 
+There, a few attendees were asked to define performance portability in their own words:
+\begin{quotebox}{Rob Neely~\cite{neely_doe_2016}}
+    For purposes of this meeting, it is the ability to run an application with acceptable performance across KNL and GPU-based systems with a single version of source code.
+\end{quotebox}
+\begin{quotebox}{Simon Pennycook~\cite{neely_doe_2016}}
+    An application is performance portable if it achieves a consistent level of performance (e.g. defined by execution time or other figure of merit, not percentage of peak flops across platforms relative to the best known implementation on each platform.
+\end{quotebox}
+\begin{quotebox}{Adrian Pope, Vitali Morozov~\cite{neely_doe_2016}}
+    Hard portability = no code changes and no tuning. Software portability = simple code mods with no algorithmic changes. Non-portable = algorithmic changes.
+\end{quotebox}
+\begin{quotebox}{David Richards~\cite{neely_doe_2016}}
+    A code is performance portable when the application team says its performance portable!
+\end{quotebox}
+
+At the end of the \gls{doe} meeting, the attendees also created a working definition trying to incorporate the above definitions into one: 
+\begin{quotebox}{\gls{doe} Working Definition~\cite{doe_meeting_attendees_definition_nodate}}
+    An application is performance portable if it achieves a consistent ratio of the actual time to solution to either the best-known or the theoretical best time to solution on each platform with minimal platform specific code required.
+\end{quotebox} % https://performanceportability.org/perfport/definition/
+
+As with all other previous definitions, all of these quotes contain some objective part in one way or another.
+However, to discuss performance portability objectively, these subjective definitions can not be used if it is expected that everyone should agree on the same values. 
+
+
+\newpage
+\cite{hoefler_scientific_2015}
+
+\begin{itemize}
+    \item experimental design (for reproducibility): application, input, compiler, runtime environment, machine, and measurement methodology
+    \item interpretability: \enquote{We call an experiment interpretable if it provides enough information to allow scientists to understand the experiment, draw own conclusions, assess their certainty, and possibly generalize results}
+\end{itemize}
+
+Rules:
+\begin{enumerate}
+    \item When publishing parallel speedup, report if the base case is a single parallel process or best serial execution, as well as the absolute execution performance of the base case.
+    \item Specify the reason for only reporting subsets of standard benchmarks or applications or not using all system resources.
+    \item Use the arithmetic mean only for summarizing costs. Use the harmonic mean for summarizing rates.
+    \item Avoid summarizing ratios; summarize the costs or rates that the ratios base on instead. Only if these are not available use the geometric mean for summarizing ratios.
+    \item Report if the measurement values are deterministic. For nondeterministic data, report confidence intervals of the measurement.
+    \item Do not assume normality of collected data (e.g., based on the number of samples) without diagnostic checking.
+    \item Compare nondeterministic data in a statistically sound way, e.g., using non-overlapping confidence intervals or ANOVA.
+    \item Carefully investigate if measures of central tendency such as mean or median are useful to report. Some problems, such as worst-case latency, may require other percentiles.
+    \item Document all varying factors and their levels as well as the complete experimental setup (e.g., software, hardware, techniques) to facilitate reproducibility and provide interpretability.
+    \item For parallel time measurements, report all measurement, (optional) synchronization, and summarization techniques.
+    \item If possible, show upper performance bounds to facilitate interpretability of the measured results.
+    \item Plot as much information as needed to interpret the experimental results. Only connect measurements by lines if they indicate trends and the interpolation is valid.
+\end{enumerate}
+
+Additional: 
+\begin{itemize}
+    \item report units unambiguously
+    \item costs: metrics with a direct semantic (runtime, energy consumption, number of instructions)
+    \item rates: derived from costs (\enquote{if the denominator has the primary semantic meaning, the harmonic mean provides correct results})
+    \item ratios (unitless): should never be averaged
+    \item statistical methods instead of arithmetic ones (samples must be normal distributed and either costs or rates): 
+    \begin{itemize}
+        \item standard variation
+        \item coefficient of variation (good for performance consistency of a system over longer time)
+        \item confidence interval of the mean
+    \end{itemize}
+    \item median and quartiles
+    \item confidence intervals of the median
+    \item recommend not to remove outliers
+    \item analysis of variance (ANOVA)
+    \item quantile regression
+    \item factorial design
+    \item warm-up, warm vs cold cache
+    \item power-of-two best case for some algorithms (e.g., MPI\_Reduce)
+    \item string vs weak scaling
+    \item full benchmarks vs kernel benchmarks
+    \item measure single events
+    \item in general more than $5$ runs
+    \item three cases of bounds models:
+    \begin{itemize}
+        \item ideal linear speedup
+        \item serial overheads (Amdahls's law)
+        \item parallel overheads
+    \end{itemize}
+    \item Points should only be connected if they indicate a trend and values between two points are expected to follow the line
+\end{itemize}
+
+% https://intel.github.io/p3-analysis-library/
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+2016: \citet{pennycook_metric_2016}\\
+2017 (preprint): \citet{pennycook_implications_2019}
+
+Therefore, the first objective performance portability metric was introduced by \citeauthor{pennycook_implications_2019} at the end of 2016 published on arXiv~\cite{pennycook_metric_2016}, and finally submitted as a full paper at the beginning of 2017~\cite{pennycook_implications_2019}. 
+It was the first formal definition that can be used to assess the performance portability of an application objectively.
+
+\begin{definition}[Performance Portability \pp~(Pennycook et al.~\cite{pennycook_implications_2019})]\label{def:pp}
+    Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \pp is defined as:
+
+    \[ \pp(a, p, H) = 
+        \begin{cases}
+            \frac{\abs{H}}{\sum\limits_{i \in H} \frac{1}{e_i(a, p)}} & \text{if }i\text{ is supported } \forall i \in H \\
+            0                                                         & \text{otherwise}
+        \end{cases} 
+    \]
+
+    where $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
+\end{definition}
+
+Therefore, the performance portability metric \pp is the harmonic mean over the performance efficiency of an application solving a specific problem on all tested hardware platforms. 
+The only difference to the harmonic mean is that \pp is also defined if the input data, i.e., the performance efficiency, includes a $0$. 
+The \pp metric has the nice property that, per construction, it is in the interval $\interval{0}{1}$ where $0$ means the application did not run on all hardware platforms and $1$ means the best possible performance on all hardware platforms. 
+
+Note that \pp heavily emphasizes the \textit{portability} aspect of performance portability: If only one hardware platform is not supported the result of \pp will directly be $0$ regardless of the performance on all other hardware platforms. 
+Depending on your target audience, this property of \pp may be desirable or not. 
+
+
+\newpage
+\cite{pennycook_implications_2019}
+
+\todo{irgendwie folgende Punkte noch unterbringen}
+\begin{itemize}
+    \item genaue Beschreibung von "platform": a specific hardware, OS, runtime system, etc. $\rightarrow$ hier \textbf{hardware}
+    \item genaue Beschreibung von "application": software, die auf ihre Korrektheit überprüft werden kann $\rightarrow$ portability nicht nur definieren als "kann darauf laufen" sondern zusätzlich such "produziert korrektes resultat
+    \item productivity schwierig zu messen/nicht objektiv, da sehr von skillset des jeweiligen Programmierers abhängig
+    \item also formal Definition vor Pennycook rein?: Performance Portability on EARTH: A Case Study Across Several Parallel Architectures,
+    \item arch: kann 100\% peak sein aber trotzdem nicht performant (z.B. bandwidth bound); z.B. via Roofline Model
+    \item app: best known != best possible
+    \item efficiency: 1 best possible; the lower, the worse
+    \item 5 Kriterien an \pp aufnehmen?
+    \item arch vs app : was rauslesen wenn eines klein, anderes groß
+\end{itemize}
+
+Performance Definition
+\begin{quotebox}{\cite{pennycook_implications_2019}}
+    Any measurable property of an application’s correct execution of a problem on a platform.
+\end{quotebox}
+
+Portability Definition
+\begin{quotebox}{\cite{pennycook_implications_2019}}
+    The ability of an application to execute a problem correctly on a given set of platforms.
+\end{quotebox}
+
+Performance Portability muss folgendes haben: 
+\begin{itemize}
+    \item beide obigen Definitionen nicht verletzen
+    \item objektiv messbar, quantifizierbar und vergleichbar sein
+\end{itemize}
+
+Ihre Definition:
+\begin{quotebox}{\cite{pennycook_implications_2019}}
+    A measurement of an application’s performance efficiency for a given problem that can be executed correctly on all platforms in a given set.
+\end{quotebox}
+
+
+Current Problems in Performance Portability:
+\begin{itemize}
+    \item "abstraction and irreducible complexity": best Performance ohne spezialisierte Code-Pfade $\rightarrow$ hohe Abstraktionsebene, automatische Code-Generierung für performance
+    \item "(still) no silver bullet": 
+\end{itemize}
+
+Approaches to Code Specialization
+\begin{itemize}
+    \item libraries
+    \item DSL
+    \item Portability and Productivity Frameworks
+    \item Autotuning
+    \item Application-specific abstractions
+    \item performance portable algorithms
+
+    \item we use frameworks + autotuning in the remainder of this work
+    \item for more information on vor- und nachteile see paper \cite{pennycook_implications_2019}
+\end{itemize}
+
+Criteria: (verbatim quote)
+\begin{enumerate}
+    \item Be measured specific to a set of platforms of interest $\mathcal{H}$.
+    \item Be independent of the absolute performance across $\mathcal{H}$.
+    \item Be zero if a platform in $\mathcal{H}$ is unsupported, and approach zero as the performance of platforms in $\mathcal{H}$ approaches zero. 
+    \item Increase if performance increases on any platform in $\mathcal{H}$.
+    \item Be directly proportional to the sum of scores across $\mathcal{H}$.
+\end{enumerate}
+
+
+\newpage
+Both formal performance portability definitions---\pp and \mpp---use a \textit{performance efficiency} $\mathbf{e_i(a, p)}$ in their definition which describes the relation between the achieved performance with respect to some proven expected performance. 
+In general, two different definitions defining the performance efficiency of an application $\mathbf{a}$ solving problem $\mathbf{p}$ on the hardware $\mathbf{i \in H}$ are used. 
+
+\begin{definition}[Architectural Efficiency]\label{def:arch_eff}
+    The achieved performance as a fraction of the \enquote{peak} theoretical hardware performance, being it the achieved \si{\flop\per\second} or memory bandwidth.
+\end{definition}
+
+The \textit{architectural efficiency}
+
+\begin{definition}[Application Efficiency~(\citet{satish_can_2012})]\label{def:app_eff}
+    The achieved performance as a fraction of the \enquote{best} observed performance. 
+\end{definition}
+
+The \textit{application efficiency}
+
+
+
+
+
+
+
+
+
+
+

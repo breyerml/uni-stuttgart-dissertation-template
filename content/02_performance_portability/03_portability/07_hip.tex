@@ -33,3 +33,28 @@ HIP
         \item only AMD and NVIDIA \glspl{gpu}
     \end{itemize}
 \end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+__global__ void vector_add(const double alpha, const double *X, const double *Y, const int N) {
+    const int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idX];
+}
+    
+double *d_X, *d_Y;
+hipMalloc(&d_X, N * sizeof(double));
+hipMalloc(&d_Y, N * sizeof(double));
+hipMemcpy(d_X, X, N * sizeof(double), hipMemcpyHostToDevice);
+hipMemcpy(d_Y, Y, N * sizeof(double), hipMemcpyHostToDevice);
+
+vector_add<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
+
+hipMemcpy(Y, d_Y, N * sizeof(double), hipMemcpyDeviceToHost);
+hipFree(d_X);
+hipFree(d_Y);
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{hip}.
+    }
+    \label{code:hip_example}
+\end{listing}
