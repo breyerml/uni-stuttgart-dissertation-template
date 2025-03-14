@@ -79,8 +79,6 @@ size_t global_size = N;
 clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, &global_size, nullptr, 0, nullptr, nullptr);
 clEnqueueReadBuffer(queue, d_C, CL_TRUE, 0, N * sizeof(double), C, 0, nullptr, nullptr);
 
-std::cout << "C[0]: " << C[0] << " C[N-1]: " << C[N-1] << "\n";
-
 clReleaseMemObject(d_X); 
 clReleaseMemObject(d_Y);
 clReleaseKernel(kernel); 

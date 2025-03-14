@@ -3,10 +3,10 @@
 
 \todo{revise}
 Until now, I looked at performance and portability separately, which is OK since sometimes one is only interested in one of these aspects. 
-One may know that the code will only ever be executed on one specific hardware platform, and it is important to achieve the best performance possible down to the assembly level. 
-On the other hand, for some, it may be enough to write code that can be executed everywhere but that must not necessarily be performant. 
-However, for many, achieving a combination of both is also important: writing code that can be executed on a variety of different hardware, without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware. 
-By reasonable here, I mean that it achieves a high enough fraction of the possible achievable performance. 
+One may know that the code will only ever be executed on one specific hardware platform, and achieving the best performance possible down to the assembly level is important. 
+On the other hand, for some, writing code that can be executed everywhere may be enough, but it must not necessarily be performant. 
+However, for many, achieving a combination of both is also important: writing code that can be executed on various hardware, without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware. 
+By reasonable, I mean it achieves a high enough fraction of the possible achievable performance. 
 It should be clear that it is extremely difficult or even impossible to achieve the same performance with code that can run on all \glspl{gpu} and \glspl{cpu} there are compared to highly optimized vendor-specific solutions that may even be implemented by the vendors themselves with special closed-source knowledge of the underlying hardware. 
 
 Assessing performance portability is an ongoing research topic. 
@@ -22,7 +22,6 @@ In the following subsections, I will discuss the history of performance portabil
 \input{content/02_performance_portability/05_performance_portability/03_performance_portability_revised}
 \input{content/02_performance_portability/05_performance_portability/04_current_state_of_the_art}
 
-\newpage
 \input{content/02_performance_portability/05_performance_portability/05_example}
 \input{content/02_performance_portability/05_performance_portability/06_visualization}
 

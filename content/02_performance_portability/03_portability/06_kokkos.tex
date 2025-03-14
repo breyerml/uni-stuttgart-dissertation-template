@@ -35,20 +35,24 @@ Kokkos:
 
 \begin{listing}
     \begin{minted}{cpp}
+template <typename T>
+using host_view_type = Kokkos::View<T *, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>;
+
 Kokkos::View<double*> d_X("X", N);
 Kokkos::View<double*> d_Y("Y", N);
-Kokkos::deep_copy(d_X, X);
-Kokkos::deep_copy(d_Y, Y);
+Kokkos::deep_copy(d_X, host_view_type<double>{ X.data(), N });
+Kokkos::deep_copy(d_Y, host_view_type<double>{ Y.data(), N });
 
 Kokkos::parallel_for("saxpy", N, KOKKOS_LAMBDA(const int idx) {
     d_Y(idx) = alpha * d_X(idx) + d_Y(idx);
 });
 Kokkos::fence();
 
-Kokkos::deep_copy(Y, d_Y);
+Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
     \end{minted}
     \caption{%
     SAXPY example using Kokkos.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:1,endLineNumber:8,positionColumn:1,positionLineNumber:8,selectionStartColumn:1,selectionStartLineNumber:8,startColumn:1,startLineNumber:8),source:'\%23include+\%3CKokkos_Core.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Atemplate+\%3Ctypename+T\%3E\%0Ausing+host_view_type+\%3D+Kokkos::View\%3CT+*,+Kokkos::HostSpace,+Kokkos::MemoryUnmanaged\%3E\%3B\%0A\%0Aint+main()+\%7B\%0A++Kokkos::initialize()\%3B\%0A++\%7B\%0A++++const+int+N+\%3D+1024\%3B\%0A\%0A++++//+create+and+fill+used+data\%0A++++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++++\%7D\%0A++++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++++//+allocate+memory+on+the+device\%0A++++Kokkos::View\%3Cdouble*\%3E+d_X(\%22X\%22,+N)\%3B\%0A++++Kokkos::View\%3Cdouble*\%3E+d_Y(\%22Y\%22,+N)\%3B\%0A++++//+copy+data+to+the+device\%0A++++Kokkos::deep_copy(d_X,+host_view_type\%3Cdouble\%3E\%7B+X.data(),+N+\%7D)\%3B\%0A++++Kokkos::deep_copy(d_Y,+host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D)\%3B\%0A\%0A++++//+the+Kokkos+compute+kernel\%0A++++Kokkos::parallel_for(\%22saxpy\%22,+N,+KOKKOS_LAMBDA(const+int+idx)+\%7B\%0A++++++++d_Y(idx)+\%3D+alpha+*+d_X(idx)+\%2B+d_Y(idx)\%3B\%0A++++\%7D)\%3B\%0A++++Kokkos::fence()\%3B\%0A\%0A++++//+copy+data+to+the+host\%0A++++Kokkos::deep_copy(host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D,+d_Y)\%3B\%0A\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++++\%7D\%0A++\%7D\%0A++Kokkos::finalize()\%3B\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!((name:kokkos,ver:'4500')),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/PW85sGxKW}
     }
     \label{code:kokkos_example}
 \end{listing}

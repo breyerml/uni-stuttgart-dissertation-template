@@ -36,9 +36,9 @@ HIP
 
 \begin{listing}
     \begin{minted}{cpp}
-__global__ void vector_add(const double alpha, const double *X, const double *Y, const int N) {
+__global__ void vector_add(const double alpha, const double *X, double *Y, const int N) {
     const int idx = blockDim.x * blockIdx.x + threadIdx.x;
-    if(idx < N) Y[idx] = alpha * X[idx] + Y[idX];
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
 }
     
 double *d_X, *d_Y;

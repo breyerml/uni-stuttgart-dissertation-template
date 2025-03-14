@@ -55,6 +55,7 @@ On the other hand, if an application's architectural efficiency is high while it
 In contrast, a high application efficiency and a low architectural efficiency may suggest that all implementations, including the best-known implementation, can be further improved. 
 
 Finally, \citeauthor{pennycook_implications_2019} devised five criteria that directly influence the design of their performance portability metric definition.
+\begin{definition}[Performance Portability Criteria~\cite{pennycook_implications_2019}]\label{def:pp_criteria}
 \begin{enumerate}
     \item Be measured specific to a set of platforms of interest $\mathbf{H}$.
     \item Be independent of the absolute performance across $\mathbf{H}$.
@@ -62,9 +63,10 @@ Finally, \citeauthor{pennycook_implications_2019} devised five criteria that dir
     \item Increase if performance increases on any platform in $\mathbf{H}$.
     \item Be directly proportional to the sum of scores across $\mathbf{H}$.
 \end{enumerate}
+\end{definition}
 These criteria directly led to the first formal, general-purpose performance portability metric:
 
-\begin{definition}[Performance Portability \pp~~\cite{pennycook_implications_2019}]\label{def:pp}
+\begin{definition}[Performance Portability \pp~\cite{pennycook_implications_2019}]\label{def:pp}
     Given a problem $\mathbf{p}$ which is solved by an application $\mathbf{a}$ and a set of platforms $\mathbf{H}$, the performance portability metric \pp is defined as:
 
     \[ \pp(a, p, H) = 

@@ -35,11 +35,13 @@ CUDA
 \end{disadvantagebox}
 
 
+
+
 \begin{listing}
     \begin{minted}{cpp}
-__global__ void saxpy(const double alpha, const double *X, const double *Y, const int N) {
+__global__ void saxpy(const double alpha, const double *X, double *Y, const int N) {
     const int idx = blockDim.x * blockIdx.x + threadIdx.x;
-    if(idx < N) Y[idx] = alpha * X[idx] + Y[idX];
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
 }
     
 double *d_X, *d_Y;
@@ -55,7 +57,8 @@ cudaFree(d_X);
 cudaFree(d_Y);
     \end{minted}
     \caption{%
-    SAXPY example using \gls{cuda}.
+    SAXPY example using \gls{cuda}. 
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:24,endLineNumber:23,positionColumn:24,positionLineNumber:23,selectionStartColumn:24,selectionStartLineNumber:23,startColumn:24,startLineNumber:23),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A//+the+CUDA+compute+kernel\%0A__global__+void+saxpy(const+double+alpha,+const+double+*X,+double+*Y,+const+int+N)+\%7B\%0A++++const+int+idx+\%3D+blockDim.x+*+blockIdx.x+\%2B+threadIdx.x\%3B\%0A++++if(idx+\%3C+N)+\%7B+\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++++\%7D\%0A\%7D\%0A++\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++double+*d_X,+*d_Y\%3B\%0A++//+allocate+memory+on+the+device\%0A++cudaMalloc(\%26d_X,+N+*+sizeof(double))\%3B\%0A++cudaMalloc(\%26d_Y,+N+*+sizeof(double))\%3B\%0A++//+copy+data+to+the+device\%0A++cudaMemcpy(d_X,+X.data(),+N+*+sizeof(double),+cudaMemcpyHostToDevice)\%3B\%0A++cudaMemcpy(d_Y,+Y.data(),+N+*+sizeof(double),+cudaMemcpyHostToDevice)\%3B\%0A\%0A++//+perform+computations\%0A++saxpy\%3C\%3C\%3C(N+\%2B+255)+/+256,+256\%3E\%3E\%3E(alpha,+d_X,+d_Y,+N)\%3B\%0A\%0A++//+copy+data+to+the+host\%0A++cudaMemcpy(Y.data(),+d_Y,+N+*+sizeof(double),+cudaMemcpyDeviceToHost)\%3B\%0A++//+free+the+ressources\%0A++cudaFree(d_X)\%3B\%0A++cudaFree(d_Y)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:nvcxx_x86_cxx25_1,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-cuda+--diag_suppress+cuda_compile',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86+nvc\%2B\%2B+25.1+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86+nvc\%2B\%2B+25.1+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/xEah998G5}
     }
     \label{code:cuda_example}
 \end{listing}

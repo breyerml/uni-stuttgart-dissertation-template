@@ -1,6 +1,18 @@
 \section{What Is Portability?}
 \label{sec::portability}
 
+\begin{definition}[Portability \citet{sedova_high-performance_2018, mooney_bringing_1997}]
+An application can be said to be portable if the cost of porting is less than the cost of re-writing:
+$$DP = 1 - \left(\frac{C_P}{C_R}\right)$$
+where $C_P$ is the cost to port and $C_R$ the cost to rewrite the program. 
+\end{definition}
+
+\begin{itemize}
+    \item $1$ $\rightarrow$ completely portable
+    \item positive $\rightarrow$ porting is more profitable
+    \item binary vs source code portability
+\end{itemize}
+
 \newpage
 \input{content/02_performance_portability/03_portability/01_openmp}
 \newpage

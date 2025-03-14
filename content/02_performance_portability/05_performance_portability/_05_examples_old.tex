@@ -1,0 +1,136 @@
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] Q[r,m] Q[c,m]},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        Platforms & theoretical peak performance           & architectural class \\\midrule
+        A         & $\SI{9.75}{\tera\flop\per\second}$     & 1                   \\
+        B         & $\SI{5.16}{\tera\flop\per\second}$     & 1                   \\
+        C         & $\SI{22.63}{\tera\flop\per\second}$    & 1                   \\
+        D         & $\SI{1.65}{\tera\flop\per\second}$     & 2                   \\
+        E         & $\SI{1.32}{\tera\flop\per\second}$     & 2                   \\
+        F         & $\SI{0.61}{\tera\flop\per\second}$     & 2                   \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO: beschreiben 
+    }
+    % \label{tab:example_platform_peak_perf}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] Q[r,m] Q[r,m] Q[r,m]},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        Platforms & Application 1                       & Application 2                      & Application 3                      \\\midrule
+        A         & $\SI{7.1}{\tera\flop\per\second}$   & $\SI{4.6}{\tera\flop\per\second}$  & $\SI{0.4}{\tera\flop\per\second}$  \\
+        B         & $\SI{3.9}{\tera\flop\per\second}$   & $\SI{2.5}{\tera\flop\per\second}$  & $\SI{0.16}{\tera\flop\per\second}$ \\
+        C         & $\SI{16.4}{\tera\flop\per\second}$  & $\SI{10.8}{\tera\flop\per\second}$ & $\SI{5.3}{\tera\flop\per\second}$  \\
+        D         & $\SI{0.02}{\tera\flop\per\second}$  & $\SI{0.9}{\tera\flop\per\second}$  & $\SI{0.02}{\tera\flop\per\second}$ \\
+        E         & $\SI{0.01}{\tera\flop\per\second}$  & $\SI{0.7}{\tera\flop\per\second}$  & $\SI{0.03}{\tera\flop\per\second}$ \\
+        F         & $\SI{0.005}{\tera\flop\per\second}$ & --                                 & $\SI{0.01}{\tera\flop\per\second}$ \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO: beschreiben 
+    }
+    % \label{tab:example_application_perf}
+\end{table}
+
+\newpage
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] Q[r,m] Q[r,m] Q[r,m]},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        Platform Sets          & Application 1 & Application 2 & Application 3 \\\midrule
+        \{ A \}                & $\num{0.730}$ & $\num{0.476}$ & $\num{0.040}$ \\
+        \{ A, B \}             & $\num{0.745}$ & $\num{0.475}$ & $\num{0.033}$ \\
+        \{ A, B, C \}          & $\num{0.736}$ & $\num{0.477}$ & $\num{0.048}$ \\
+        \{ A, B, C, D \}       & $\num{0.038}$ & $\num{0.493}$ & $\num{0.025}$ \\
+        \{ A, B, C, D, E \}    & $\num{0.022}$ & $\num{0.500}$ & $\num{0.024}$ \\
+        \{ A, B, C, D, E, F \} & $\num{0.017}$ & $\num{0.0}$   & $\num{0.023}$ \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO: beschreiben \pp
+    }
+    % \label{tab:example_application_pp}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] Q[r,m] Q[r,m] Q[r,m]},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        Platform Sets          & Application 1 & Application 2 & Application 3 \\\midrule
+        \{ A \}                & $\num{0.730}$ & $\num{0.470}$ & $\num{0.040}$ \\
+        \{ A, B \}             & $\num{0.745}$ & $\num{0.475}$ & $\num{0.035}$ \\
+        \{ A, B, C \}          & $\num{0.737}$ & $\num{0.477}$ & $\num{0.100}$ \\
+        \{ A, B, C, D \}       & $\num{0.555}$ & $\num{0.495}$ & $\num{0.078}$ \\
+        \{ A, B, C, D, E \}    & $\num{0.446}$ & $\num{0.502}$ & $\num{0.066}$ \\
+        \{ A, B, C, D, E, F \} & $\num{0.373}$ & $\num{0.502}$ & $\num{0.058}$ \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO: beschreiben \mpp
+    }
+    % \label{tab:example_application_mpp}
+\end{table}
+
+
+
+
+\newpage
+\todo{update table}
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rrrr}
+        
+        Application 1           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}   \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.        & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{40}{\percent}    & \SI{100}{\percent}   & \SI{40}{\percent} & \SI{100}{\percent}    \\
+        \{ A, B \}              & \SI{26.67}{\percent} & \SI{91.89}{\percent} & \SI{30}{\percent} & \SI{92.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{21.18}{\percent} & \SI{78.06}{\percent} & \SI{25}{\percent} & \SI{81.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{0.0}{\percent}   & \SI{0.0}{\percent}   & \SI{25}{\percent} & \SI{81.67}{\percent} 
+    \end{tabular}
+    \caption{%
+    The calculated values for \pp and \mpp for application 1 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \pp and \mpp if the unsupported hardware platform D is added to the platform set $\mathbf{H}$.
+    }
+    % \label{tab:pp_app_1_example}
+\end{table}
+
+\begin{table}[]
+    % https://www.programiz.com/online-compiler/0apVuVZDNe38e
+    \centering
+    \begin{tabular}{c|rrrr}
+        Application 2           & \multicolumn{2}{c}{$\pp(a, p, H)$}          & \multicolumn{2}{c}{$\mpp(a, p, S, H)$}      \\
+        Subsets of $\mathbf{H}$ & Arch. Eff.           & App. Eff.            & Arch. Eff.           & App. Eff.            \\\midrule
+        \{ A \}                 & \SI{30}{\percent}    & \SI{90}{\percent}    & \SI{30}{\percent}    & \SI{90}{\percent}    \\
+        \{ A, B \}              & \SI{30}{\percent}    & \SI{87.43}{\percent} & \SI{30}{\percent}    & \SI{87.5}{\percent}  \\
+        \{ A, B, C \}           & \SI{25}{\percent}    & \SI{62.66}{\percent} & \SI{25}{\percent}    & \SI{71.67}{\percent} \\
+        \{ A, B, C, D \}        & \SI{25.26}{\percent} & \SI{64.35}{\percent} & \SI{28.75}{\percent} & \SI{71.25}{\percent}
+    \end{tabular}
+    \caption{%
+    The calculated values for \pp and \mpp for application 2 using different subsets of $\mathbf{H}$ and the performance efficiencies given in \autoref{tab:platforms_example}. 
+    This example shows the differences between \pp and \mpp if all hardware platforms in the platform set $\mathbf{H}$ are supported.
+    }
+    % \label{tab:pp_app_2_example}
+\end{table}

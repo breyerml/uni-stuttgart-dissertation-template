@@ -50,12 +50,19 @@ OpenMP (Target Offloading)
 \begin{listing}
     \begin{minted}{cpp}
 #pragma omp parallel for
-for (int i = 0; i < N; ++i) {
-    Y[i] = alpha * X[i] + Y[i];
+for (int idx = 0; idx < N; ++idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+}
+
+#pragma omp target map(tofrom: Y[0:N]) map(to: X[0:N])
+#pragma omp teams distribute parallel for
+for (int idx = 0; idx < N; ++idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
 }
     \end{minted}
     \caption{%
     SAXPY example using \gls{openmp}.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:25,positionColumn:32,positionLineNumber:25,selectionStartColumn:32,selectionStartLineNumber:25,startColumn:32,startLineNumber:25),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++/*\%0A++//+CPU+only\%0A++\%23pragma+omp+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A++*/\%0A\%0A++const+double+*d_X+\%3D+X.data()\%3B\%0A++double+*d_Y+\%3D+Y.data()\%3B\%0A\%0A++//+OpenMP+target+offloading\%0A++\%23pragma+omp+target+map(tofrom:+d_Y\%5B0:N\%5D)+map(to:+d_X\%5B0:N\%5D)\%0A++\%23pragma+omp+teams+distribute+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fopenmp',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.98157361341441,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.01842638658559,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/63nT7Eaeo}
     }
     \label{code:openmp_example}
 \end{listing}
