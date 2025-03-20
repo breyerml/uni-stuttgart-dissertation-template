@@ -7,7 +7,7 @@ The first version of the performance portability metric developed by \citet{penn
 A revised version of the paper~\cite{pennycook_implications_2019} was submitted to Elsevier Science in 2017 and finally published in the Future Generation Computer Systems Periodical in~\citeyear{pennycook_implications_2019}. 
 
 \citeauthor{pennycook_implications_2019} define the following terms also used in their later definitions and formulas. 
-A \textit{platform} $\mathbf{i}$ is a particular execution environment, mostly interpreted as a specific hardware; the set of all possible platforms is denoted as $\mathbf{H}$. 
+A \textit{platform} $\mathbf{i}$ is a particular execution environment, mostly interpreted as a specific hardware platform; the set of all possible platforms is denoted as $\mathbf{H}$. 
 An \textit{application} $\mathbf{a}$ is any software, library, or source code that can accept a \textit{problem} $\mathbf{p}$ as input and produce an output that can be validated against a known ground truth. 
 Based on these terms, \citeauthor{pennycook_implications_2019} define the \textit{performance}  
 \begin{quotebox}{\citet{pennycook_implications_2019}}
@@ -41,7 +41,7 @@ Both definitions' values lie in the range $\interval{0}{1}$, where $1$ denotes t
 \end{definition}
 
 The \textit{architectural efficiency} represents an application's ability to utilize the available hardware. 
-Note that an architectural efficiency of $1$, i.e., achieving for example $\SI{100}{\percent}$ of the available peak memory bandwidth, does not mean that an application is perfectly optimized since it is very well possible that the application performs many unnecessary loads artificially increasing the utilized memory bandwidth. 
+Note that an architectural efficiency of $1$, i.e., achieving, for example, $\SI{100}{\percent}$ of the available peak memory bandwidth, does not mean that an application is perfectly optimized since it is very well possible that the application performs many unnecessary loads artificially increasing the utilized memory bandwidth. 
 
 \begin{definition}[Application Efficiency~\cite{satish_can_2012}]\label{def:app_eff}
     The achieved performance as a fraction of the \enquote{best} observed performance. 
@@ -56,13 +56,13 @@ In contrast, a high application efficiency and a low architectural efficiency ma
 
 Finally, \citeauthor{pennycook_implications_2019} devised five criteria that directly influence the design of their performance portability metric definition.
 \begin{definition}[Performance Portability Criteria~\cite{pennycook_implications_2019}]\label{def:pp_criteria}
-\begin{enumerate}
-    \item Be measured specific to a set of platforms of interest $\mathbf{H}$.
-    \item Be independent of the absolute performance across $\mathbf{H}$.
-    \item Be zero if a platform in $\mathbf{H}$ is unsupported, and approach zero as the performance of platforms in $\mathbf{H}$ approaches zero. 
-    \item Increase if performance increases on any platform in $\mathbf{H}$.
-    \item Be directly proportional to the sum of scores across $\mathbf{H}$.
-\end{enumerate}
+    \begin{enumerate}
+        \item Be measured specific to a set of platforms of interest $\mathbf{H}$.
+        \item Be independent of the absolute performance across $\mathbf{H}$.
+        \item Be zero if a platform in $\mathbf{H}$ is unsupported, and approach zero as the performance of platforms in $\mathbf{H}$ approaches zero. 
+        \item Increase if performance increases on any platform in $\mathbf{H}$.
+        \item Be directly proportional to the sum of scores across $\mathbf{H}$.
+    \end{enumerate}
 \end{definition}
 These criteria directly led to the first formal, general-purpose performance portability metric:
 

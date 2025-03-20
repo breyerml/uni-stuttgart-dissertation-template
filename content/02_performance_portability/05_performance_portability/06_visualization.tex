@@ -1,18 +1,29 @@
 \subsection{Performance Portability Visualization}
 \label{sec:pp_visualization}
 
-\citet{sewall_interpreting_2020} 
-different visualization strategies:
-\begin{itemize}
-    \item Box Plots: obscures the "did not run" case (large boxes); no number of supported platforms; only median to compare in case of "did not run" (boxes cover whole range)
-    \item Histograms: distribution of bins ("did not run" must be own bin; how many bins?); areas of low density $\rightarrow$ difficult to "see" the distribution
-    \item Probability Density Function: primary problem choosing a good kernel bandwidth; PP sparse and uneven distributed data $\rightarrow$ no fixed bandwidth guaranteed to yield satisfactory results $\rightarrow$ adaptive methods; problems on [0, 1] boundaries $\rightarrow$ there may be many points there for PP making this problem even worse; but better than Histograms (better tendencies; less crowded bars)
-    \item Violin Plots: a combination of kernel density estimation and Box Plots
+Since the tables presented in the previous section can get quite large and difficult to understand, it is advisable to use some form of visualization to help readers grasp the most important results, especially characteristics, as easily and quickly as possible. 
 
-    % Impact of Platform Selection
-    \item plotting \pp against $\mathcal{H}$ $\rightarrow$ other paper \cite{deakin_performance_2019}
-    \item Efficiency Cascade Plots + Platform Charts: minimum efficiency and H $\rightarrow$ remove platform with minimum efficiency and start again; independent for each application; platform sets at the bottom may not be the same for each application; monotonic decreasing
-\end{itemize}
+To visualize the performance efficiencies also shown in \autoref{tab:example_effs}, the most widely used solution in the literature is to use a heatmap. 
+A heatmap created from the values in \autoref{tab:example_effs} is shown in \autoref{fig:vis_example_effs}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/02_performance_portability/example_diss_eff_heat.pdf}
+    \caption{%
+    An example visualization of the architectural efficiencies (higher is better) of \autoref{tab:example_effs} as a simple heatmap makes it easy to spot the overall behavior of the three example applications. 
+    }
+    \label{fig:vis_example_effs}
+\end{figure}
+
+Such heatmaps make it easy to see the different application characteristics at a glance, including the cases where an application does not support a hardware platform. 
+However, care must be taken to always scale the heatmap to the same range, in case of performance efficiencies, the range $\interval{0}{1}$, regardless of the actual values, to make different heatmaps easier comparable. 
+
+However, visualizing the performance portability metrics without losing or obscuring too much information is more difficult. 
+In their paper, \citet{sewall_interpreting_2020} compared different visualization techniques for their \pp metric and discussed their advantages and disadvantages. 
+They concluded that established visualization techniques like box plots, histograms, probability density functions, or violin plots in theory work, but all lose or obscure some information, mostly the case when a hardware platform is not supported by an application in one way or another.
+They concluded that now-established visualization techniques cannot convey all important information, especially if we factor in the importance of the used platform set in the calculation of \pp. 
+Therefore, based on the idea in \cite{deakin_performance_2019}, \citet{sewall_interpreting_2020} proposed the efficiency cascade plots and platform charts. 
+Such an example plot for the performance efficiencies in \autoref{tab:example_effs} and performance portability scores of \pp in \autoref{tab:example_perfs} is shown in \autoref{fig:vis_example_pp}.
 
 \begin{figure}
     \centering
@@ -21,44 +32,40 @@ different visualization strategies:
     An example visualization of the architectural efficiencies of \autoref{tab:example_effs} and performance portability scores of \autoref{tab:example_pp} of the three example applications as proposed by \citet{sewall_interpreting_2020}. 
     This plot can help us to determine the set of platforms best supported by some applications. 
     }
-    \label{fig:pp-example-visualization}
+    \label{fig:vis_example_pp}
 \end{figure}
+
+Creating an efficiency cascade plot works as follows. 
+First, each application's \pp and efficiency values are gathered when using all hardware platforms. 
+Afterward, remove the platform with the smallest remaining efficiency and use this reduced platform set as a new baseline to calculate the \pp score. 
+This process is repeated until only one platform, the best-performing platform for the current application, is left in the platform set. 
+These values are then plotted from right to left, resulting in a monotonically decreasing plot of the performance portability scores and efficiencies. 
+As discussed by \citet{sewall_interpreting_2020, pennycook_navigating_2021}, this plot can be used to draw many different conclusions from the raw \pp and performance efficiency values. 
+Applications for which the efficiency cascade plot extends further to the right support more hardware platforms and are, therefore, more portable. 
+However, we can see the number of platforms supported and which are supported best. 
+This can help us identify whether our application's performance in one architectural class is lackluster and needs to be addressed. 
+One drawback of the efficiency cascade plots is that one must be careful since the order of hardware platforms in the platform charts at the bottom of the plot may differ for each application. 
+
+For an example, we can look at \autoref{fig:vis_example_pp}. 
+For application one, we see that the platforms from the first architectural class are supported best, followed by a sharp decline in performance portability after adding platforms from the second class. 
+On the other hand, application two's performance portability scores are, on average, better for more hardware platforms until platform F is added, which results in a score of zero, shown by a vertical decline in the plot. 
+Application three also shows bad performance portability scores for all hardware platforms, as already discussed. 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\linewidth]{figures/02_performance_portability/example_diss_eff_heat.pdf}
+    \includegraphics[width=\linewidth]{figures/02_performance_portability/example_diss_eff_cascade_with_HS.pdf}
     \caption{%
-    An example visualization of the architectural efficiencies of \autoref{tab:example_effs} as a simple heatmap makes it easy to spot the overall behavior of the three example applications. 
+    An example visualization of the architectural efficiencies of \autoref{tab:example_effs} and performance portability scores of \autoref{tab:example_pp} of the three example applications as proposed by \citet{sewall_interpreting_2020}. 
+    This time, the newly proposed heterogeneity score $HS$ (\autoref{def:hetero_score}) is added using dotted lines. 
     }
-    \label{fig:pp-example-visualization}
+    \label{fig:vis_example_pp_hs}
 \end{figure}
 
+\autoref{fig:vis_example_pp_hs} shows the same plot as \autoref{fig:vis_example_pp} but now with the newly proposed heterogeneity score added as dotted lines. 
+This plot shows that while application one has a high \pp score, its heterogeneity score is zero in our example, meaning that only a single architectural class is highly optimized. 
+On the other hand, application two's \pp score is lower, but its heterogeneity score is higher, meaning its \pp score of roughly $\num{0.5}$ is not caused by only one architectural class being optimized but multiple. 
+This new heterogeneity score plot nicely complements the efficiency cascade plot and the platform chart, resulting in a better interpretability of the results. 
 
-\newpage
-\cite{pennycook_navigating_2021}
-
-\begin{itemize}
-    \item it should be clear what is part of the application and what of the platform (e.g., third-party libraries)
-    \item Cascade plots: \enquote{applications extending further to the right support more platforms (portability), and if they do so with higher efficiency, are more performance portable.}
-    \item Productivity: subjective, approximation sufficient; they use \cite{harrell_effective_2018} code divergence with the Jaccard distance
-    \item dendrogram for visualizing code divergence (by clustering)
-    \item \pp-CC charts: $2D$-plane, top-right corner is the goal
-    \item track performance portability and productivity as early as possible in the development process
-    \begin{enumerate}
-        \item identify the destination
-        \item get your bearings
-        \item chart the course
-        \item set sail
-    \end{enumerate}
-\end{itemize}
-
-\begin{definition}[Jaccard Distance SLOC~\citet{pennycook_navigating_2021}]
-Given $c_i(a, p)$ as the set of source lines required to compile application $a$ and execute problem $p$ for platform $i$, the dissimilarity of the source code can be expressed as:
-
-$$d_{i, j}(a, p) = 1 - \frac{\abs{c_i(a, p) \cap c_j(a, p)}}{\abs{c_i(a, p) \cup c_j(a, p)}}$$
-\end{definition}
-Here, $0$ means \enquote{single-source}, i.e., everything is shared by both platforms, and $1$ means nothing is shared. 
-
-\begin{definition}[\pp-CC Metric~\citet{pennycook_navigating_2021}]
-    $$M(a, p, H) = \min(\pp(a, p, H), CC(a, p, H))$$
-\end{definition}
+The efficiency cascade plots were created only with \pp in mind. 
+Creating the same plot for the \mpp metric is not directly possible since per \autoref{def:mpp}, only platforms with the same architectural class should be used to calculate \mpp. 
+However, if we relax this restriction and use all platforms in calculating \mpp, we can also create an efficiency cascade plot for scores retrieved via \mpp. 

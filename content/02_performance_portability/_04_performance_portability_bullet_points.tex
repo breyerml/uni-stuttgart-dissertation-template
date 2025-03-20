@@ -775,3 +775,95 @@ This also shows us the main emphasis of \mpp in contrast to \pp: For \mpp the \t
 
 \todo{way more complex metric}
 As a response to \citeauthor{marowka_comparison_2023} critic to their performance portability metric \pp, \citet{pennycook_revisiting_2021} updated their metric to include \todo{was kam dazu?}
+
+
+\newpage
+\citet{sewall_interpreting_2020} 
+different visualization strategies:
+\begin{itemize}
+    \item Box Plots: obscures the "did not run" case (large boxes); no number of supported platforms; only median to compare in case of "did not run" (boxes cover whole range)
+    \item Histograms: distribution of bins ("did not run" must be own bin; how many bins?); areas of low density $\rightarrow$ difficult to "see" the distribution
+    \item Probability Density Function: primary problem choosing a good kernel bandwidth; PP sparse and uneven distributed data $\rightarrow$ no fixed bandwidth guaranteed to yield satisfactory results $\rightarrow$ adaptive methods; problems on [0, 1] boundaries $\rightarrow$ there may be many points there for PP making this problem even worse; but better than Histograms (better tendencies; less crowded bars)
+    \item Violin Plots: a combination of kernel density estimation and Box Plots
+
+    % Impact of Platform Selection
+    \item plotting \pp against $\mathcal{H}$ $\rightarrow$ other paper \cite{deakin_performance_2019}
+    \item Efficiency Cascade Plots + Platform Charts: minimum efficiency and H $\rightarrow$ remove platform with minimum efficiency and start again; independent for each application; platform sets at the bottom may not be the same for each application; monotonic decreasing
+\end{itemize}
+
+
+
+
+\newpage
+\cite{pennycook_navigating_2021}
+
+\begin{itemize}
+    \item it should be clear what is part of the application and what of the platform (e.g., third-party libraries)
+    \item Cascade plots: \enquote{applications extending further to the right support more platforms (portability), and if they do so with higher efficiency, are more performance portable.}
+    \item Productivity: subjective, approximation sufficient; they use \cite{harrell_effective_2018} code divergence with the Jaccard distance
+    \item dendrogram for visualizing code divergence (by clustering)
+    \item \pp-CC charts: $2D$-plane, top-right corner is the goal
+    \item track performance portability and productivity as early as possible in the development process
+    \begin{enumerate}
+        \item identify the destination
+        \item get your bearings
+        \item chart the course
+        \item set sail
+    \end{enumerate}
+\end{itemize}
+
+\begin{definition}[Jaccard Distance SLOC~\citet{pennycook_navigating_2021}]
+Given $c_i(a, p)$ as the set of source lines required to compile application $a$ and execute problem $p$ for platform $i$, the dissimilarity of the source code can be expressed as:
+
+$$d_{i, j}(a, p) = 1 - \frac{\abs{c_i(a, p) \cap c_j(a, p)}}{\abs{c_i(a, p) \cup c_j(a, p)}}$$
+\end{definition}
+Here, $0$ means \enquote{single-source}, i.e., everything is shared by both platforms, and $1$ means nothing is shared. 
+
+\begin{definition}[\pp-CC Metric~\citet{pennycook_navigating_2021}]
+    $$M(a, p, H) = \min(\pp(a, p, H), CC(a, p, H))$$
+\end{definition}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+
+% \begin{definition}[Heterogeneity Score]
+% Given different platform categories $\mathbf{C}$, and the set of all platforms $\mathbf{H}$ where each $\mathbf{p \in H}$ is associated with a platform category $\mathbf{c \in C}$, let the heterogeneity score be defined as:
+
+% $$HS(C, H) = \begin{cases}
+%                 \frac{-\sum\limits_{c \in C} p_c \log p_c}{\log\abs{C}} & \text{if } \abs{C} > 1 \\
+%                 0                                                       & \text{otherwise}
+%               \end{cases}$$
+
+% where
+
+% $$p_c = \begin{cases}
+%             \frac{\abs{\{ p \in H \mid p \text{ is associated with } c \}}}{\abs{H}} & \text{if at least one platform is associated with } c \\
+%             1 & \text{otherwise}
+%         \end{cases}$$ 
+
+% is the ratio of the number of platforms in the current category relative to the total number of platforms. 
+% \end{definition}
+
+\begin{itemize}
+    % \item there is only one category $\rightarrow$ HS is 0 since we do not have a heterogeneous platform set
+    \item if there are the same amount of platforms in all categories $\rightarrow$ HS is 1 since our tested platforms have perfect heterogeneity 
+    \item if we have two categories $c_1$ and $c_2$ with $\abs{c_1} = 1$ and $\abs{c_2} = 3$ and we add a new platform to set $\abs{c_2}$ $\rightarrow$ HS decreases $\rightarrow$ good since we penalize cases where a new GOOD supported platform is added to increase \pp but reduce the overall tested heterogeneity 
+\end{itemize}
+\todo{example?}

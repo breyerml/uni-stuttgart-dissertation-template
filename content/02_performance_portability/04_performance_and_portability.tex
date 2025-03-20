@@ -1,56 +1,24 @@
 \section{Performance + Portability}
 \label{sec:pp}
 
-\todo{revise}
-Until now, I looked at performance and portability separately, which is OK since sometimes one is only interested in one of these aspects. 
-One may know that the code will only ever be executed on one specific hardware platform, and achieving the best performance possible down to the assembly level is important. 
-On the other hand, for some, writing code that can be executed everywhere may be enough, but it must not necessarily be performant. 
-However, for many, achieving a combination of both is also important: writing code that can be executed on various hardware, without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware. 
-By reasonable, I mean it achieves a high enough fraction of the possible achievable performance. 
+Until now, I looked at performance and portability as separate instances. 
+If one knows that the code will only ever be executed on one specific hardware platform, achieving the best performance possible down to the assembly level is important. 
+On the other hand, for some, writing code that can be executed everywhere while sacrificing performance may be enough. 
+However, in many cases, especially in \gls{hpc}, achieving a combination of both, performance and portability, is also important: writing code that can be executed on various hardware platforms without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware platforms. 
+Reasonable here means achieving a high enough fraction of the possible achievable peak performance. 
 It should be clear that it is extremely difficult or even impossible to achieve the same performance with code that can run on all \glspl{gpu} and \glspl{cpu} there are compared to highly optimized vendor-specific solutions that may even be implemented by the vendors themselves with special closed-source knowledge of the underlying hardware. 
 
 Assessing performance portability is an ongoing research topic. 
-Over the years, many definitions have emerged, starting with more informal definitions of performance portability. 
-Note that the following definitions aren't exhaustive but only serve as examples.
-
-\todo{3-P challenge: performance, portability, and productivity}
-
 In the following subsections, I will discuss the history of performance portability, starting with its informal beginnings, through the first performance portability metric, and to the current state of the art. 
+Additionally, I will introduce the new heterogeneity score which complements the performance portability by specifying how representative our used platforms are with respect to the platforms we ultimately want to support. 
+This section is closed with an example of the usage and results of different performance portability metrics based on three artificial example applications and a possible way to visualize the performance portability proposed by~\citet{sewall_interpreting_2020}.
 
 \input{content/02_performance_portability/05_performance_portability/01_age_before_pp_metrics}
 \input{content/02_performance_portability/05_performance_portability/02_first_pp_metric}
 \input{content/02_performance_portability/05_performance_portability/03_performance_portability_revised}
 \input{content/02_performance_portability/05_performance_portability/04_current_state_of_the_art}
 
+\input{content/02_performance_portability/05_performance_portability/0X_heterogeneity_score}
+
 \input{content/02_performance_portability/05_performance_portability/05_example}
 \input{content/02_performance_portability/05_performance_portability/06_visualization}
-
-
-\newpage
-\todo{does it make sense?}
-
-\begin{definition}[Heterogeneity Score]
-Given different platform categories $C$, where $c \in C$ contains the respective platforms of the set of all platforms $H$, let the heterogeneity score be defined as:
-
-$$HS(C, H) = \begin{cases}
-                \frac{-\sum\limits_{c \in C} p_c \log p_c}{\log\abs{C}} & \text{if } \abs{C} > 1 \\
-                0                                                       & \text{otherwise}
-              \end{cases}$$
-
-where
-
-$$p_c = \begin{cases}
-            \frac{\abs{c}}{\abs{H}} & \text{if } \abs{c} > 0 \\
-            1 & \text{otherwise}
-        \end{cases}$$ 
-
-is the ratio of number of platforms belonging to the current category relative to the total number of platforms. 
-\end{definition}
-
-\begin{itemize}
-    \item there is only one category $\rightarrow$ HS is 0 since we do not have a heterogeneous platform set
-    \item if there are the same amount of platforms in all categories $\rightarrow$ HS is 1 since our tested platforms have perfect heterogeneity 
-    \item if we have two categories $c_1$ and $c_2$ with $\abs{c_1} = 1$ and $\abs{c_2} = 3$ and we add a new platform to set $\abs{c_2}$ $\rightarrow$ HS decreases $\rightarrow$ good since we penalize cases where a new GOOD supported platform is added to increase \pp but reduce the overall tested heterogeneity 
-\end{itemize}
-\todo{example?}
-
