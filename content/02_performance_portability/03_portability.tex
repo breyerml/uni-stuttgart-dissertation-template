@@ -1,17 +1,37 @@
 \section{What Is Portability?}
 \label{sec::portability}
 
-\begin{definition}[Portability \citet{sedova_high-performance_2018, mooney_bringing_1997}]
+Two main portability types can be meant if we are talking about portability. 
+On the one side, binary portability means that I compile my code once, and it runs everywhere. 
+On the other side, source code portability means I write portable source code that needs to be recompiled on each new hardware platform. 
+Generally, the former is much more challenging to achieve than the latter, and most of the time, some form of \gls{jit} compilation is involved. 
+For the remainder of this thesis, if I talk about portability, I mean source code portability. 
+
+The need for portable codes, in general, has been an ongoing problem for many years. 
+One of the first portability definitions was already provided in \citeyear{poole_portability_1975} fifty years ago: 
+\begin{quotebox}{\citet{poole_portability_1975}}
+    Portability is a measure of the ease with which a program can be transferred from one environment to another: If the effort required to move the program is much less than that required to implement it initially, then we say that it is highly portable.
+\end{quotebox}
+% which was later picked up or slightly modified by other publications~\cite{tanenbaum_guidelines_1978, mooney_bringing_1997}. \todo{cite? more?}
+
+\todo{find more definitions?}
+
+Based on the slight modification of this portability definition from \citet{mooney_bringing_1997}, \citet{sedova_high-performance_2018} devised a formal definition of portability:
+\begin{definition}[Portability~\cite{sedova_high-performance_2018}]
 An application can be said to be portable if the cost of porting is less than the cost of re-writing:
 $$DP = 1 - \left(\frac{C_P}{C_R}\right)$$
-where $C_P$ is the cost to port and $C_R$ the cost to rewrite the program. 
+where $C_P$ is the cost to port, and $C_R$ is the cost to rewrite the program. 
 \end{definition}
+A program is completely portable if $DP$ is one, and a positive value indicates that porting a code is more profitable than rewriting it from scratch. 
 
-\begin{itemize}
-    \item $1$ $\rightarrow$ completely portable
-    \item positive $\rightarrow$ porting is more profitable
-    \item binary vs source code portability
-\end{itemize}
+A more recent definition of portability was created by \citet{pennycook_metric_2016, pennycook_implications_2019} which define portability as: 
+\begin{quotebox}{\citet{pennycook_implications_2019}}
+    The ability of an application to execute a problem correctly on a given set of platforms.
+\end{quotebox}
+In contrast to the previous definition, the key part here is that it is not enough for an application to run on different hardware platforms but to produce the correct results on these different platforms. 
+An application that runs everywhere but produces wrong results is pointless in a real-world setting. 
+
+\todo{insert ways to fix the portability problem}
 
 \newpage
 \input{content/02_performance_portability/03_portability/01_openmp}

@@ -2,15 +2,15 @@
 \label{sec:pp}
 
 Until now, I looked at performance and portability as separate instances. 
-If one knows that the code will only ever be executed on one specific hardware platform, achieving the best performance possible down to the assembly level is important. 
+If one knows that the code will only ever be executed on one specific hardware platform, achieving the best performance possible down to the assembly level is essential. 
 On the other hand, for some, writing code that can be executed everywhere while sacrificing performance may be enough. 
-However, in many cases, especially in \gls{hpc}, achieving a combination of both, performance and portability, is also important: writing code that can be executed on various hardware platforms without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware platforms. 
-Reasonable here means achieving a high enough fraction of the possible achievable peak performance. 
+However, in many cases, especially in \gls{hpc}, achieving a combination of both performance and portability is also essential: writing code that can be executed on various hardware platforms without the need to re-implement everything from scratch again if the hardware changes, but that also achieves reasonable performance on all hardware platforms. 
+Reasonable means achieving a high enough fraction of the achievable peak performance. 
 It should be clear that it is extremely difficult or even impossible to achieve the same performance with code that can run on all \glspl{gpu} and \glspl{cpu} there are compared to highly optimized vendor-specific solutions that may even be implemented by the vendors themselves with special closed-source knowledge of the underlying hardware. 
 
 Assessing performance portability is an ongoing research topic. 
 In the following subsections, I will discuss the history of performance portability, starting with its informal beginnings, through the first performance portability metric, and to the current state of the art. 
-Additionally, I will introduce the new heterogeneity score which complements the performance portability by specifying how representative our used platforms are with respect to the platforms we ultimately want to support. 
+Additionally, I will introduce the new heterogeneity score, which complements the performance portability by specifying how representative our used platforms are with respect to the platforms we ultimately want to support. 
 This section is closed with an example of the usage and results of different performance portability metrics based on three artificial example applications and a possible way to visualize the performance portability proposed by~\citet{sewall_interpreting_2020}.
 
 \input{content/02_performance_portability/05_performance_portability/01_age_before_pp_metrics}
