@@ -1,4 +1,9 @@
 \subsection{SYCL}
+\label{sec:frameworks:sycl}
+
+\begin{quotebox}{\href{https://www.khronos.org/sycl/}{Khronos SYCL}}
+    SYCL is an open, royalty-free, cross-platform abstraction layer that enables code for heterogeneous and offload processors to be written using modern ISO C++, and provides APIs and abstractions to find devices (CPUs, GPUs, FPGAs ...) on which code can be executed, and to manage data resources and code execution on those devices.
+\end{quotebox}
 
 SYCL:
 \begin{itemize}
@@ -24,21 +29,8 @@ SYCL:
     \item different ways to express parallelism
     \item programming model/kernel structure close to \gls{cuda} ($\rightarrow$ automatic \gls{cuda} to SYCL migration tools available)
     \item originally tightly coupled with \gls{opencl}
+    \item automatic source code conversion to SYCL~\cite{huang_syclomatic_2023, noauthor_oneapi-srcsyclomatic_2025} 
 \end{itemize}
-
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item standardized
-        \item supports a wide variety of hardware platforms
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item some low-level optimizations not possible directly in SYCL
-    \end{itemize}
-\end{disadvantagebox}
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -63,3 +55,13 @@ sycl::free(d_Y, q);
     }
     \label{code:sycl_example}
 \end{listing}
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{sycl}{
+    \item standardized
+    \item supports a wide variety of hardware platforms
+    \item structure close to \gls{cuda}
+}{
+    \item some low-level optimizations not possible directly in SYCL
+}

@@ -1,4 +1,9 @@
 \subsection{HIP -- Heterogeneous-computing Interface for Portability}
+\label{sec:frameworks:hip}
+
+\begin{quotebox}{\href{https://rocm.docs.amd.com/projects/HIP/en/latest/index.html\#hip-documentation}{HIP Documentation}}
+    The Heterogeneous-computing Interface for Portability (HIP) is a C++ runtime API and kernel language that lets you create portable applications for AMD and NVIDIA GPUs from a single source code.
+\end{quotebox}
 
 HIP
 \begin{itemize}
@@ -18,21 +23,9 @@ HIP
     \item many vendor-provided, highly optimized libraries available (e.g., hipBLAS, hipSPARSE, hipFFT, $\dots$)
     \item in most cases, conversion between \gls{cuda} and \gls{hip} via simple regex possible
     \item NVIDIA \gls{gpu} support via NVIDIA's compiler stack
+    \item HIP with OpenCL backend~\cite{babej_hipcl_2020}
+    \item HIP with Level zero backend~\cite{singer_hiplz_2023}
 \end{itemize}
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item easy to translate from \gls{cuda}
-        \item high optimization potential
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item not standardized
-        \item only AMD and NVIDIA \glspl{gpu}
-    \end{itemize}
-\end{disadvantagebox}
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -54,7 +47,22 @@ hipFree(d_X);
 hipFree(d_Y);
     \end{minted}
     \caption{%
-    SAXPY example using \gls{hip}.
+    A simple DAXPY example using \gls{hip} including all necessary memory and kernel launch operations.
     }
     \label{code:hip_example}
 \end{listing}
+
+This is also evident when we compare the \gls{cuda} example in \autoref{code:cuda_example} with the \autoref{code:hip_example}. 
+The only difference between the two codes is that in \gls{hip}, all \code{cu} function and variable prefixes are replaced with \gls{hip}. 
+This goes so far that for basic kernels, \gls{cuda} code can be converted to \gls{hip} code via a simple find-and-replace. 
+For more advanced code, the HIPIFY~\cite{advanced_micro_devices_rocmhipify_2025} utility can be used to automatically translate \gls{cuda} source code to \gls{hip} source code. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{hip}{
+    \item easy to translate from \gls{cuda}
+    \item high optimization potential
+}{
+    \item not standardized
+    \item only AMD and NVIDIA \glspl{gpu}
+}

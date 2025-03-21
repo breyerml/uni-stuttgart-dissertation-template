@@ -1,4 +1,9 @@
 \subsection{Kokkos}
+\label{sec:frameworks:kokkos}
+
+\begin{quotebox}{\href{https://github.com/kokkos/kokkos}{Kokkos GitHub README}}
+    Kokkos Core implements a programming model in C++ for writing performance portable applications targeting all major HPC platforms. For that purpose it provides abstractions for both parallel execution of code and data management. Kokkos is designed to target complex node architectures with N-level memory hierarchies and multiple types of execution resources.
+\end{quotebox}
 
 Kokkos:
 \begin{itemize}
@@ -16,22 +21,6 @@ Kokkos:
     \item different ways to express parallelism
     \item high-level abstractions, making it easier for new programmers
 \end{itemize}
-
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item supports a wide variety of hardware platforms with different execution spaces
-        \item easy-to-use abstractions like execution and memory spaces
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item not standardized
-        \item abstractions different to \gls{cuda} $\rightarrow$ more difficult to translate from existing \gls{cuda} code
-        \item some low-level optimizations not possible directly in Kokkos
-    \end{itemize}
-\end{disadvantagebox}
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -56,3 +45,14 @@ Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
     }
     \label{code:kokkos_example}
 \end{listing}
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{kokkos}{
+    \item supports a wide variety of hardware platforms with different execution spaces
+    \item easy-to-use abstractions like execution and memory spaces
+}{
+    \item not standardized
+    \item abstractions different to \gls{cuda} $\rightarrow$ more difficult to translate from existing \gls{cuda} code
+    \item some low-level optimizations not possible directly in Kokkos
+}

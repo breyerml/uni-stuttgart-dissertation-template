@@ -119,6 +119,30 @@
     boxrule=0.8pt
 }
 
+% TODO: remove old ONES!
+
+% Define a custom box for advantages
+\newtcolorbox{advantagebox2}[1]{
+    colback=green!10!white,
+    colframe=green!50!black,
+    title=\textbf{Advantages},
+    fonttitle=\bfseries,
+    rounded corners,
+    boxrule=0.8pt,
+    equal height group=#1
+}
+
+% Define a custom box for disadvantages
+\newtcolorbox{disadvantagebox2}[1]{
+    colback=red!10!white,
+    colframe=red!50!black,
+    title=\textbf{Disadvantages},
+    fonttitle=\bfseries,
+    rounded corners,
+    boxrule=0.8pt,
+    equal height group=#1
+}
+
 \NewDocumentEnvironment{quotebox}{m b}
 {%
     \vspace{0.2\baselineskip} % Top margin
@@ -131,6 +155,28 @@
 {%
 }%
 
+\newcommand{\AdvantagesAndDisadvantages}[3]{
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+    \vspace{0pt}
+    \begin{advantagebox2}{#1}
+        \begin{itemize}[leftmargin=2.5mm]
+            \setlength\itemsep{0.0em}
+            #2
+        \end{itemize}
+    \end{advantagebox2}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
+    \vspace{0pt}
+    \begin{disadvantagebox2}{#1}
+        \begin{itemize}[leftmargin=2.5mm]
+            \setlength\itemsep{0.0em}
+            #3
+        \end{itemize}
+    \end{disadvantagebox2}
+\end{minipage}\newline
+}
 
 % binding correction
 \setlength{\evensidemargin}{-24pt}

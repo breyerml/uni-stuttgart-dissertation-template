@@ -1,51 +1,25 @@
 \subsection{OpenMP -- Open Multi-Processing}
+\label{sec:frameworks:openmp}
 
-OpenMP (Target Offloading)
-\begin{itemize}
-    \item first OpenMP specification version 1.0 (C/\cpp) October 1998~\cite{openmp_architecture_review_board_openmp_1998}
-    \item first OpenMP specification with target offloading version 4.0 July 2013~\cite{openmp_architecture_review_board_openmp_2013}
-    \item current OpenMP specification version 6.0 November 2024~\cite{openmp_architecture_review_board_openmp_2024}
-    \item Implementations (Auszug)(\url{https://www.openmp.org/resources/openmp-compilers-tools/})
-    \begin{itemize}
-        \item AMD
-        \item Intel
-        \item LLVM
-        \item GNU
-        \item ARM
-        \item NVIDIA
-        \item PGI
-        \item $\dots$
-    \end{itemize}
-\end{itemize}
+\begin{quotebox}{\href{https://www.openmp.org/about/openmp-faq/\#WhatIs}{OpenMP FAQ}}
+OpenMP is a specification for a set of compiler directives, library routines, and environment variables that can be used to specify high-level parallelism in Fortran and C/\cpp programs.
+\end{quotebox}
 
+\acrfull{openmp} is a standard created by the OpenMP Architecture Review Board with the first specification version 1.0 released in October 1998~\cite{openmp_architecture_review_board_openmp_1998}. 
+Back then, \gls{openmp} only supported \glspl{cpu}. 
+This was changed with version 4.0 released in July 2013~\cite{openmp_architecture_review_board_openmp_2013}, which introduced \gls{openmp} target offloading constructs to also support accelerators like \glspl{gpgpu}. 
+The current \gls{openmp} version 6.0 was released in November 2024~\cite{openmp_architecture_review_board_openmp_2024}, showing that \gls{openmp} is still further improved and under active development. 
+Since \gls{openmp} is merely a specification, there is no single standard \gls{openmp} implementation but multiple implementations from different vendors targeting different hardware platforms. 
+These implementations include but are not limited to \gls{amd}, Intel, NVIDIA, LLVM, GNU GCC, ARM, etc. 
 
-\begin{itemize}
-    \item \acrfull{openmp}
-    \item pragma based
-    \item least invasive; pragmas ignored if no OpenMP capable compiler could be found
-    \item but comes also with a runtime library 
-    \item originally meant for CPUs only
-    \item standardized
-    \item uses the fork-join model; initial thread spawns worker threads
-    \item uses a custom OpemMP thread pool
-    \item task- and loop-parallelism (only latter is used)
-\end{itemize}
-
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item standardized
-        \item supports a wide variety of hardware platforms
-        \item non-intrusive and easy-to-use
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item very high-level, i.e., some optimizations not possible
-    \end{itemize}
-\end{disadvantagebox}
-
+\gls{openmp} consists of two main components: a runtime library and compiler pragmas or directives. 
+The runtime library contains functions to retrieve basic information like the total number of threads or the current thread ID in a parallel region but also to change the behavior of an \gls{openmp} program by, e.g., explicitly setting the number of available threads or specifying the used thread scheduling algorithm. 
+The actual parallelization in \gls{openmp} is done through the compiler pragmas. 
+These pragmas have the benefit that they are easy to use and non-intrusive. 
+Additionally, since these are only pragmas if a compiler does not support \gls{openmp}, he is free to ignore them. 
+This means that code parallelized with \gls{openmp} can also be compiled with compilers that do not support it, granted that no runtime library functions are used, but as a result, the executable also only runs single-threaded. 
+Internally, \gls{openmp} uses a fork-join model where an initial thread spawns a number of so-called work threads in a parallel region. 
+For better performance, in general, \gls{openmp} implementations are based on a custom thread pool. 
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -61,8 +35,25 @@ for (int idx = 0; idx < N; ++idx) {
 }
     \end{minted}
     \caption{%
-    SAXPY example using \gls{openmp}.
-    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:25,positionColumn:32,positionLineNumber:25,selectionStartColumn:32,selectionStartLineNumber:25,startColumn:32,startLineNumber:25),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++/*\%0A++//+CPU+only\%0A++\%23pragma+omp+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A++*/\%0A\%0A++const+double+*d_X+\%3D+X.data()\%3B\%0A++double+*d_Y+\%3D+Y.data()\%3B\%0A\%0A++//+OpenMP+target+offloading\%0A++\%23pragma+omp+target+map(tofrom:+d_Y\%5B0:N\%5D)+map(to:+d_X\%5B0:N\%5D)\%0A++\%23pragma+omp+teams+distribute+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fopenmp',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.98157361341441,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.01842638658559,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/63nT7Eaeo}
+    A simple DAXPY example using \gls{openmp} (top) and \gls{openmp} target offloading (bottom) (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:25,positionColumn:32,positionLineNumber:25,selectionStartColumn:32,selectionStartLineNumber:25,startColumn:32,startLineNumber:25),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++/*\%0A++//+CPU+only\%0A++\%23pragma+omp+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A++*/\%0A\%0A++const+double+*d_X+\%3D+X.data()\%3B\%0A++double+*d_Y+\%3D+Y.data()\%3B\%0A\%0A++//+OpenMP+target+offloading\%0A++\%23pragma+omp+target+map(tofrom:+d_Y\%5B0:N\%5D)+map(to:+d_X\%5B0:N\%5D)\%0A++\%23pragma+omp+teams+distribute+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fopenmp',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.98157361341441,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.01842638658559,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/63nT7Eaeo}).
     }
     \label{code:openmp_example}
 \end{listing}
+
+\autoref{code:openmp_example} shows a simple DAXPY example using \gls{openmp} and \gls{openmp} target offloading. 
+Parallelizing a simple for loop with \gls{openmp} is as easy as annotating it with a simple \code{#pragma omp parallel for} directive. 
+This is also called loop parallelism in \gls{openmp}. 
+Additionally, \gls{openmp} also supports task parallelism, which is not shown here since it will not be used in the remainder of this thesis. 
+\autoref{code:openmp_example} also shows a \gls{openmp} target offloading example of the same code at the bottom. 
+While the first code can only be executed on \glspl{cpu}, the target offloading code can also be executed on any supported \gls{gpu}. 
+However, the downside of \gls{openmp}'s high-level directive-based constructs is that low-level performance optimizations are generally impossible, resulting in worse performance than hand-tuned native codes. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{openmp}{
+    \item standardized
+    \item supports a wide variety of hardware platforms
+    \item non-intrusive and easy-to-use
+}{
+    \item very high-level, i.e., some optimizations not possible
+}

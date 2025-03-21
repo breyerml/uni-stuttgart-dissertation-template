@@ -1,0 +1,574 @@
+OpenMP (Target Offloading)
+\begin{itemize}
+    \item first OpenMP specification version 1.0 (C/\cpp) October 1998~\cite{openmp_architecture_review_board_openmp_1998}
+    \item first OpenMP specification with target offloading version 4.0 July 2013~\cite{openmp_architecture_review_board_openmp_2013}
+    \item current OpenMP specification version 6.0 November 2024~\cite{openmp_architecture_review_board_openmp_2024}
+    \item Implementations (Auszug)(\url{https://www.openmp.org/resources/openmp-compilers-tools/})
+    \begin{itemize}
+        \item AMD
+        \item Intel
+        \item LLVM
+        \item GNU
+        \item ARM
+        \item NVIDIA
+        \item PGI
+        \item $\dots$
+    \end{itemize}
+\end{itemize}
+
+
+\begin{itemize}
+    \item \acrfull{openmp}
+    \item pragma based
+    \item least invasive; pragmas ignored if no OpenMP capable compiler could be found
+    \item but comes also with a runtime library 
+    \item originally meant for CPUs only
+    \item standardized
+    \item uses the fork-join model; initial thread spawns worker threads
+    \item uses a custom OpemMP thread pool
+    \item task- and loop-parallelism (only latter is used)
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms
+        \item non-intrusive and easy-to-use
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item very high-level, i.e., some optimizations not possible
+    \end{itemize}
+\end{disadvantagebox}
+
+
+\begin{listing}
+    \begin{minted}{cpp}
+#pragma omp parallel for
+for (int idx = 0; idx < N; ++idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+}
+
+#pragma omp target map(tofrom: Y[0:N]) map(to: X[0:N])
+#pragma omp teams distribute parallel for
+for (int idx = 0; idx < N; ++idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+}
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{openmp}.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:25,positionColumn:32,positionLineNumber:25,selectionStartColumn:32,selectionStartLineNumber:25,startColumn:32,startLineNumber:25),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++/*\%0A++//+CPU+only\%0A++\%23pragma+omp+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A++*/\%0A\%0A++const+double+*d_X+\%3D+X.data()\%3B\%0A++double+*d_Y+\%3D+Y.data()\%3B\%0A\%0A++//+OpenMP+target+offloading\%0A++\%23pragma+omp+target+map(tofrom:+d_Y\%5B0:N\%5D)+map(to:+d_X\%5B0:N\%5D)\%0A++\%23pragma+omp+teams+distribute+parallel+for\%0A++for+(int+idx+\%3D+0\%3B+idx+\%3C+N\%3B+\%2B\%2Bidx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fopenmp',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.98157361341441,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.01842638658559,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/63nT7Eaeo}
+    }
+    \label{code:openmp_example}
+\end{listing}
+
+
+
+
+
+
+
+
+
+\newpage
+
+CUDA
+\begin{itemize}
+    \item first release of CUDA 1.0 June, 2007~\cite{nvidia_corporation_cuda_2007}
+    \item current release of CUDA 12.8 February, 2025~\cite{nvidia_corporation_cuda_2025-1}
+    \item the current CUDA programming guide February, 2025~\cite{nvidia_corporation_cuda_2025}
+    \item first CUDA version (3.0) deprecating device emulation mode March, 2010~\cite{nvidia_corporation_cuda_2010}
+\end{itemize}
+
+\begin{itemize}
+    \item \acrfull{cuda}
+    \item NVIDIA's own vendor-specific framework
+    \item C-like API with custom extensions \code{<<<...>>>}
+    \item only for NVIDIA \glspl{gpu}
+    \item offload compute kernels from host (i.e., classically \glspl{cpu}) to one or more devices
+    \item many vendor-provided, highly optimized libraries available (e.g., cuBLAS, cuSPARSE, cuFFT, $\dots$)
+    \item interfaces for C, C++, FORTRAN, Python, Matlab, Java
+\end{itemize}
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item practically, the go-to standard to target \glspl{gpu}
+        \item many resources available
+        \item high optimization potential
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item only NVIDIA \glspl{gpu}
+        \item closed-source proprietary
+    \end{itemize}
+\end{disadvantagebox}
+
+
+
+
+\begin{listing}
+    \begin{minted}{cpp}
+__global__ void saxpy(const double alpha, const double *X, double *Y, const int N) {
+    const int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
+}
+    
+double *d_X, *d_Y;
+cudaMalloc(&d_X, N * sizeof(double));
+cudaMalloc(&d_Y, N * sizeof(double));
+cudaMemcpy(d_X, X, N * sizeof(double), cudaMemcpyHostToDevice);
+cudaMemcpy(d_Y, Y, N * sizeof(double), cudaMemcpyHostToDevice);
+
+saxpy<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
+
+cudaMemcpy(Y, d_Y, N * sizeof(double), cudaMemcpyDeviceToHost);
+cudaFree(d_X);
+cudaFree(d_Y);
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{cuda}. 
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:24,endLineNumber:23,positionColumn:24,positionLineNumber:23,selectionStartColumn:24,selectionStartLineNumber:23,startColumn:24,startLineNumber:23),source:'\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0A//+the+CUDA+compute+kernel\%0A__global__+void+saxpy(const+double+alpha,+const+double+*X,+double+*Y,+const+int+N)+\%7B\%0A++++const+int+idx+\%3D+blockDim.x+*+blockIdx.x+\%2B+threadIdx.x\%3B\%0A++++if(idx+\%3C+N)+\%7B+\%0A++++++Y\%5Bidx\%5D+\%3D+alpha+*+X\%5Bidx\%5D+\%2B+Y\%5Bidx\%5D\%3B\%0A++++\%7D\%0A\%7D\%0A++\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++double+*d_X,+*d_Y\%3B\%0A++//+allocate+memory+on+the+device\%0A++cudaMalloc(\%26d_X,+N+*+sizeof(double))\%3B\%0A++cudaMalloc(\%26d_Y,+N+*+sizeof(double))\%3B\%0A++//+copy+data+to+the+device\%0A++cudaMemcpy(d_X,+X.data(),+N+*+sizeof(double),+cudaMemcpyHostToDevice)\%3B\%0A++cudaMemcpy(d_Y,+Y.data(),+N+*+sizeof(double),+cudaMemcpyHostToDevice)\%3B\%0A\%0A++//+perform+computations\%0A++saxpy\%3C\%3C\%3C(N+\%2B+255)+/+256,+256\%3E\%3E\%3E(alpha,+d_X,+d_Y,+N)\%3B\%0A\%0A++//+copy+data+to+the+host\%0A++cudaMemcpy(Y.data(),+d_Y,+N+*+sizeof(double),+cudaMemcpyDeviceToHost)\%3B\%0A++//+free+the+ressources\%0A++cudaFree(d_X)\%3B\%0A++cudaFree(d_Y)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:nvcxx_x86_cxx25_1,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-cuda+--diag_suppress+cuda_compile',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86+nvc\%2B\%2B+25.1+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86+nvc\%2B\%2B+25.1+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/xEah998G5}
+    }
+    \label{code:cuda_example}
+\end{listing}
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+
+OpenCL:
+\begin{itemize}
+    \item \enquote{OpenCL is a trademark of Apple Inc. used under license to the Khronos Group Inc}
+    \item working group created 2008~\cite{khronos_opencl_working_group_khronos_2008}
+    \item first speciifcation published 2009~\cite{munshi_opencl_2009}
+    \item current standard OpenCL 3.0 revision 17 October 24, 2024~\cite{khronos_opencl_working_group_opencl_2024}
+    \item Implementations OpenCL 3.0 (\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl})
+    \begin{itemize}
+        \item Intel
+        \item Imagination Technologies
+        \item QUALCOMM
+        \item Google, Inc. 
+        \item Software Freedom Conservancy
+        \item Arm Limited
+        \item NVIDIA
+        \item Software in the Public Interest, Inc.
+        \item Verisilicon, Inc.
+        \item pocl
+    \end{itemize}
+    \item many more for OpenCL 2.0 (like AMD, Samsung Electronics, etc.)
+\end{itemize}
+
+\begin{itemize}
+    \item \acrfull{opencl}
+    \item standardized
+    \item kernels are simple strings $\rightarrow$ easy to manipulate, tedious to use
+    \item kernels must be compiled by yourself using OpenCL provided functions
+    \item C API
+    \item \gls{jit} compiled
+    \item programming model/kernel structure close to \gls{cuda}
+\end{itemize}
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms (many implementations)
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item kernels must be compiled by hand
+        \item error prone
+        \item some low-level optimizations not possible
+    \end{itemize}
+\end{disadvantagebox}
+
+
+\begin{listing}
+    \begin{minted}{cpp}
+const char* kernel_source = R"KS(
+__kernel void saxpy(const double alpha, __global double *X, __global double *X) {
+    const int idx = get_global_id(0);
+    Y[idx] = alpha * X[idx] + Y[idx];
+}
+)KS";
+
+cl_platform_id platform;
+clGetPlatformIDs(1, &platform, nullptr);
+cl_device_id device;
+clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, nullptr);
+cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, nullptr);
+cl_command_queue queue = clCreateCommandQueue(context, device, 0, nullptr);
+
+cl_mem d_X = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, N * sizeof(double), X, nullptr);
+cl_mem d_Y = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, N * sizeof(double), Y, nullptr);
+
+cl_program program = clCreateProgramWithSource(context, 1, &kernel_source, nullptr, nullptr);
+clBuildProgram(program, 1, &device, nullptr, nullptr, nullptr);
+cl_kernel kernel = clCreateKernel(program, "saxpy", nullptr);
+
+clSetKernelArg(kernel, 0, sizeof(double), &alpha);
+clSetKernelArg(kernel, 1, sizeof(cl_mem), &d_X);
+clSetKernelArg(kernel, 2, sizeof(cl_mem), &d_Y);
+
+size_t global_size = N;
+clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, &global_size, nullptr, 0, nullptr, nullptr);
+clEnqueueReadBuffer(queue, d_C, CL_TRUE, 0, N * sizeof(double), C, 0, nullptr, nullptr);
+
+clReleaseMemObject(d_X); 
+clReleaseMemObject(d_Y);
+clReleaseKernel(kernel); 
+clReleaseProgram(program);
+clReleaseCommandQueue(queue); 
+clReleaseContext(context);
+    \end{minted}
+    \caption{%
+    SAXPY example using \gls{opencl}.
+    }
+    \label{code:opencl_example}
+\end{listing}
+
+
+
+
+
+
+\newpage
+\subsection{HIP -- Heterogeneous-computing Interface for Portability}
+\label{sec:frameworks:hip}
+
+\begin{quotebox}{\href{https://rocm.docs.amd.com/projects/HIP/en/latest/index.html\#hip-documentation}{HIP Documentation}}
+    The Heterogeneous-computing Interface for Portability (HIP) is a C++ runtime API and kernel language that lets you create portable applications for AMD and NVIDIA GPUs from a single source code.
+\end{quotebox}
+
+HIP
+\begin{itemize}
+    \item first public release 0.82.01 March 08, 2016~\cite{advanced_micro_devices_release_2016}
+    \item current release 6.3.3 February, 19 2025~\cite{advanced_micro_devices_release_2025}
+    \item current HIP documentation~\cite{advanced_micro_devices_hip_nodate}
+    \item HIP for CUDA: \enquote{It’s HIP to be Open}~\cite{advanced_micro_devices_its_2016}
+\end{itemize}
+
+
+\begin{itemize}
+    \item \acrfull{hip}
+    \item AMD's own vendor-specific framework
+    \item C-like API with custom extensions \code{<<<...>>>}
+    \item only for AMD and NVIDIA \glspl{gpu}
+    \item offload compute kernels from host (i.e., classically \glspl{cpu}) to one or more devices
+    \item many vendor-provided, highly optimized libraries available (e.g., hipBLAS, hipSPARSE, hipFFT, $\dots$)
+    \item in most cases, conversion between \gls{cuda} and \gls{hip} via simple regex possible
+    \item NVIDIA \gls{gpu} support via NVIDIA's compiler stack
+\end{itemize}
+
+\begin{listing}
+    \begin{minted}{cpp}
+__global__ void vector_add(const double alpha, const double *X, double *Y, const int N) {
+    const int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
+}
+    
+double *d_X, *d_Y;
+hipMalloc(&d_X, N * sizeof(double));
+hipMalloc(&d_Y, N * sizeof(double));
+hipMemcpy(d_X, X, N * sizeof(double), hipMemcpyHostToDevice);
+hipMemcpy(d_Y, Y, N * sizeof(double), hipMemcpyHostToDevice);
+
+vector_add<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
+
+hipMemcpy(Y, d_Y, N * sizeof(double), hipMemcpyDeviceToHost);
+hipFree(d_X);
+hipFree(d_Y);
+    \end{minted}
+    \caption{%
+    A simple DAXPY example using \gls{hip} including all necessary memory and kernel launch operations.
+    }
+    \label{code:hip_example}
+\end{listing}
+
+This is also evident when we compare the \gls{cuda} example in \autoref{code:cuda_example} with the \autoref{code:hip_example}. 
+The only difference between the two codes is that in \gls{hip}, all \code{cu} function and variable prefixes are replaced with \gls{hip}. 
+This goes so far that for basic kernels, \gls{cuda} code can be converted to \gls{hip} code via a simple find-and-replace. 
+For more advanced code, the HIPIFY~\cite{advanced_micro_devices_rocmhipify_2025} utility can be used to automatically translate \gls{cudæ} source code to \gls{hip} source code. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{hip}{
+    \item easy to translate from \gls{cuda}
+    \item high optimization potential
+}{
+    \item not standardized
+    \item only AMD and NVIDIA \glspl{gpu}
+}
+
+
+
+
+
+
+\newpage
+HPX
+\begin{itemize}
+    \item development started in 2007~\cite{kaiser_stellar-grouphpx_2024}
+    \item main paper to cite~\cite{kaiser_hpx_2020}
+    \item current release V1.10.0 March 29, 2024~\cite{the_stear_group_history_nodate}
+\end{itemize}
+
+\begin{itemize}
+    \item \acrfull{hpx}
+    \item build asynchronous task graph
+    \item scheduler incorporates work-stealing
+    \item \glspl{gpu} supported via executors, written using other frameworks
+    \item support for distributed memory computation
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item supports algorithms close to \cpp standard
+        \item task-based abstraction more suitable for some problems
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item can only launch kernels, other frameworks still \textbf{necessary} to write the actual compute kernels 
+    \end{itemize}
+\end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](const int idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+});
+    \end{minted}
+    \caption{%
+    A simple DAXPY example using \gls{hpx} parallel loops.
+    }
+    \label{code:hpx_example}
+\end{listing}
+
+
+
+
+
+\newpage
+
+\subsection{Standard \cpp\ -- stdpar}
+\label{sec:frameworks:stdpar}
+
+standard \cpp
+\begin{itemize}
+    \item \cpp{17} standard~\cite{international_organization_for_standardization_isoiec_2017}
+    \item execution policies introduced with \cpp{17} P0024R2~\cite{hoberock_p0024r2_2016}
+    \item \code{std::execution::par_unseq} added in \cpp{20} P1001R2~\cite{meredith_p1001r2_2019}
+    \item sender and receiver added in \cpp{26}~\cite{dominiak_p2300r10_2024, baker_p3396r0_2024, niebler_p3325r5_2024}
+    \item Implementations:
+    \begin{itemize}
+        \item GNU GCC + TBB
+        \item NVIDIA nvhpc
+        \item rocstdpar
+        \item AdaptiveCpp
+        \item \dpcpp/icpx
+    \end{itemize}
+\end{itemize}
+
+
+\begin{itemize}
+    \item Standard \cpp
+    \item direct part of the \cpp{17} standard
+    \item although standard \cpp no all \cpp features allowed inside kernels
+    \item parallelization can easily be enabled/disabled using the respective execution policy
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms
+        \item extremely easy-to-use if already familiar with \cpp standard algorithms
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item very high-level, i.e., some optimizations not possible
+    \end{itemize}
+\end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=](const int idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+});
+    \end{minted}
+    \caption{%
+    SAXPY example using standard \cpp stdpar.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:11,positionColumn:32,positionLineNumber:11,selectionStartColumn:32,selectionStartLineNumber:11,startColumn:32,startLineNumber:11),source:'\%23include+\%3Cexecution\%3E\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+the+indices+used+in+the+for_each+loop\%0A++std::vector\%3Cint\%3E+indices(N)\%3B\%0A++std::iota(indices.begin(),+indices.end(),+0)\%3B\%0A\%0A++//+the+stdpar+compute+kernel\%0A++std::for_each(std::execution::par_unseq,+indices.begin(),+indices.end(),+\%5B\%3D,+d_X+\%3D+X.data(),+d_Y+\%3D+Y.data()\%5D(const+int+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/evjYfPrrq}
+    }
+    \label{code:stdpar_example}
+\end{listing}
+
+
+
+
+\newpage
+\subsection{Kokkos}
+\label{sec:frameworks:kokkos}
+
+\begin{quotebox}{\href{https://github.com/kokkos/kokkos}{Kokkos GitHub README}}
+    Kokkos Core implements a programming model in C++ for writing performance portable applications targeting all major HPC platforms. For that purpose it provides abstractions for both parallel execution of code and data management. Kokkos is designed to target complex node architectures with N-level memory hierarchies and multiple types of execution resources.
+\end{quotebox}
+
+Kokkos:
+\begin{itemize}
+    \item first release May 2015~\cite{trott_kokkos_2015}
+    \item original Kokkos paper 2024~\cite{carter_edwards_kokkos_2014}
+    \item please cite~\cite{trott_kokkos_2022}
+    \item current release v 4.5.1 December 23, 2024~\cite{noauthor_release_2024}
+\end{itemize}
+
+\begin{itemize}
+    \item Kokkos
+    \item open-source
+    \item \cpp API
+    \item interoperability with backend specific libraries
+    \item different ways to express parallelism
+    \item high-level abstractions, making it easier for new programmers
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item supports a wide variety of hardware platforms with different execution spaces
+        \item easy-to-use abstractions like execution and memory spaces
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item not standardized
+        \item abstractions different to \gls{cuda} $\rightarrow$ more difficult to translate from existing \gls{cuda} code
+        \item some low-level optimizations not possible directly in Kokkos
+    \end{itemize}
+\end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+template <typename T>
+using host_view_type = Kokkos::View<T *, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>;
+
+Kokkos::View<double*> d_X("X", N);
+Kokkos::View<double*> d_Y("Y", N);
+Kokkos::deep_copy(d_X, host_view_type<double>{ X.data(), N });
+Kokkos::deep_copy(d_Y, host_view_type<double>{ Y.data(), N });
+
+Kokkos::parallel_for("saxpy", N, KOKKOS_LAMBDA(const int idx) {
+    d_Y(idx) = alpha * d_X(idx) + d_Y(idx);
+});
+Kokkos::fence();
+
+Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
+    \end{minted}
+    \caption{%
+    SAXPY example using Kokkos.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:1,endLineNumber:8,positionColumn:1,positionLineNumber:8,selectionStartColumn:1,selectionStartLineNumber:8,startColumn:1,startLineNumber:8),source:'\%23include+\%3CKokkos_Core.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Atemplate+\%3Ctypename+T\%3E\%0Ausing+host_view_type+\%3D+Kokkos::View\%3CT+*,+Kokkos::HostSpace,+Kokkos::MemoryUnmanaged\%3E\%3B\%0A\%0Aint+main()+\%7B\%0A++Kokkos::initialize()\%3B\%0A++\%7B\%0A++++const+int+N+\%3D+1024\%3B\%0A\%0A++++//+create+and+fill+used+data\%0A++++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++++\%7D\%0A++++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++++//+allocate+memory+on+the+device\%0A++++Kokkos::View\%3Cdouble*\%3E+d_X(\%22X\%22,+N)\%3B\%0A++++Kokkos::View\%3Cdouble*\%3E+d_Y(\%22Y\%22,+N)\%3B\%0A++++//+copy+data+to+the+device\%0A++++Kokkos::deep_copy(d_X,+host_view_type\%3Cdouble\%3E\%7B+X.data(),+N+\%7D)\%3B\%0A++++Kokkos::deep_copy(d_Y,+host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D)\%3B\%0A\%0A++++//+the+Kokkos+compute+kernel\%0A++++Kokkos::parallel_for(\%22saxpy\%22,+N,+KOKKOS_LAMBDA(const+int+idx)+\%7B\%0A++++++++d_Y(idx)+\%3D+alpha+*+d_X(idx)+\%2B+d_Y(idx)\%3B\%0A++++\%7D)\%3B\%0A++++Kokkos::fence()\%3B\%0A\%0A++++//+copy+data+to+the+host\%0A++++Kokkos::deep_copy(host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D,+d_Y)\%3B\%0A\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++++\%7D\%0A++\%7D\%0A++Kokkos::finalize()\%3B\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!((name:kokkos,ver:'4500')),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/PW85sGxKW}
+    }
+    \label{code:kokkos_example}
+\end{listing}
+
+
+
+\newpage
+\subsection{SYCL}
+\label{sec:frameworks:sycl}
+
+\begin{quotebox}{\href{https://www.khronos.org/sycl/}{Khronos SYCL}}
+    SYCL is an open, royalty-free, cross-platform abstraction layer that enables code for heterogeneous and offload processors to be written using modern ISO C++, and provides APIs and abstractions to find devices (CPUs, GPUs, FPGAs ...) on which code can be executed, and to manage data resources and code execution on those devices.
+\end{quotebox}
+
+SYCL:
+\begin{itemize}
+    \item first provisional specification March 19, 2014~\cite{khronos_sycl_working_group_khronos_2014}
+    \item first official release of SYCL 1.2 specification May 11, 2015~\cite{khronos_sycl_working_group_khronos_2015}
+    \item current standard SYCL 2020 Rev 9 August 18, 2024~\cite{khronos_sycl_working_group_sycl_2024}
+    \item Implementations (\url{https://www.khronos.org/sycl/#sycl-implementations})
+    \begin{itemize}
+        \item Intel oneAPI \dpcpp/icpx
+        \item AdaptiveCpp
+        \item triSYCL
+        \item neoSYCL
+        \item SimSYCL
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+    \item SYCL
+    \item standardized
+    \item sinlge-source standard \cpp
+    \item \cpp API
+    \item easy builtin interoperability with backend specific libraries
+    \item different ways to express parallelism
+    \item programming model/kernel structure close to \gls{cuda} ($\rightarrow$ automatic \gls{cuda} to SYCL migration tools available)
+    \item originally tightly coupled with \gls{opencl}
+\end{itemize}
+
+
+\begin{advantagebox}
+    \begin{itemize}
+        \item standardized
+        \item supports a wide variety of hardware platforms
+    \end{itemize}
+\end{advantagebox}
+
+\begin{disadvantagebox}
+    \begin{itemize}
+        \item some low-level optimizations not possible directly in SYCL
+    \end{itemize}
+\end{disadvantagebox}
+
+\begin{listing}
+    \begin{minted}{cpp}
+sycl::queue q{ sycl::default_selector_v, {sycl::property::queue::in_order{}} };
+
+double *d_X = sycl::malloc_device<double>(N, q);
+double *d_Y = sycl::malloc_device<double>(N, q);
+q.copy(X, d_X, N);
+q.copy(Y, d_Y, N);
+
+q.parallel_for(sycl::range<1>{ N }, [=](const sycl::id<1> idx) {
+    d_Y[idx] = alpha * d_X[idx] + d_Y[idx];
+});
+
+q.copy(d_Y, Y, N);
+sycl::free(d_X, q);
+sycl::free(d_Y, q);
+    \end{minted}
+    \caption{%
+    SAXPY example using SYCL.
+    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:31,endLineNumber:19,positionColumn:31,positionLineNumber:19,selectionStartColumn:31,selectionStartLineNumber:19,startColumn:31,startLineNumber:19),source:'\%23include+\%3Csycl/sycl.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+a+SYCL+queue+specifying+WHERE+the+code+should+run\%0A++sycl::queue+q\%7B+sycl::default_selector_v,+\%7Bsycl::property::queue::in_order\%7B\%7D\%7D+\%7D\%3B\%0A\%0A++//+allocate+memory+on+the+device\%0A++double+*d_X+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++double+*d_Y+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++//+copy+data+to+the+device\%0A++q.copy(X.data(),+d_X,+N)\%3B\%0A++q.copy(Y.data(),+d_Y,+N)\%3B\%0A\%0A++//+the+SYCL+compute+kernel\%0A++q.parallel_for(sycl::range\%3C1\%3E\%7B+N+\%7D,+\%5B\%3D\%5D(const+sycl::id\%3C1\%3E+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++//+copy+data+to+the+host\%0A++q.copy(d_Y,+Y.data(),+N)\%3B\%0A++//+free+the+ressources\%0A++sycl::free(d_X,+q)\%3B\%0A++sycl::free(d_Y,+q)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((g:!((h:compiler,i:(compiler:icx202421,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fsycl',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+icx+2024.2.1+(Editor+\%232)',t:'0')),k:50,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:device,i:(compilerName:'x86-64+icx+2024.2.1',device:sycl-spir64-unknown-unknown,editorid:2,fontScale:14,fontUsePx:'0',j:1,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),treeid:0),l:'5',n:'0',o:'Device+Viewer+x86-64+icx+2024.2.1+(Editor+\%232,+Compiler+\%231)',t:'0')),header:(),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',m:49.97236042012162,n:'0',o:'',t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+icx+2024.2.1+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/G9e4sWj6o}
+    }
+    \label{code:sycl_example}
+\end{listing}

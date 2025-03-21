@@ -1,28 +1,40 @@
 \section{What Is Portability?}
 \label{sec::portability}
 
-Two main portability types can be meant if we are talking about portability. 
-On the one side, binary portability means that I compile my code once, and it runs everywhere. 
-On the other side, source code portability means I write portable source code that needs to be recompiled on each new hardware platform. 
-Generally, the former is much more challenging to achieve than the latter, and most of the time, some form of \gls{jit} compilation is involved. 
+When we are talking about portability, we can distinguish between two basic forms of portability. 
+On the one hand, binary portability means that I compile my code once, and it runs everywhere. 
+On the other hand, source code portability means I write portable source code that does not need to be changed when targeting a new hardware platform but must be recompiled on said new hardware platform. 
+Generally, the former is much more challenging to achieve than the latter. %, and most of the time, some form of \gls{jit} compilation is involved. 
 For the remainder of this thesis, if I talk about portability, I mean source code portability. 
 
 The need for portable codes, in general, has been an ongoing problem for many years. 
-One of the first portability definitions was already provided in \citeyear{poole_portability_1975} fifty years ago: 
+One of the first portability definitions was already provided in \citeyear{poole_portability_1975}, fifty years ago: 
 \begin{quotebox}{\citet{poole_portability_1975}}
     Portability is a measure of the ease with which a program can be transferred from one environment to another: If the effort required to move the program is much less than that required to implement it initially, then we say that it is highly portable.
 \end{quotebox}
 % which was later picked up or slightly modified by other publications~\cite{tanenbaum_guidelines_1978, mooney_bringing_1997}. \todo{cite? more?}
+%\todo{find more definitions?}
 
-\todo{find more definitions?}
+The definition of portability of \citet{poole_portability_1975} was later slightly modified to ... by \citet{mooney_strategies_1990, mooney_bringing_1997}:
+\begin{quotebox}{\citet{mooney_bringing_1997}}
+    A software unit is portable (exhibits portability) across a class of environments to the degree that the cost to transport and adapt it to a new environment in the class is less than the cost of redevelopment. 
+\end{quotebox}
+This definition is closely related to the definition from \citet{poole_portability_1975}. 
+It is only slightly more precise in specifying that any software unit, including library codes instead of only programs, can be portable. 
+Additionally, it narrows down the portability considerations to environments of the same class.  
 
-Based on the slight modification of this portability definition from \citet{mooney_bringing_1997}, \citet{sedova_high-performance_2018} devised a formal definition of portability:
+Based on the definition from \citet{mooney_strategies_1990, mooney_bringing_1997}, \citet{sedova_high-performance_2018} devised a formal definition of portability:
 \begin{definition}[Portability~\cite{sedova_high-performance_2018}]
 An application can be said to be portable if the cost of porting is less than the cost of re-writing:
 $$DP = 1 - \left(\frac{C_P}{C_R}\right)$$
 where $C_P$ is the cost to port, and $C_R$ is the cost to rewrite the program. 
 \end{definition}
 A program is completely portable if $DP$ is one, and a positive value indicates that porting a code is more profitable than rewriting it from scratch. 
+However, devising such costs is highly non-trivial and subjective. 
+Is the cost only based on the amount of lines of code that must be changed? 
+That can be easily measurable but does not really reflect true real-world cost since it also depends on the development time necessary to port a code. 
+If we factor in development time, we also have to account for the developers' different experience levels: a developer already familiar with a new hardware platform may port a code in less time than an unfamiliar programmer, reducing the real-world cost of porting and, therefore, changing the cut-off point of when porting a code may be worthwhile. 
+However, it is extremely difficult to assess the developers' different experience levels beforehand to decide whether porting or rewriting an application is more feasible. 
 
 A more recent definition of portability was created by \citet{pennycook_metric_2016, pennycook_implications_2019} which define portability as: 
 \begin{quotebox}{\citet{pennycook_implications_2019}}
@@ -32,6 +44,17 @@ In contrast to the previous definition, the key part here is that it is not enou
 An application that runs everywhere but produces wrong results is pointless in a real-world setting. 
 
 \todo{insert ways to fix the portability problem}
+
+In the following, I will present the basics of the languages or frameworks that promise portability. 
+The order in which I present them may seem arbitrary at first, but it is the order in which the respective first public release or standard document was available. 
+Note while \gls{cuda} is not a portable language, it was the first language able to target \glspl{gpgpu}, and many of the later portable languages were heavily influenced by \gls{cuda}. 
+Therefore, \gls{cuda} will also be included in the following sections. 
+
+\todo{Formulierung}
+I also added small code examples for all later-used programming languages or frameworks to show their basic usage. 
+These code examples show a DAXPY kernel computing $y = \alpha \cdot x + y$ for two vectors $x, y \in \mathbb{R}^N$ and a scalar $\alpha \in \mathbb{R}$ using FP64 floating point numbers with all necessary language- or framework-specific constructs, like memory operations or enqueueing a compute kernel for execution. 
+Additionally, where possible, the code examples contain a link to the Godbolt compiler explorer~\cite{godbolt_compiler-explorercompiler-explorer_2025} for a fully compilable and executable version that can be played with. 
+Note that the following sections do not fully introduce the respective programming languages and frameworks but serve only to gather a general overview. 
 
 \newpage
 \input{content/02_performance_portability/03_portability/01_openmp}
@@ -49,59 +72,10 @@ An application that runs everywhere but produces wrong results is pointless in a
 \input{content/02_performance_portability/03_portability/07_hip}
 \newpage
 \input{content/02_performance_portability/03_portability/08_standard_cpp}
+\newpage
+\input{content/02_performance_portability/03_portability/09_other_frameworks}
 
 
-Other Frameworks:
-\begin{itemize}
-    \item OpenACC
-    \begin{itemize}
-        \item first specification November 2011~\cite{openacc_standard_openacc_2011}
-        \item first or one of the first OpenACC papers 2012~\cite{hutchison_openacc_2012}
-        \item current specification November 2022~\cite{openacc_standard_openacc_2022}
-        \item Implementations (\url{https://www.openacc.org/tools})
-        \begin{itemize}
-            \item HPE Cray Compiler Environment (CCE): OpenACC deprecated since CCE 10.0.0 for C and C++ as of 7 May 2020 (\url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00113907en_us&page=OpenACC_Use.html}, \url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00115296en_us&page=About_the_Cray_Fortran_Reference_Manual.html})
-            \item NVIDIA
-            \item GCC (\url{https://gcc.gnu.org/wiki/OpenACC})
-            \item Omni Compiler Project (\url{https://omni-compiler.org/})
-            \item OpenHU (\url{https://github.com/uhhpctools/openuh})
-            \item OpenARC (\url{https://github.com/swiftcurrent2018/openarc})
-            \item RoseACC (\url{https://github.com/laudarch/RoseACC-workspace})
-        \end{itemize}
-    \end{itemize}
-    
-    \item RAJA:
-    \begin{itemize}
-        \item first release v0.1.0 June 22, 2016~\cite{llnl_release_2016}
-        \item first publication 2019~\cite{beckingsale_raja_2019}
-        \item current release v2024.07.0 July 24, 2024~\cite{llnl_release_2024}
-    \end{itemize}
-
-    \item thrust
-    \begin{itemize}
-        \item algorithms for NVIDIA GPU and multi-core CPU~\cite{bell_thrust_2012}
-        \item first thrust release 1.0.0 June, 2009~\cite{nvidia_corporation_thrust_2009}
-        \item current thrust release under the CUDA \cpp Core Libraries 2.8.0 March 03, 2025~\cite{cccl_development_team_release_2023}
-    \end{itemize}
-
-    \item Charm++
-    \begin{itemize}
-        \item GPU Manager library and Hybrid API (HAPI)
-        \item source repo~\cite{kale_uiuc-pplcharm_2021}
-        \item first release and paper October 1993~\cite{kale_charm_1993}
-        \item added support for GPUs~\cite{wesolowski_application_2008}
-        \item current release v8.0.0 June 4, 2024~\cite{noauthor_release_2024}
-    \end{itemize}
-
-    \item Legion
-    \begin{itemize}
-        \item \enquote{Legion is a data-centric parallel programming system for writing portable high-performance programs targeted at distributed heterogeneous architectures.}
-        \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
-        \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
-    \end{itemize}
-
-    \item Domain-Specific Languages (DSLs)
-\end{itemize}
 
 \newpage
 

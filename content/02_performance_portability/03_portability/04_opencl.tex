@@ -1,52 +1,16 @@
 \subsection{OpenCL -- Open Computing Language}
+\label{sec:frameworks:opencl}
 
-OpenCL:
-\begin{itemize}
-    \item \enquote{OpenCL is a trademark of Apple Inc. used under license to the Khronos Group Inc}
-    \item working group created 2008~\cite{khronos_opencl_working_group_khronos_2008}
-    \item first speciifcation published 2009~\cite{munshi_opencl_2009}
-    \item current standard OpenCL 3.0 revision 17 October 24, 2024~\cite{khronos_opencl_working_group_opencl_2024}
-    \item Implementations OpenCL 3.0 (\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl})
-    \begin{itemize}
-        \item Intel
-        \item Imagination Technologies
-        \item QUALCOMM
-        \item Google, Inc. 
-        \item Software Freedom Conservancy
-        \item Arm Limited
-        \item NVIDIA
-        \item Software in the Public Interest, Inc.
-        \item Verisilicon, Inc.
-        \item pocl
-    \end{itemize}
-    \item many more for OpenCL 2.0 (like AMD, Samsung Electronics, etc.)
-\end{itemize}
+\begin{quotebox}{\href{https://www.khronos.org/opencl}{Khronos OpenCL}}
+    OpenCL™ (Open Computing Language) is an open, royalty-free standard for cross-platform, parallel programming of diverse accelerators found in supercomputers, cloud servers, personal computers, mobile devices and embedded platforms.
+\end{quotebox}
 
-\begin{itemize}
-    \item \acrfull{opencl}
-    \item standardized
-    \item kernels are simple strings $\rightarrow$ easy to manipulate, tedious to use
-    \item kernels must be compiled by yourself using OpenCL provided functions
-    \item C API
-    \item \gls{jit} compiled
-    \item programming model/kernel structure close to \gls{cuda}
-\end{itemize}
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item standardized
-        \item supports a wide variety of hardware platforms (many implementations)
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item kernels must be compiled by hand
-        \item error prone
-        \item some low-level optimizations not possible
-    \end{itemize}
-\end{disadvantagebox}
-
+\acrfull{opencl} was the first standardized programming framework with which programmers were able to target \glspl{cpu} and \glspl{gpu} (and many more hardware platforms) using a single source code. 
+The first \gls{opencl} Khronos working group was created in 2008~\cite{khronos_opencl_working_group_khronos_2008}, shortly after the initial \gls{cuda} release, and the first official \gls{opencl} specification was released one year later in 2009~\cite{munshi_opencl_2009}. 
+The current \gls{opencl} version 3.0 revision 17 was published in October 2024~\cite{khronos_opencl_working_group_opencl_2024}. 
+As was the case with \gls{openmp}, since \gls{opencl} is a standard, there are many different implementations of \gls{opencl} targeting different hardware platforms. 
+These implementations include, among others, implementations of the \gls{opencl} 3.0 standard from Intel, Google, ARM, NVIDIA, or PoCL. 
+Many more implementations exist for the \gls{opencl} 2.0 standard\footnote{\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl} (visited: 2025-03-21)}.
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -87,7 +51,26 @@ clReleaseCommandQueue(queue);
 clReleaseContext(context);
     \end{minted}
     \caption{%
-    SAXPY example using \gls{opencl}.
-    }
+    A simple DAXPY example using \gls{opencl} including all necessary compilation, memory, and kernel launch operations. }
     \label{code:opencl_example}
 \end{listing}
+
+\gls{opencl} follows the same host-to-device offloading model as \gls{cuda} including the mentioned general workflow. 
+However, as can be seen in \autoref{code:opencl_example}, \gls{opencl} is noticeably more verbose and involved than \gls{cuda}. 
+\gls{opencl} allows the programmer to dynamically specify to which device the code should be offloaded at runtime. 
+For that, the \code{cl_command_queue} (lines 8-13) has to be created, which is later used to enqueue the actual compute kernels. 
+Additionally, in \gls{opencl}, it is necessary to compile the kernel source, given as a simple C-style string, by hand, as well as setting the actual kernel arguments (lines 18-24). 
+This approach gives \gls{opencl} great flexibility since the compute kernels can easily be assembled and modified at runtime. 
+At the same time, however, the verbosity of \gls{opencl} also opens the doors for many more pitfalls and potential bugs. 
+Also, while \gls{opencl} is not as high-level as \gls{openmp}, not all vendor-specific optimizations are possible since one of the main goals of \gls{opencl} is to support as many platforms as possible. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{opencl}{
+    \item standardized
+    \item supports a wide variety of hardware platforms
+}{
+    \item kernels must be compiled by hand
+    \item error-prone
+    \item some low-level optimizations not possible
+}

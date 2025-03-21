@@ -1,34 +1,21 @@
 \subsection{HPX -- High Performance ParallelX}
+\label{sec:frameworks:hpx}
 
-HPX
-\begin{itemize}
-    \item development started in 2007~\cite{kaiser_stellar-grouphpx_2024}
-    \item main paper to cite~\cite{kaiser_hpx_2020}
-    \item current release V1.10.0 March 29, 2024~\cite{the_stear_group_history_nodate}
-\end{itemize}
+\begin{quotebox}{\href{https://hpx-docs.stellar-group.org/latest/html/index.html\#what-is-hpx}{HPX Documentation}}
+    PX is a C++ Standard Library for Concurrency and Parallelism. It implements all of the corresponding facilities as defined by the C++ Standard. Additionally, in HPX we implement functionalities proposed as part of the ongoing C++ standardization process. We also extend the C++ Standard APIs to the distributed case. HPX is developed by the STE||AR group.
+\end{quotebox}
 
-\begin{itemize}
-    \item \acrfull{hpx}
-    \item build asynchronous task graph
-    \item scheduler incorporates work-stealing
-    \item \glspl{gpu} supported via executors, written using other frameworks
-    \item support for distributed memory computation
-\end{itemize}
+\acrfull{hpx}~\cite{kaiser_hpx_2020} is high-performance many-task asynchronous tasking library. 
+Its development started in 2007~\cite{the_stear_group_history_nodate} with the current version being v1.10.0 from March 2024~\cite{kaiser_stellar-grouphpx_2024}.
+Although \gls{hpx} is not standardized where possible, its \gls{api} is closely modeled after the \cpp standard \gls{api}. 
 
-
-\begin{advantagebox}
-    \begin{itemize}
-        \item supports algorithms close to \cpp standard
-        \item task-based abstraction more suitable for some problems
-    \end{itemize}
-\end{advantagebox}
-
-\begin{disadvantagebox}
-    \begin{itemize}
-        \item not standardized
-        \item can only launch kernels, other frameworks still \textbf{necessary} to write the actual compute kernels 
-    \end{itemize}
-\end{disadvantagebox}
+The execution model of \gls{hpx} is based on a task graph that is implicitly built in the source code and later executed asynchronously. 
+It implements custom schedulers that also incorporate work-stealing to automatically improve the load-balancing of applications using \gls{hpx}. 
+This is especially useful for non-uniform problems that rely on good load-balancing. 
+\gls{hpx} also supports distributed memory architectures using an \gls{agas} and different accelerators using executors. 
+Note that \gls{hpx} only portably incorporates kernel launches in its internal task graph; the actual compute kernels must still be written using other frameworks like \gls{cuda}, \gls{hip}, Kokkos, or SYCL.  
+Additionally, \gls{hpx} supports the \cpp[17] standard library parallel algorithms (also see~\autoref{sec:frameworks:stdpar}. 
+In the remainder of this thesis, only these standard algorithms are used with \gls{hpx}. 
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -40,7 +27,20 @@ hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](con
 });
     \end{minted}
     \caption{%
-    SAXPY example using \gls{hpx} parallel loops.
-    }
+    A simple DAXPY example using \gls{hpx} parallel loops.}
     \label{code:hpx_example}
 \end{listing}
+
+An example of these \cpp[17] standard parallel algorithms can be seen in \autoref{code:hpx_example}. 
+The only difference compared to \autoref{code:stdpar_example} is the usage of the \code{hpx::} namespace qualifiers instead of the \code{std::} ones. 
+In this code, the \code{for_each} loop is automatically parallelized across all available \gls{cpu} cores. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{hpx}{
+    \item supports algorithms close to \cpp standard
+    \item task-based abstraction more suitable for some problems
+}{
+    \item not standardized
+    \item can only launch kernels, other frameworks still \textbf{necessary} to write the actual compute kernels 
+}
