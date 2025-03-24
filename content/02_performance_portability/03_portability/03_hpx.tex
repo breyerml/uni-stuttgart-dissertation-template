@@ -2,7 +2,7 @@
 \label{sec:frameworks:hpx}
 
 \begin{quotebox}{\href{https://hpx-docs.stellar-group.org/latest/html/index.html\#what-is-hpx}{HPX Documentation}}
-    PX is a C++ Standard Library for Concurrency and Parallelism. It implements all of the corresponding facilities as defined by the C++ Standard. Additionally, in HPX we implement functionalities proposed as part of the ongoing C++ standardization process. We also extend the C++ Standard APIs to the distributed case. HPX is developed by the STE||AR group.
+    HPX is a C++ Standard Library for Concurrency and Parallelism. It implements all of the corresponding facilities as defined by the C++ Standard. Additionally, in HPX we implement functionalities proposed as part of the ongoing C++ standardization process. We also extend the C++ Standard APIs to the distributed case. HPX is developed by the STE||AR group.
 \end{quotebox}
 
 \acrfull{hpx}~\cite{kaiser_hpx_2020} is high-performance many-task asynchronous tasking library. 
@@ -11,11 +11,13 @@ Although \gls{hpx} is not standardized where possible, its \gls{api} is closely 
 
 The execution model of \gls{hpx} is based on a task graph that is implicitly built in the source code and later executed asynchronously. 
 It implements custom schedulers that also incorporate work-stealing to automatically improve the load-balancing of applications using \gls{hpx}. 
-This is especially useful for non-uniform problems that rely on good load-balancing. 
+This is especially useful for non-uniform problems that rely on good load balancing. 
 \gls{hpx} also supports distributed memory architectures using an \gls{agas} and different accelerators using executors. 
 Note that \gls{hpx} only portably incorporates kernel launches in its internal task graph; the actual compute kernels must still be written using other frameworks like \gls{cuda}, \gls{hip}, Kokkos, or SYCL.  
-Additionally, \gls{hpx} supports the \cpp[17] standard library parallel algorithms (also see~\autoref{sec:frameworks:stdpar}. 
+Additionally, \gls{hpx} supports the \cpp{17} standard library parallel algorithms (also see~\autoref{sec:frameworks:stdpar}. 
 In the remainder of this thesis, only these standard algorithms are used with \gls{hpx}. 
+
+\todo{mention that parallel algorithms were only implemented after the \cpp draft}
 
 \begin{listing}
     \begin{minted}{cpp}
@@ -31,7 +33,7 @@ hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](con
     \label{code:hpx_example}
 \end{listing}
 
-An example of these \cpp[17] standard parallel algorithms can be seen in \autoref{code:hpx_example}. 
+An example of these \cpp{17} standard parallel algorithms can be seen in \autoref{code:hpx_example}. 
 The only difference compared to \autoref{code:stdpar_example} is the usage of the \code{hpx::} namespace qualifiers instead of the \code{std::} ones. 
 In this code, the \code{for_each} loop is automatically parallelized across all available \gls{cpu} cores. 
 

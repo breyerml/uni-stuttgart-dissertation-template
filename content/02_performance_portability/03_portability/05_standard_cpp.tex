@@ -1,0 +1,80 @@
+\subsection{Standard \cpp\ -- stdpar}
+\label{sec:frameworks:stdpar}
+
+Until now, only frameworks or libraries were mentioned that extend standard \cpp but starting in 2014, the \cpp Standardization Committee also worked on an \enquote{Extension for Parallelism} that should be added to the \cpp standard itself~\cite{hoberock_n3960_2014}. 
+This working draft was later standardized in the ISO \cpp{17} standard~\cite{hoberock_p0024r2_2016, international_organization_for_standardization_isoiec_2017} sometimes called \textit{stdpar}. 
+In \cpp{20}, the \cpp standard parallelism features were extended with a new execution policy \code{std::execution::unseq}~\cite{meredith_p1001r2_2019}. 
+Lately, efforts have been made to further improve the parallelism features in \cpp by voting senders and receivers in the \cpp{26} standard~\cite{dominiak_p2300r10_2024, baker_p3396r0_2024, niebler_p3325r5_2024}. 
+
+\begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] Q[l,m] *{4}{X[c,m]}},
+                 row{1,2} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 cell{1}{1}={r=2}{l},
+                 cell{1}{2}={r=2}{l},
+                 cell{1}{3}={r=2}{c},
+                 }
+        \toprule
+        {stdpar\\implementation}     & execution policy                              & \glspl{cpu}  & \SetCell[c=3]{c}\glspl{gpu} &&             \\
+                                     &                                               &              & NVIDIA       & AMD          & Intel        \\\midrule
+        GNU GCC + \acrshort{tbb}     & {\code{par}, \code{par_unseq},\\\code{unseq}} & \supported   & \unsupported & \unsupported & \unsupported \\
+        NVIDIA nvhpc                 & \code{par}, \code{par_unseq}                  & \supported   & \supported   & \unsupported & \unsupported \\
+        AMD rocstdpar                & \code{par_unseq}                              & \unsupported & \unsupported & \supported   & \unsupported \\
+        Intel icpx + oneDPL          & \code{par_unseq}                              & \supported   & \supported   & \supported   & \supported   \\
+        AdaptiveCpp + \acrshort{tbb} & \code{par_unseq}                              & \supported   & \supported   & \supported   & \supported   \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    The available implementations for \cpp standard parallel algorithms, including which parallel execution policy they support. 
+    Currently, there are specialized stdpar implementations for a narrow range of hardware platforms, often directly provided by the respective vendors, but also SYCL-based implementations that support all current major hardware platforms. 
+    }
+    \label{tab:stdpar_implementations}
+\end{table}
+
+Since \textit{stdpar} is standardized, different implementations exist that all support different hardware platforms. 
+\autoref{tab:stdpar_implementations} shows the currently available stdpar implementation list, including the supported parallel execution policies. 
+All major hardware platforms can be targeted using solely \cpp standard parallelism. 
+Whether a vendor-provided implementation, like NVIDIA's nvhpc or \gls{amd}'s rocstdpar, or a more general SYCL-based implementation, like icpx or AdaptiveCpp, is used is up to the user. 
+This again shows the power of a standardized framework: as long as the code adheres to the standard, the used software stack can be chosen based on the current application's needs. 
+
+\begin{listing}
+    \begin{minted}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=](const int idx) {
+    Y[idx] = alpha * X[idx] + Y[idx];
+});
+    \end{minted}
+    \caption{%
+    A simple DAXPY example using \cpp standard parallelism also called \textit{stdpar} (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:11,positionColumn:32,positionLineNumber:11,selectionStartColumn:32,selectionStartLineNumber:11,startColumn:32,startLineNumber:11),source:'\%23include+\%3Cexecution\%3E\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+the+indices+used+in+the+for_each+loop\%0A++std::vector\%3Cint\%3E+indices(N)\%3B\%0A++std::iota(indices.begin(),+indices.end(),+0)\%3B\%0A\%0A++//+the+stdpar+compute+kernel\%0A++std::for_each(std::execution::par_unseq,+indices.begin(),+indices.end(),+\%5B\%3D,+d_X+\%3D+X.data(),+d_Y+\%3D+Y.data()\%5D(const+int+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/evjYfPrrq}).
+    }
+    \label{code:stdpar_example}
+\end{listing}
+
+The basic idea of parallelizing code with \cpp standard functionality is shown in \autoref{code:stdpar_example}. 
+In \cpp{17}, many standard algorithms gained an additional overload accepting a \code{std::execution} policies. 
+This policy specifies how the algorithm should be parallelized. 
+AS of \cpp{20}, four different execution policies are supported by the standard, whereby the \cpp standard explicitly allowed implementations to add new specialized execution policies:
+\begin{description}
+    \item[\code{std::execution::seq}] sequential execution, no additional assumptions
+    \item[\code{std::execution::par}] parallel execution but no vectorization allowed
+    \item[\code{std::execution::par_unseq}] parallel execution with vectorization
+    \item[\code{std::execution::unseq}] sequential execution with vectorization
+\end{description}
+Providing \code{std::execution::seq} to a \cpp standard algorithm acts if no execution policy has been provided. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{stdpar}{
+    \item standardized
+    \item supports a wide variety of hardware platforms
+    \item extremely easy-to-use if already familiar with \cpp standard algorithms
+}{
+    \item very high-level, i.e., some optimizations not possible
+}

@@ -20,12 +20,54 @@ SYCL:
     \end{itemize}
 \end{itemize}
 
+\begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
+    \centering
+    \begin{threeparttable}[b]
+        \begin{tblr}{colspec = {Q[l,m] *{4}{X[c,m]} X[2, c,m]},
+                     row{1,2} = {font=\bfseries, bg=gray!50},
+                     row{odd[2]} = {bg=gray!25},
+                     rowsep=4pt,
+                     cell{1}{1}={r=2}{l},
+                     cell{1}{2}={r=2}{c},
+                     cell{1}{6}={r=2}{c},
+                     }
+            \toprule
+            {SYCL\\implementation}     & \glspl{cpu} & \SetCell[c=3]{c}\glspl{gpu}      &&             & other                         \\
+                                       &             & NVIDIA       & AMD               & Intel        &                               \\\midrule
+            AdaptiveCpp                & \supported  & \supported   & \supported        & \supported   & \gls{opencl} SPIR-V devices   \\
+            Intel \dpcpp/icpx          & \supported  & \supported   & \supported        & \supported   & Intel \glspl{fpga}            \\
+            SimSYCL                    & \supported  & \unsupported & \unsupported      & \unsupported & --                            \\
+            triSYCL\tnote{1}           & \supported  & \unsupported & \unsupported      & \unsupported & Xilinx/\gls{amd} \glspl{fpga} \\
+            neoSYCL\tnote{1}\tnote{*}  & \supported  & \unsupported & \unsupported      & \unsupported & NEC SX-Aurora TSUBASA         \\
+            sycl-gtx\tnote{1}\tnote{*} & \SetCell[c=5]{c}any \gls{opencl} 1.2 device &&&&                                              \\
+            Sylkan\tnote{1}            & \SetCell[c=5]{c}any Vulkan device &&&&                                                        \\
+            ComputeCpp\tnote{2}        & \supported  & \supported   & \partialsupported & \supported   & \gls{opencl} SPIR-V devices   \\
+            \bottomrule
+        \end{tblr}
+        \begin{tablenotes}
+            \item[1] not under active development anymore
+            \item[2] discontinued (now part of Intel \dpcpp/icpx)
+            \item[*] SYCL 1.2.1 only
+        \end{tablenotes}
+    \end{threeparttable}
+    \caption{%
+        The available SYCL implementations. 
+        Currently, three SYCL implementations are under active development, of which AdaptiveCpp and Intel's \dpcpp/icpx support the most hardware platforms. 
+        The other SYCL implementations are not under active development anymore or officially discontinued (ComputeCpp). 
+        Nevertheless, this table shows that SYCL supports a wide variety of different hardware platforms. 
+    }
+    \label{tab:stdpar_implementations}
+\end{table}
+
 \begin{itemize}
     \item SYCL
     \item standardized
-    \item sinlge-source standard \cpp
+    \item single-source standard \cpp
     \item \cpp API
-    \item easy builtin interoperability with backend specific libraries
+    \item easy builtin interoperability with backend-specific libraries
     \item different ways to express parallelism
     \item programming model/kernel structure close to \gls{cuda} ($\rightarrow$ automatic \gls{cuda} to SYCL migration tools available)
     \item originally tightly coupled with \gls{opencl}

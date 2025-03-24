@@ -1,0 +1,53 @@
+\subsection{HIP -- Heterogeneous-computing Interface for Portability}
+\label{sec:frameworks:hip}
+
+\begin{quotebox}{\href{https://rocm.docs.amd.com/projects/HIP/en/latest/index.html\#hip-documentation}{HIP Documentation}}
+    The Heterogeneous-computing Interface for Portability (HIP) is a C++ runtime API and kernel language that lets you create portable applications for AMD and NVIDIA GPUs from a single source code.
+\end{quotebox}
+
+\acrfull{hip} is \gls{amd}'s counterpart to NVIDIA's \gls{cuda} as their own vendor-provided framework. 
+The first public release of \gls{hip} is from March 2016~\cite{advanced_micro_devices_release_2016} and the current version 6.3.3 was released in February 2025~\cite{advanced_micro_devices_release_2025}. 
+While \gls{hip}'s main target is \gls{amd} \glspl{gpu}, it also supports NVIDIA \glspl{gpu} from the beginning~\cite{advanced_micro_devices_its_2016} using NVIDIA's own compiler stack.
+More recently, additional projects tried to increase the hardware platforms that \gls{hip} can target by adding support for other low-level runtimes like \gls{opencl}~\cite{babej_hipcl_2020} or Intel's Level Zero~\cite{singer_hiplz_2023}.
+
+The \gls{hip} \gls{api} is extremely close to the one provided by NVIDIA: in most cases, conversions between \gls{cuda} and \gls{hip} can be achieved via a simple regex for more complex cases, the HIPIFY~\cite{advanced_micro_devices_rocmhipify_2025} tool can be used. 
+Additionally, the most common NVIDIA provided \gls{cuda} libraries are also available for \gls{hip} like hipBLAS, hipSPARSE, hipFFT, etc.
+
+\begin{listing}
+    \begin{minted}{cpp}
+__global__ void vector_add(const double alpha, const double *X, double *Y, const int N) {
+    const int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
+}
+    
+double *d_X, *d_Y;
+hipMalloc(&d_X, N * sizeof(double));
+hipMalloc(&d_Y, N * sizeof(double));
+hipMemcpy(d_X, X, N * sizeof(double), hipMemcpyHostToDevice);
+hipMemcpy(d_Y, Y, N * sizeof(double), hipMemcpyHostToDevice);
+
+vector_add<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
+
+hipMemcpy(Y, d_Y, N * sizeof(double), hipMemcpyDeviceToHost);
+hipFree(d_X);
+hipFree(d_Y);
+    \end{minted}
+    \caption{%
+    A simple DAXPY example using \gls{hip} including all necessary memory and kernel launch operations.
+    }
+    \label{code:hip_example}
+\end{listing}
+
+The close relationship between \gls{hip} and \gls{cuda} can also be seen in \autoref{code:hip_example}. 
+If we compare this code with the \gls{cuda} example in \autoref{code:cuda_example}, we see that the only difference between the two codes is that in \gls{hip}, all \code{cu} function and variable prefixes are replaced with \code{hip}. 
+Everything else can stay the same. 
+
+
+%%% ADVANTAGES AND DISADVANTAGES
+\AdvantagesAndDisadvantages{hip}{
+    \item easy to translate from \gls{cuda}
+    \item high optimization potential
+}{
+    \item not standardized
+    \item officially, only AMD and NVIDIA \glspl{gpu}
+}
