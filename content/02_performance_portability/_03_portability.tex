@@ -9,3 +9,72 @@ where $C_P$ is the cost to port and $C_R$ the cost to rewrite the program.
     \item positive $\rightarrow$ porting is more profitable
     \item binary vs source code portability
 \end{itemize}
+
+\begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] *{6}{X[c,m]}},
+                 row{1,2} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 }
+        \toprule
+                      & \SetCell[c=3]{c}\glspl{cpu} &&             & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
+                      & x86\_64      & POWER9       & ARM          & NVIDIA            & AMD               & Intel             \\\midrule
+        OpenMP        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        CUDA          & \unsupported & \unsupported & \unsupported & \supported        & \unsupported      & \unsupported      \\
+        HPX           & \supported   & \supported   & \supported   & \partialsupported & \partialsupported & \partialsupported \\
+        OpenCL        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        Standard \cpp & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        SYCL          & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        Kokkos        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        HIP           & \unsupported & \unsupported & \unsupported & \supported        & \supported        & \unsupported      \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    Either we can use two categories, simply splitting the hardware platforms in \glspl{cpu} and \glspl{gpu}, or split it into more fine-grain categories like different \gls{cpu} and \gls{gpu} architectures. 
+    Additional, other hardware platforms inside these categories, e.g., RISC-V \glspl{cpu} or ARM \glspl{gpu} or even completely new categories like \glspl{fpga} or \glspl{tpu} are also possible. 
+    For \gls{hpx}, \glspl{gpu} are supported via executors, but the actual compute kernels must be written using another framework like \gls{cuda}, \gls{hip}, SYCL, or Kokkos.
+    Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
+    }
+    \label{tab:portability_categories}
+\end{table}
+
+
+
+\begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] *{4}{X[c,m]}},
+                 row{1,2} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 cell{1}{1}={r=2}{l},
+                 cell{1}{2}={r=2}{c},
+                 }
+        \toprule
+        {programming\\framework} & \glspl{cpu}  & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
+                                 &              & NVIDIA            & AMD               & Intel             \\\midrule
+        OpenMP (target offload)  & \supported   & \supported        & \supported        & \supported        \\
+        CUDA                     & \unsupported & \supported        & \unsupported      & \unsupported      \\
+        HPX                      & \supported   & \partialsupported & \partialsupported & \partialsupported \\
+        OpenCL                   & \supported   & \supported        & \supported        & \supported        \\
+        Standard \cpp            & \supported   & \supported        & \supported        & \supported        \\
+        SYCL                     & \supported   & \supported        & \supported        & \supported        \\
+        Kokkos                   & \supported   & \supported        & \supported        & \supported        \\
+        HIP                      & \unsupported & \supported        & \supported        & \unsupported      \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    The list of the programming frameworks used in the remainder of this dissertation including their supported target platforms. 
+    Five out of the investigated eight programming frameworks promise to support all major hardware platforms, i.e., \glspl{cpu} and \glspl{gpu} from NVIDIA, \gls{amd}, and Intel. 
+    Note that we do not make use of \gls{openmp}'s target offload feature and, therefore, later only investigate \gls{openmp} on \glspl{cpu}. 
+    For \gls{hpx}, \glspl{gpu} are supported via executors, but the actual compute kernels must be written using another framework like \gls{cuda}, \gls{hip}, SYCL, or Kokkos.
+    % Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
+    }
+    \label{tab:frameworks_overview}
+\end{table}

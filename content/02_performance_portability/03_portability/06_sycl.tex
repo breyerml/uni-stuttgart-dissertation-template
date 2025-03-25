@@ -5,20 +5,11 @@
     SYCL is an open, royalty-free, cross-platform abstraction layer that enables code for heterogeneous and offload processors to be written using modern ISO C++, and provides APIs and abstractions to find devices (CPUs, GPUs, FPGAs ...) on which code can be executed, and to manage data resources and code execution on those devices.
 \end{quotebox}
 
-SYCL:
-\begin{itemize}
-    \item first provisional specification March 19, 2014~\cite{khronos_sycl_working_group_khronos_2014}
-    \item first official release of SYCL 1.2 specification May 11, 2015~\cite{khronos_sycl_working_group_khronos_2015}
-    \item current standard SYCL 2020 Rev 9 August 18, 2024~\cite{khronos_sycl_working_group_sycl_2024}
-    \item Implementations (\url{https://www.khronos.org/sycl/#sycl-implementations})
-    \begin{itemize}
-        \item Intel oneAPI \dpcpp/icpx
-        \item AdaptiveCpp
-        \item triSYCL
-        \item neoSYCL
-        \item SimSYCL
-    \end{itemize}
-\end{itemize}
+As with \gls{opencl}, SYCL is also a standard the Khronos working group develops. 
+The first provisional SYCL specification was released in March 2014~\cite{khronos_sycl_working_group_khronos_2014} followed by the first official release 1.2 in May 2015~\cite{khronos_sycl_working_group_khronos_2015}. 
+Back then, SYCL was tightly coupled to \gls{opencl}, including \gls{opencl} interoperability functionality. 
+However, \citet{alpay_sycl_2020} showed with his AdaptiveCpp (back then known as hipSYCL) implementation, which directly uses \gls{openmp}, \gls{cuda}, and \gls{hip} to target the respective hardware that this tight integration with \gls{opencl} is unnecessary and even hinders the future directions of SYCL. 
+Therefore, the current SYCL specification 2020, with its current Revision 9 from August 2024~\cite{khronos_sycl_working_group_sycl_2024}, lifted this restriction and officially allowed the usage of any backend to implement the SYCL specification. 
 
 \begin{table}[]
     \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
@@ -59,23 +50,38 @@ SYCL:
         The other SYCL implementations are not under active development anymore or officially discontinued (ComputeCpp). 
         Nevertheless, this table shows that SYCL supports a wide variety of different hardware platforms. 
     }
-    \label{tab:stdpar_implementations}
+    \label{tab:sycl_implementations}
 \end{table}
 
-\begin{itemize}
-    \item SYCL
-    \item standardized
-    \item single-source standard \cpp
-    \item \cpp API
-    \item easy builtin interoperability with backend-specific libraries
-    \item different ways to express parallelism
-    \item programming model/kernel structure close to \gls{cuda} ($\rightarrow$ automatic \gls{cuda} to SYCL migration tools available)
-    \item originally tightly coupled with \gls{opencl}
-    \item automatic source code conversion to SYCL~\cite{huang_syclomatic_2023, noauthor_oneapi-srcsyclomatic_2025} 
-\end{itemize}
+Since SYCL is also a standard like \gls{opencl}, many different implementations exist that can be seen in \autoref{tab:sycl_implementations}. 
+The two most major and feature-complete SYCL implementations currently available are the open-source AdaptiveCpp~\cite{alpay_sycl_2020, alpay_one_2023, alpay_adaptivecppadaptivecpp_2025} developed at the University of Heidelberg and Intel's \dpcpp/icpx implementation~\cite{reinders_data_2021}. 
+AdaptiveCpp supports a \gls{sscp} compilation flow using a generic target that allows a single compiler invocation to generate a single binary containing custom \gls{ir} that is at runtime \gls{jit} compiled to the used target hardware. 
+It also directly supports \gls{aot} compilation using the respective targets. 
+However, the new \gls{sscp} is currently the recommended way to use AdaptiveCpp. 
+AdaptiveCpp supports NVIDIA \glspl{gpu} using the \gls{cuda} runtime \gls{api}, \gls{amd} \glspl{gpu} using ROCm, Intel \glspl{gpu} using Level Zero, and \glspl{cpu} using \gls{openmp}. 
+Intel has two slightly different versions of its SYCL compiler: \dpcpp as the fully open source compiler available on GitHub~\cite{noauthor_intelllvm_2025} and their closed source icpx compiler available directly on Intel's website~\cite{intel_compile_2025}. 
+\dpcpp/icpx supports \gls{jit} but also \gls{aot} compilation. 
+It supports NVIDIA \glspl{gpu} using the \gls{cuda} driver \gls{api}, \gls{amd} \glspl{gpu} using ROCm, Intel \glspl{gpu} using Level Zero, and \glspl{cpu} using \gls{opencl}. 
+The major difference between these two is that compared to \dpcpp, icpx contains additional compiler passes for better and more optimized support of \glspl{cpu}~\cite{brodman_dpc_2023}.
+Both of these SYCL implementations support all major hardware platforms. 
+
+Previously, ComputeCpp~\cite{misra_development_2019} was also one of the major SYCL implementations, but Intel bought the company, and the ComputeCpp SYCL implementation was incorporated into \dpcpp/icpx. 
+Another recent SYCL implementation is SimSYCL~\cite{thoman_simsycl_2024}, which is intentionally an extremely simple SYCL implementation that does not support parallelism at all and is meant as a verification tool to test SYCL applications against simulated hardware with different characteristics.  
+Other SYCL implementations exist that are, however, currently not under active development anymore: triSYCL~\cite{gozillon_trisycl_2020, doumoulakis_sycl_2017} which was mainly developed to target Xilinx/\gls{amd} \glspl{fpga}, Sylkan~\cite{thoman_sylkan_2021} a prove of concept implementation showing that SYCL can be built on top of Vulkan, neoSYCL~\cite{ke_neosycl_2021} to target NEC SX-Aurora TSUBASA vector engines, and sycl-gtx~\cite{zuzek_implementation_2016} as one of the earliest SYCL implementations. 
+In the case of the latter two, they even only support the SYCL 1.2.1 specification. 
+For the remainder of this dissertation, only the AdaptiveCpp and \dpcpp/icpx SYCL implementations are considered further. 
+
+SYCL itself is a single-source programming model, i.e., host and device code can be written in the same file, allowing to target different hardware with only standard \cpp; no additional language extensions are necessary. 
+This means that, e.g., compared to \gls{cuda} or \gls{opencl}, the SYCL runtime \gls{api} is also purely based on \cpp enabling, e.g., first-class citizen support for \cpp features like exceptions or templates. 
+SYCL also provides a standard way for interoperability with the actual backend implementations. 
+Using this interoperability layer, it is, for example, easy to call highly-optimized vendor-specific library routines from SYCL code. 
+Compared to \gls{cuda}, SYCL also supports different ways to express parallelism (more on this in \autoref{sec:sycl_kernel_invocation_types}). 
+SYCL builds a task graph internally where all queue operations, like memory copies or kernel launches, are enqueued for which dependencies can be specified using SYCL events to be sure that, for example, two kernels are always executed after one another. 
+This task graph is processed asynchronously at runtime, automatically overlapping memory operations or kernel executions where possible. 
+Additionally, SYCL provides a portable way to gather device-specific information like the device name, number of cores, or available memory. 
 
 \begin{listing}
-    \begin{minted}{cpp}
+    \begin{moderncode}{cpp}
 sycl::queue q{ sycl::default_selector_v, {sycl::property::queue::in_order{}} };
 
 double *d_X = sycl::malloc_device<double>(N, q);
@@ -83,20 +89,29 @@ double *d_Y = sycl::malloc_device<double>(N, q);
 q.copy(X, d_X, N);
 q.copy(Y, d_Y, N);
 
-q.parallel_for(sycl::range<1>{ N }, [=](const sycl::id<1> idx) {
+q.parallel_for(sycl::range<1>{N}, [=](const sycl::id<1> idx) {
     d_Y[idx] = alpha * d_X[idx] + d_Y[idx];
 });
 
 q.copy(d_Y, Y, N);
 sycl::free(d_X, q);
 sycl::free(d_Y, q);
-    \end{minted}
+    \end{moderncode}
     \caption{%
-    SAXPY example using SYCL.
-    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:31,endLineNumber:19,positionColumn:31,positionLineNumber:19,selectionStartColumn:31,selectionStartLineNumber:19,startColumn:31,startLineNumber:19),source:'\%23include+\%3Csycl/sycl.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+a+SYCL+queue+specifying+WHERE+the+code+should+run\%0A++sycl::queue+q\%7B+sycl::default_selector_v,+\%7Bsycl::property::queue::in_order\%7B\%7D\%7D+\%7D\%3B\%0A\%0A++//+allocate+memory+on+the+device\%0A++double+*d_X+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++double+*d_Y+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++//+copy+data+to+the+device\%0A++q.copy(X.data(),+d_X,+N)\%3B\%0A++q.copy(Y.data(),+d_Y,+N)\%3B\%0A\%0A++//+the+SYCL+compute+kernel\%0A++q.parallel_for(sycl::range\%3C1\%3E\%7B+N+\%7D,+\%5B\%3D\%5D(const+sycl::id\%3C1\%3E+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++//+copy+data+to+the+host\%0A++q.copy(d_Y,+Y.data(),+N)\%3B\%0A++//+free+the+ressources\%0A++sycl::free(d_X,+q)\%3B\%0A++sycl::free(d_Y,+q)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((g:!((h:compiler,i:(compiler:icx202421,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fsycl',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+icx+2024.2.1+(Editor+\%232)',t:'0')),k:50,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:device,i:(compilerName:'x86-64+icx+2024.2.1',device:sycl-spir64-unknown-unknown,editorid:2,fontScale:14,fontUsePx:'0',j:1,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),treeid:0),l:'5',n:'0',o:'Device+Viewer+x86-64+icx+2024.2.1+(Editor+\%232,+Compiler+\%231)',t:'0')),header:(),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',m:49.97236042012162,n:'0',o:'',t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+icx+2024.2.1+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/G9e4sWj6o}
+    A simple DAXPY example using SYCL including all necessary memory and kernel launch operations (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:31,endLineNumber:19,positionColumn:31,positionLineNumber:19,selectionStartColumn:31,selectionStartLineNumber:19,startColumn:31,startLineNumber:19),source:'\%23include+\%3Csycl/sycl.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+a+SYCL+queue+specifying+WHERE+the+code+should+run\%0A++sycl::queue+q\%7B+sycl::default_selector_v,+\%7Bsycl::property::queue::in_order\%7B\%7D\%7D+\%7D\%3B\%0A\%0A++//+allocate+memory+on+the+device\%0A++double+*d_X+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++double+*d_Y+\%3D+sycl::malloc_device\%3Cdouble\%3E(N,+q)\%3B\%0A++//+copy+data+to+the+device\%0A++q.copy(X.data(),+d_X,+N)\%3B\%0A++q.copy(Y.data(),+d_Y,+N)\%3B\%0A\%0A++//+the+SYCL+compute+kernel\%0A++q.parallel_for(sycl::range\%3C1\%3E\%7B+N+\%7D,+\%5B\%3D\%5D(const+sycl::id\%3C1\%3E+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++//+copy+data+to+the+host\%0A++q.copy(d_Y,+Y.data(),+N)\%3B\%0A++//+free+the+ressources\%0A++sycl::free(d_X,+q)\%3B\%0A++sycl::free(d_Y,+q)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((g:!((h:compiler,i:(compiler:icx202421,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17+-fsycl',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+icx+2024.2.1+(Editor+\%232)',t:'0')),k:50,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:device,i:(compilerName:'x86-64+icx+2024.2.1',device:sycl-spir64-unknown-unknown,editorid:2,fontScale:14,fontUsePx:'0',j:1,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),treeid:0),l:'5',n:'0',o:'Device+Viewer+x86-64+icx+2024.2.1+(Editor+\%232,+Compiler+\%231)',t:'0')),header:(),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',m:49.97236042012162,n:'0',o:'',t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+icx+2024.2.1+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/G9e4sWj6o}).
     }
     \label{code:sycl_example}
 \end{listing}
+
+\autoref{code:sycl_example} shows an example SYCL code for the DAXPY kernel. 
+Again, this code is closely related to the \gls{cuda} code in \autoref{code:cuda_example}. 
+In fact, the mapping is so easy that there is also the SYCLomatic~\cite{huang_syclomatic_2023, noauthor_oneapi-srcsyclomatic_2025} conversion tool that can automatically convert \gls{cuda} code to SYCL. 
+The main difference compared to \gls{cuda} is that in SYCL, at first, we have to create a \code{sycl::queue} that represents the device we want our code to execute on: a \gls{cpu}, \gls{gpu}, \gls{fpga}, or any other device supported by an SYCL implementation. 
+Then, as was the case with \gls{cuda}, we have to allocate memory on the device and copy the data to it. 
+In SYCL, however, we can do this with a more \cpp like \gls{api}: in lines 3-6, we can see that, e.g., we do not have to calculate our sizes in bytes, removing an additional point of failure. 
+The actual compute kernel is defined in lines 5-10 as a simple \cpp lambda function (could also be an ordinary function object). 
+It should be noted that the previously mentioned asynchronous task graph processing can be disabled using the \code{sycl::property::queue::in_order} property provided to the SYCL queue constructor in line 1, which implicitly serializes all SYCL runtime calls. 
+This small example showcases the power of SYCL to target any device with purely standard \cpp code, especially when compared to the verbosity of \gls{opencl} shown in \autoref{code:opencl_example}. 
 
 
 %%% ADVANTAGES AND DISADVANTAGES
@@ -104,6 +119,7 @@ sycl::free(d_Y, q);
     \item standardized
     \item supports a wide variety of hardware platforms
     \item structure close to \gls{cuda}
+    \item builtin interoperability
 }{
     \item some low-level optimizations not possible directly in SYCL
 }

@@ -5,25 +5,66 @@
     Kokkos Core implements a programming model in C++ for writing performance portable applications targeting all major HPC platforms. For that purpose it provides abstractions for both parallel execution of code and data management. Kokkos is designed to target complex node architectures with N-level memory hierarchies and multiple types of execution resources.
 \end{quotebox}
 
-Kokkos:
-\begin{itemize}
-    \item first release May 2015~\cite{trott_kokkos_2015}
-    \item original Kokkos paper 2024~\cite{carter_edwards_kokkos_2014}
-    \item please cite~\cite{trott_kokkos_2022}
-    \item current release v 4.5.1 December 23, 2024~\cite{noauthor_release_2024}
-\end{itemize}
+Kokkos'~\cite{trott_kokkos_2022} basic idea is close to the one provided by SYCL: writing portable code for different hardware platforms using modern \cpp. 
+However, the realization is different. 
+While SYCL is a standardized framework, Kokkos is not standardized; it is developed by the national laboratories in the United States in an open source repository. 
+Its first official release was in May 2015~\cite{trott_kokkos_2015, carter_edwards_kokkos_2014}, with the current version being 4.5.1, released in December 2024~\cite{noauthor_release_2024}. 
+Additionally, Kokkos provides higher abstraction levels using execution spaces and views. 
+While this may be helpful for completely new programmers diving into \gls{hpc} and \gls{gpu} programming for the first time, it may be hindering for programmers that already have experience with \gls{cuda}. 
+As with SYCL, parallelism can be expressed in different ways in Kokkos and interoperated with specific backend libraries. 
+In contrast to SYCL, Kokkos provides no way to portably retrieve device-specific information. 
+For example, vendor- or framework-specific functions must be used to check the amount of available device memory. 
+Kokkos has a large ecosystem of different libraries and even Python bindings~\cite{al_awar_performance_2021}.
+However, the Python bindings only support a reduced feature set and only the \gls{cpu}-only and \gls{cuda} execution spaces. 
+Additionally, in contrast to SYCL, where the two major implementations both rely on some compiler extensions, Kokkos is a full library-only implementation that does not require a special compiler. 
 
-\begin{itemize}
-    \item Kokkos
-    \item open-source
-    \item \cpp API
-    \item interoperability with backend specific libraries
-    \item different ways to express parallelism
-    \item high-level abstractions, making it easier for new programmers
-\end{itemize}
+\begin{table}[]
+    \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
+    \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
+    \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
+    \centering
+    \begin{threeparttable}[b]
+        \begin{tblr}{colspec = {Q[l,m] *{4}{X[c,m]} X[2, c,m]},
+                     row{1,2} = {font=\bfseries, bg=gray!50},
+                     row{odd[2]} = {bg=gray!25},
+                     rowsep=4pt,
+                     cell{1}{1}={r=2}{l},
+                     cell{1}{2}={r=2}{c},
+                     }
+            \toprule
+            {Kokkos\\execution space} & \glspl{cpu}  & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
+                                      &              & NVIDIA            & AMD               & Intel             \\\midrule
+            Cuda                      & \unsupported & \supported        & \unsupported      & \unsupported      \\
+            HIP                       & \unsupported & \supported        & \supported        & \unsupported      \\
+            SYCL                      & \supported   & \supported        & \supported        & \supported        \\
+            OpenMPTarget\tnote{1}     & \supported   & \supported        & \supported        & \supported        \\
+            OpenACC\tnote{1}          & \supported   & \supported        & \supported        & \supported        \\
+            HPX\tnote{1}              & \supported   & \partialsupported & \partialsupported & \partialsupported \\
+            OpenMP                    & \supported   & \unsupported      & \unsupported      & \unsupported      \\
+            Threads                   & \supported   & \unsupported      & \unsupported      & \unsupported      \\
+            Serial                    & \supported   & \unsupported      & \unsupported      & \unsupported      \\
+            \bottomrule
+        \end{tblr}
+        \begin{tablenotes}
+            \item[1] experimental
+        \end{tablenotes}
+    \end{threeparttable}
+    \caption{%
+        The available Kokkos execution spaces. 
+        Currently, six execution spaces are fully supported, while three remain in an experimental state.  
+        Nevertheless, this table shows that Kokkos supports various hardware platforms with its different execution spaces. 
+    }
+    \label{tab:kokkos_execution_spaces}
+\end{table}
+
+\autoref{tab:kokkos_execution_spaces} shows the currently supported Kokkos execution spaces. 
+Currently, this includes four \gls{cpu}-only execution spaces and five execution spaces that are able to target other devices. 
+Note that the \gls{hpx}, OpenMPTarget, and OpenACC execution spaces are still experimental. 
+Additionally, Kokkos only supports one \gls{gpu} related execution space at a time, i.e., it is not possible to mix, e.g., the \gls{cuda} and HIP execution spaces in a single application at the same time. 
+Also, while Kokkos has a SYCL execution space, its implementation does not adhere to the SYCL specification but uses \dpcpp/icpx specific extensions, making it only compatible with this SYCL implementation. 
 
 \begin{listing}
-    \begin{minted}{cpp}
+    \begin{moderncode}{cpp}
 template <typename T>
 using host_view_type = Kokkos::View<T *, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>;
 
@@ -38,14 +79,17 @@ Kokkos::parallel_for("saxpy", N, KOKKOS_LAMBDA(const int idx) {
 Kokkos::fence();
 
 Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
-    \end{minted}
+    \end{moderncode}
     \caption{%
-    SAXPY example using Kokkos.
-    \href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:1,endLineNumber:8,positionColumn:1,positionLineNumber:8,selectionStartColumn:1,selectionStartLineNumber:8,startColumn:1,startLineNumber:8),source:'\%23include+\%3CKokkos_Core.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Atemplate+\%3Ctypename+T\%3E\%0Ausing+host_view_type+\%3D+Kokkos::View\%3CT+*,+Kokkos::HostSpace,+Kokkos::MemoryUnmanaged\%3E\%3B\%0A\%0Aint+main()+\%7B\%0A++Kokkos::initialize()\%3B\%0A++\%7B\%0A++++const+int+N+\%3D+1024\%3B\%0A\%0A++++//+create+and+fill+used+data\%0A++++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++++\%7D\%0A++++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++++//+allocate+memory+on+the+device\%0A++++Kokkos::View\%3Cdouble*\%3E+d_X(\%22X\%22,+N)\%3B\%0A++++Kokkos::View\%3Cdouble*\%3E+d_Y(\%22Y\%22,+N)\%3B\%0A++++//+copy+data+to+the+device\%0A++++Kokkos::deep_copy(d_X,+host_view_type\%3Cdouble\%3E\%7B+X.data(),+N+\%7D)\%3B\%0A++++Kokkos::deep_copy(d_Y,+host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D)\%3B\%0A\%0A++++//+the+Kokkos+compute+kernel\%0A++++Kokkos::parallel_for(\%22saxpy\%22,+N,+KOKKOS_LAMBDA(const+int+idx)+\%7B\%0A++++++++d_Y(idx)+\%3D+alpha+*+d_X(idx)+\%2B+d_Y(idx)\%3B\%0A++++\%7D)\%3B\%0A++++Kokkos::fence()\%3B\%0A\%0A++++//+copy+data+to+the+host\%0A++++Kokkos::deep_copy(host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D,+d_Y)\%3B\%0A\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++++\%7D\%0A++\%7D\%0A++Kokkos::finalize()\%3B\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!((name:kokkos,ver:'4500')),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/PW85sGxKW}
+    A simple DAXPY example using Kokkos including all necessary memory and kernel launch operations (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:1,endLineNumber:8,positionColumn:1,positionLineNumber:8,selectionStartColumn:1,selectionStartLineNumber:8,startColumn:1,startLineNumber:8),source:'\%23include+\%3CKokkos_Core.hpp\%3E\%0A\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Atemplate+\%3Ctypename+T\%3E\%0Ausing+host_view_type+\%3D+Kokkos::View\%3CT+*,+Kokkos::HostSpace,+Kokkos::MemoryUnmanaged\%3E\%3B\%0A\%0Aint+main()+\%7B\%0A++Kokkos::initialize()\%3B\%0A++\%7B\%0A++++const+int+N+\%3D+1024\%3B\%0A\%0A++++//+create+and+fill+used+data\%0A++++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++++\%7D\%0A++++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++++//+allocate+memory+on+the+device\%0A++++Kokkos::View\%3Cdouble*\%3E+d_X(\%22X\%22,+N)\%3B\%0A++++Kokkos::View\%3Cdouble*\%3E+d_Y(\%22Y\%22,+N)\%3B\%0A++++//+copy+data+to+the+device\%0A++++Kokkos::deep_copy(d_X,+host_view_type\%3Cdouble\%3E\%7B+X.data(),+N+\%7D)\%3B\%0A++++Kokkos::deep_copy(d_Y,+host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D)\%3B\%0A\%0A++++//+the+Kokkos+compute+kernel\%0A++++Kokkos::parallel_for(\%22saxpy\%22,+N,+KOKKOS_LAMBDA(const+int+idx)+\%7B\%0A++++++++d_Y(idx)+\%3D+alpha+*+d_X(idx)+\%2B+d_Y(idx)\%3B\%0A++++\%7D)\%3B\%0A++++Kokkos::fence()\%3B\%0A\%0A++++//+copy+data+to+the+host\%0A++++Kokkos::deep_copy(host_view_type\%3Cdouble\%3E\%7B+Y.data(),+N+\%7D,+d_Y)\%3B\%0A\%0A++++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++++\%7D\%0A++\%7D\%0A++Kokkos::finalize()\%3B\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!((name:kokkos,ver:'4500')),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:100,l:'4',m:49.97236042012162,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50.02763957987838,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/PW85sGxKW}).
     }
     \label{code:kokkos_example}
 \end{listing}
 
+\autoref{code:kokkos_example} shows a code example written in Kokkos. 
+The overall code structure, move data to the device, to your computation, move the data back to the host, is similar to, e.g., \gls{cuda} or SYCL. 
+However, as already mentioned, the abstraction level is a different one: the memory allocations are hidden behind the \code{Kokkos::View} (lines 4+5), and the device the code should be executed on is hidden behind the in this example implicitly used \code{Kokkos::DefaultExecutionSpace}. 
+The actual kernel is similar to SYCL written using a simple lambda function, whereby we have to note that normal \cpp lambda functions are not enough, but the Kokkos specific \code{KOKKOS_LAMBDA} macro must be used. 
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{kokkos}{
@@ -53,6 +97,6 @@ Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
     \item easy-to-use abstractions like execution and memory spaces
 }{
     \item not standardized
-    \item abstractions different to \gls{cuda} $\rightarrow$ more difficult to translate from existing \gls{cuda} code
+    \item abstractions different to \gls{cuda} making it more difficult to translate from existing \gls{cuda} code
     \item some low-level optimizations not possible directly in Kokkos
 }

@@ -20,14 +20,14 @@ In the remainder of this thesis, only these standard algorithms are used with \g
 \todo{mention that parallel algorithms were only implemented after the \cpp draft}
 
 \begin{listing}
-    \begin{minted}{cpp}
+    \begin{moderncode}{cpp}
 std::vector<int> indices(N);
 std::iota(indices.begin(), indices.end(), 0);
 
 hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](const int idx) {
     Y[idx] = alpha * X[idx] + Y[idx];
 });
-    \end{minted}
+    \end{moderncode}
     \caption{%
     A simple DAXPY example using \gls{hpx} parallel loops.}
     \label{code:hpx_example}

@@ -95,6 +95,8 @@
 
 \newcommand{\cpp}[1][]{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}#1\xspace}
 \newcommand{\dpcpp}{DPC\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
+\newcommand{\charmpp}{Charm\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
+\newcommand{\qdppp}{QDP\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
 
 \newcommand{\setfontsize}[1]{\fontsize{#1pt}{1.2\dimexpr#1pt\relax}\selectfont}
 
@@ -179,6 +181,22 @@
 \end{minipage}\newline
 }
 
+% Define a modern-looking code block style
+\tcbuselibrary{minted}  % Unicode support for minted
+\newtcblisting{moderncode}[2][]{
+    listing engine=minted,
+    colframe=black!50,    % Subtle border
+    coltitle=black,       % Title color
+    boxrule=0.5pt,        % Thin border
+    arc=3pt,              % Slightly rounded corners
+    boxsep=5pt,           % Padding for readability
+    listing only,         % Ensures only code is displayed
+    minted language=#2, % Default language (can be overridden)
+    minted options={xleftmargin=8pt, #1},
+}
+
+
+
 % binding correction
 \setlength{\evensidemargin}{-24pt}
 \setlength{\oddsidemargin}{-24pt}
@@ -192,7 +210,7 @@
 
 
 
-\includeonly{content/02_performance_portability}
+\includeonly{content/02_performance_portability, content/03_hardware}
 
 %\input{commands}
 
@@ -288,6 +306,7 @@
 
 \include{content/01_introduction}
 \include{content/02_performance_portability}
+\include{content/03_hardware}
 \include{content/03_problem_category_blas_like}
 \include{content/04_problem_category_tree_based}
 \include{content/05_problem_category_hashing_based}

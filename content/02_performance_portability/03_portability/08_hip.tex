@@ -14,7 +14,7 @@ The \gls{hip} \gls{api} is extremely close to the one provided by NVIDIA: in mos
 Additionally, the most common NVIDIA provided \gls{cuda} libraries are also available for \gls{hip} like hipBLAS, hipSPARSE, hipFFT, etc.
 
 \begin{listing}
-    \begin{minted}{cpp}
+    \begin{moderncode}{cpp}
 __global__ void vector_add(const double alpha, const double *X, double *Y, const int N) {
     const int idx = blockDim.x * blockIdx.x + threadIdx.x;
     if(idx < N) Y[idx] = alpha * X[idx] + Y[idx];
@@ -31,7 +31,7 @@ vector_add<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
 hipMemcpy(Y, d_Y, N * sizeof(double), hipMemcpyDeviceToHost);
 hipFree(d_X);
 hipFree(d_Y);
-    \end{minted}
+    \end{moderncode}
     \caption{%
     A simple DAXPY example using \gls{hip} including all necessary memory and kernel launch operations.
     }

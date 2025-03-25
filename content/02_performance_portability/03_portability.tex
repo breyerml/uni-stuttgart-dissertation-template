@@ -12,8 +12,6 @@ One of the first portability definitions was already provided in \citeyear{poole
 \begin{quotebox}{\citet{poole_portability_1975}}
     Portability is a measure of the ease with which a program can be transferred from one environment to another: If the effort required to move the program is much less than that required to implement it initially, then we say that it is highly portable.
 \end{quotebox}
-% which was later picked up or slightly modified by other publications~\cite{tanenbaum_guidelines_1978, mooney_bringing_1997}. \todo{cite? more?}
-%\todo{find more definitions?}
 
 The definition of portability of \citet{poole_portability_1975} was later slightly modified to ... by \citet{mooney_strategies_1990, mooney_bringing_1997}:
 \begin{quotebox}{\citet{mooney_bringing_1997}}
@@ -31,8 +29,8 @@ where $C_P$ is the cost to port, and $C_R$ is the cost to rewrite the program.
 \end{definition}
 A program is completely portable if $DP$ is one, and a positive value indicates that porting a code is more profitable than rewriting it from scratch. 
 However, devising such costs is highly non-trivial and subjective. 
-Is the cost only based on the amount of lines of code that must be changed? 
-That can be easily measurable but does not really reflect true real-world cost since it also depends on the development time necessary to port a code. 
+Is the cost only based on the number of lines of code that must be changed? 
+That can be easily measurable but does not reflect true real-world cost since it depends on the development time necessary to port a code. 
 If we factor in development time, we also have to account for the developers' different experience levels: a developer already familiar with a new hardware platform may port a code in less time than an unfamiliar programmer, reducing the real-world cost of porting and, therefore, changing the cut-off point of when porting a code may be worthwhile. 
 However, it is extremely difficult to assess the developers' different experience levels beforehand to decide whether porting or rewriting an application is more feasible. 
 
@@ -43,74 +41,68 @@ A more recent definition of portability was created by \citet{pennycook_metric_2
 In contrast to the previous definition, the key part here is that it is not enough for an application to run on different hardware platforms but to produce the correct results on these different platforms. 
 An application that runs everywhere but produces wrong results is pointless in a real-world setting. 
 
-\todo{insert ways to fix the portability problem}
-
-In the following, I will present the basics of the languages or frameworks that promise portability. 
-The order in which I present them may seem arbitrary at first, but it is the order in which the respective first public release or standard document was available. 
-Note while \gls{cuda} is not a portable language, it was the first language able to target \glspl{gpgpu}, and many of the later portable languages were heavily influenced by \gls{cuda}. 
-Therefore, \gls{cuda} will also be included in the following sections. 
-
-\todo{Formulierung}
-I also added small code examples for all later-used programming languages or frameworks to show their basic usage. 
-These code examples show a DAXPY kernel computing $y = \alpha \cdot x + y$ for two vectors $x, y \in \mathbb{R}^N$ and a scalar $\alpha \in \mathbb{R}$ using FP64 floating point numbers with all necessary language- or framework-specific constructs, like memory operations or enqueueing a compute kernel for execution. 
-Additionally, where possible, the code examples contain a link to the Godbolt compiler explorer~\cite{godbolt_compiler-explorercompiler-explorer_2025} for a fully compilable and executable version that can be played with. 
-Note that the following sections do not fully introduce the respective programming languages and frameworks but serve only to gather a general overview. 
-
-\newpage
-\input{content/02_performance_portability/03_portability/01_openmp}
-\newpage
-\input{content/02_performance_portability/03_portability/02_cuda}
-\newpage
-\input{content/02_performance_portability/03_portability/03_hpx}
-\newpage
-\input{content/02_performance_portability/03_portability/04_opencl}
-\newpage
-\input{content/02_performance_portability/03_portability/05_standard_cpp}
-\newpage
-\input{content/02_performance_portability/03_portability/06_sycl}
-\newpage
-\input{content/02_performance_portability/03_portability/07_kokkos}
-\newpage
-\input{content/02_performance_portability/03_portability/08_hip}
-\newpage
-\input{content/02_performance_portability/03_portability/09_other_frameworks}
-
-\todo{pennycook definition eigene oder quelle suchen}
-
-\newpage
 
 \begin{table}[]
     \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
     \newcommand{\partialsupported}{\textcolor{BurntOrange}{\faCheckCircle}}
     \newcommand{\unsupported}{\textcolor{Red}{\faTimesCircle}}
     \centering
-    \begin{tblr}{colspec = {Q[l,m] *{6}{X[c,m]}},
+    \begin{tblr}{colspec = {Q[l,m] *{4}{X[c,m]}},
                  row{1,2} = {font=\bfseries, bg=gray!50},
                  row{odd[2]} = {bg=gray!25},
-                 rowsep=4pt
+                 rowsep=4pt,
+                 cell{1}{1}={r=2}{l},
+                 cell{1}{2}={r=2}{c},
                  }
         \toprule
-                      & \SetCell[c=3]{c}\glspl{cpu} &&             & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
-                      & x86\_64      & POWER9       & ARM          & NVIDIA            & AMD               & Intel             \\\midrule
-        OpenMP        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
-        CUDA          & \unsupported & \unsupported & \unsupported & \supported        & \unsupported      & \unsupported      \\
-        HPX           & \supported   & \supported   & \supported   & \partialsupported & \partialsupported & \partialsupported \\
-        OpenCL        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
-        SYCL          & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
-        Kokkos        & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
-        HIP           & \unsupported & \unsupported & \unsupported & \supported        & \supported        & \unsupported      \\
-        Standard \cpp & \supported   & \supported   & \supported   & \supported        & \supported        & \supported        \\
+        {programming\\framework} & \glspl{cpu}  & \SetCell[c=3]{c}\glspl{gpu} &&                            \\
+                                 &              & NVIDIA            & AMD               & Intel             \\\midrule
+        OpenMP (target offload)  & \supported   & \supported        & \supported        & \supported        \\
+        CUDA                     & \unsupported & \supported        & \unsupported      & \unsupported      \\
+        HPX                      & \supported   & \partialsupported & \partialsupported & \partialsupported \\
+        OpenCL                   & \supported   & \supported        & \supported        & \supported        \\
+        Standard \cpp            & \supported   & \supported        & \supported        & \supported        \\
+        SYCL                     & \supported   & \supported        & \supported        & \supported        \\
+        Kokkos                   & \supported   & \supported        & \supported        & \supported        \\
+        HIP                      & \unsupported & \supported        & \supported        & \unsupported      \\
         \bottomrule
     \end{tblr}
     \caption{%
-    Either we can use two categories, simply splitting the hardware platforms in \glspl{cpu} and \glspl{gpu}, or split it into more fine-grain categories like different \gls{cpu} and \gls{gpu} architectures. 
-    Additional, other hardware platforms inside these categories, e.g., RISC-V \glspl{cpu} or ARM \glspl{gpu} or even completely new categories like \glspl{fpga} or \glspl{tpu} are also possible. 
+    The list of the programming frameworks used in the remainder of this dissertation including their supported target platforms. 
+    Five out of the investigated eight programming frameworks promise to support all major hardware platforms, i.e., \glspl{cpu} and \glspl{gpu} from NVIDIA, \gls{amd}, and Intel. 
+    Note that we do not make use of \gls{openmp}'s target offload feature and, therefore, later only investigate \gls{openmp} on \glspl{cpu}. 
     For \gls{hpx}, \glspl{gpu} are supported via executors, but the actual compute kernels must be written using another framework like \gls{cuda}, \gls{hip}, SYCL, or Kokkos.
-    Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
+    % Note that for the standardized frameworks, it can happen that no single implementation supports all hardware platforms, but only a mixture does. 
     }
-    \label{tab:portability_categories}
+    \label{tab:frameworks_overview}
 \end{table}
 
+In the following, I will present the basics of the languages or frameworks that promise portability and that I used during my dissertation. 
+All used frameworks can be found in \autoref{tab:frameworks_overview}. 
+The order in which I present them may seem arbitrary at first, but it is the order in which the respective first public release or standard document was available. 
+Note that while \gls{cuda} is not a portable language, it was the first language able to target \glspl{gpgpu}, and many of the later portable languages were heavily influenced by \gls{cuda}. 
+Therefore, \gls{cuda} will also be included in the following sections. 
+For \gls{hpx}, \glspl{gpgpu} are supported via executors, but the actual compute kernels must be written using another framework like \gls{cuda}, \gls{hip}, SYCL, or Kokkos. 
+
+I also added small code examples for all later-used programming languages or frameworks to show their basic usage. 
+These code examples show a DAXPY kernel computing $y = \alpha \cdot x + y$ for two vectors $x, y \in \mathbb{R}^N$ and a scalar $\alpha \in \mathbb{R}$ using FP64 floating point numbers with all necessary language- or framework-specific constructs, like memory operations or kernel launches. 
+Additionally, where possible, the code examples contain a link to the Godbolt compiler explorer~\cite{godbolt_compiler-explorercompiler-explorer_2025} for a fully compilable and executable version that can be played with. 
+Note that the following sections do not fully introduce the respective programming languages and frameworks but serve only to gather a general overview. 
+
+\input{content/02_performance_portability/03_portability/01_openmp}
+\input{content/02_performance_portability/03_portability/02_cuda}
+\input{content/02_performance_portability/03_portability/03_hpx}
+\input{content/02_performance_portability/03_portability/04_opencl}
+\input{content/02_performance_portability/03_portability/05_standard_cpp}
+\input{content/02_performance_portability/03_portability/06_sycl}
+\input{content/02_performance_portability/03_portability/07_kokkos}
+\input{content/02_performance_portability/03_portability/08_hip}
+\input{content/02_performance_portability/03_portability/09_other_frameworks}
+
+\todo{Wie den Übergang hier sinnvoller gestalten?}
+
+\subsection{Notations}
+\label{sec:frameworks:notation}
 
 \begin{table}[]
     \centering
@@ -134,7 +126,16 @@ Note that the following sections do not fully introduce the respective programmi
     The different naming conventions for the different portability languages and frameworks. 
     Since my greatest focus lies on SYCL, I will use its naming convention going forward. 
     For Standard \cpp, these notations do not apply since the \cpp standard has no notion of the underlying hardware because it is only defined on an abstract state machine. 
+    The notation depends on the used executor for \gls{hpx}. 
     }
-    \label{tab:portability_naming}
+    \label{tab:frameworks_notations}
 \end{table}
 
+In the previous sections, I introduced the programming frameworks that I will use in this dissertation. 
+\autoref{tab:frameworks_notations} shows the different notations between the programming frameworks. 
+Since \gls{hip} is extremely closely related to \gls{cuda}, both programming frameworks use the same notations. 
+Originally, SYCL was based on \gls{opencl} and, therefore, also inherited its notation. 
+On the other hand, Kokkos shares its basic notation with \gls{openmp}. 
+
+Since it is not feasible to always mention all notations and the main programming framework used in this dissertation is SYCL, from now on, I will stick to the SYCL/\gls{opencl} notation. 
+If you are more familiar with the \gls{cuda} or Kokkos notation, \autoref{tab:frameworks_notations} can be a translation aid. 

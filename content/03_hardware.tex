@@ -1,0 +1,62 @@
+\chapter{Hardware}
+\label{chapter:hardware}
+
+Used Hardware: 
+TDP vs TGP vs TBP
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] *{4}{X[r,m]}},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 }
+        \toprule
+        hardware        & FP64 Peak FLOP in $\left[\si{\tera\flop\per\second}\right]$ & theoretical memory bandwidth in $\left[\si{\giga\byte\per\second}\right]$  & memory in $\left[\si{\giga\byte}\right]$ & Power Draw (\acrshort{tdp}) in $[W]$ \\\midrule
+        NVIDIA A100~\cite{nvidia_nvidia_2020}     & $\num{9.7}$   & $\num{1555}$ & $\num{40}$ HBM2   & $\num{400}$ \\
+        NVIDIA A30~\cite{nvidia_nvidia_2022}      & $\num{5.2}$   & $\num{933}$  & $\num{24}$ HBM2   & $\num{165}$ \\
+        NVIDIA RTX 3090~\cite{nvidia_nvidia_2021} & $\num{0.556}$ & $\num{936}$  & $\num{24}$ GDDR6X & $\num{350}$ \\
+
+        AMD Instinct MI210~\cite{amd_amd_2021}             & $\num{22.6}$  & $\num{1600}$ & $\num{64}$ HBM2e & $\num{300}$ \\
+        AMD Radeon VII~\cite{techpowerup_techpowerup_2019} & $\num{3.36}$  & $\num{1020}$ & $\num{16}$ HBM2  & $\num{295}$ \\
+        AMD Radeon RX 7800 XT~\cite{amd_radeon_2025}       & $\num{1.156}$ & $\num{624}$  & $\num{16}$ GDDR6 & $\num{263}$ \\
+
+        Intel Arc B580~\cite{techpowerup_techpowerup_2025} & $\num{1.709}$ & $\num{456}$ & $\num{12}$ GDDR6 & $\num{190}$ \\
+        
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO
+    }
+    \label{tab:gpu_hardware}
+\end{table}
+
+\todo{how to calculate FLOP on CPU \cite{dolbeau_theoretical_2018}}
+\todo{how to specify memory bandwidth}
+\todo{POWER9 info}
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] *{5}{X[r,m]}},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 }
+        \toprule
+        hardware        & FP64 Peak FLOP in $\left[\si{\tera\flop\per\second}\right]$ & theoretical memory bandwidth in $\left[\si{\giga\byte\per\second}\right]$  & \# cores/\# threads & Power Draw (\acrshort{tdp}) in $[W]$ & clock frequency (all core boost) $\left[\si{\giga\hertz}\right]$\\\midrule
+        AMD EPYC 9274F~\cite{amd_amd_2022}            & TODO   & TODO & $\num{24}/\num{48}$ & $\num{320}$ & $\num{4.05} (\num{4.1})$ \\
+        Intel Core i9-10980XE~\cite{intel_intel_2019} & TODO   & TODO & $\num{18}/\num{36}$ & $\num{165}$ & $\num{3.00} (\num{4.6})$ \\
+        IBM POWER9 2.2                                & TODO   & TODO & $\num{20}/\num{80}$ & $\num{160}$ & $\num{2.30} (\num{3.8})$ \\
+        
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    TODO
+    }
+    \label{tab:cpu_hardware}
+\end{table}
+
+likwid 
+nvprof 
+rocprof 
+OpenCL?

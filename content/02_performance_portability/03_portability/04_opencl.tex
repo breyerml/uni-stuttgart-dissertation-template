@@ -13,7 +13,7 @@ These implementations include, among others, implementations of the \gls{opencl}
 Many more implementations exist for the \gls{opencl} 2.0 standard\footnote{\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl} (visited: 2025-03-21)}.
 
 \begin{listing}
-    \begin{minted}{cpp}
+    \begin{moderncode}[fontsize=\small]{cpp}
 const char* kernel_source = R"KS(
 __kernel void saxpy(const double alpha, __global double *X, __global double *X) {
     const int idx = get_global_id(0);
@@ -49,7 +49,7 @@ clReleaseKernel(kernel);
 clReleaseProgram(program);
 clReleaseCommandQueue(queue); 
 clReleaseContext(context);
-    \end{minted}
+    \end{moderncode}
     \caption{%
     A simple DAXPY example using \gls{opencl} including all necessary compilation, memory, and kernel launch operations. }
     \label{code:opencl_example}
@@ -64,6 +64,7 @@ This approach gives \gls{opencl} great flexibility since the compute kernels can
 At the same time, however, the verbosity of \gls{opencl} also opens the doors for many more pitfalls and potential bugs. 
 Also, while \gls{opencl} is not as high-level as \gls{openmp}, not all vendor-specific optimizations are possible since one of the main goals of \gls{opencl} is to support as many platforms as possible. 
 
+\todo{different parallelism strategies?}
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{opencl}{

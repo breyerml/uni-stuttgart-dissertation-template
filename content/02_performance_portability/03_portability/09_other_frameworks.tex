@@ -1,62 +1,34 @@
 \subsection{Other Portability Frameworks}
 \label{sec:frameworks:other}
 
-Other Frameworks:
-\begin{itemize}
-    \item OpenACC
-    \begin{itemize}
-        \item first specification November 2011~\cite{openacc_standard_openacc_2011}
-        \item first or one of the first OpenACC papers 2012~\cite{hutchison_openacc_2012}
-        \item current specification November 2022~\cite{openacc_standard_openacc_2022}
-        \item Implementations (\url{https://www.openacc.org/tools})
-        \begin{itemize}
-            \item HPE Cray Compiler Environment (CCE): OpenACC deprecated since CCE 10.0.0 for C and C++ as of 7 May 2020 (\url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00113907en_us&page=OpenACC_Use.html}, \url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00115296en_us&page=About_the_Cray_Fortran_Reference_Manual.html})
-            \item NVIDIA
-            \item GCC (\url{https://gcc.gnu.org/wiki/OpenACC})
-            \item Omni Compiler Project (\url{https://omni-compiler.org/})
-            \item OpenHU (\url{https://github.com/uhhpctools/openuh})
-            \item OpenARC (\url{https://github.com/swiftcurrent2018/openarc})
-            \item RoseACC (\url{https://github.com/laudarch/RoseACC-workspace})
-        \end{itemize}
-    \end{itemize}
-    
-    \item RAJA:
-    \begin{itemize}
-        \item first release v0.1.0 June 22, 2016~\cite{llnl_release_2016}
-        \item first publication 2019~\cite{beckingsale_raja_2019}
-        \item current release v2024.07.0 July 24, 2024~\cite{llnl_release_2024}
-    \end{itemize}
+All previously mentioned libraries, frameworks, or programming languages will be used in the remainder of this dissertation, at least to some extent. 
+However, additional frameworks exist, the usage of which was outside of the scope of this dissertation. 
+These frameworks will be touched upon in this section for completeness. 
 
-    \item thrust
-    \begin{itemize}
-        \item algorithms for NVIDIA GPU and multi-core CPU~\cite{bell_thrust_2012}
-        \item first thrust release 1.0.0 June, 2009~\cite{nvidia_corporation_thrust_2009}
-        \item current thrust release under the CUDA \cpp Core Libraries 2.8.0 March 03, 2025~\cite{cccl_development_team_release_2023}
-    \end{itemize}
+With the first official release from 1993, \charmpp is one of the oldest portability frameworks still under active development~\cite{kale_charm_1993, kale_uiuc-pplcharm_2021}, with the current version being released in June 2024~\cite{noauthor_release_2024}. 
+It is a message-passing parallel language and runtime system. 
+While it originally only supported \glspl{cpu}, support for \glspl{gpu} was added in 2008~\cite{wesolowski_application_2008} and later improved through \charmpp's \gls{gpu} manager and Hybrid \gls{api}. 
+However, currently, only NVIDIA \glspl{gpu} are supported, and the compute kernels must be written using native \gls{cuda}. 
 
-    \item Charm++
-    \begin{itemize}
-        \item GPU Manager library and Hybrid API (HAPI)
-        \item source repo~\cite{kale_uiuc-pplcharm_2021}
-        \item first release and paper October 1993~\cite{kale_charm_1993}
-        \item added support for GPUs~\cite{wesolowski_application_2008}
-        \item current release v8.0.0 June 4, 2024~\cite{noauthor_release_2024}
-    \end{itemize}
+Two years after the first \gls{cuda} release, NVIDIA released their first version of the thrust library in 2009~\cite{nvidia_corporation_thrust_2009}, which is a library of parallel algorithms and data structures for NVIDIA \glspl{gpu} and multi-core \glspl{cpu}~\cite{bell_thrust_2012}. 
+Currently, thrust is released under the \gls{cuda} \cpp Core Libraries with the most recent version 2.8.0 released in March 2025~\cite{cccl_development_team_release_2025}. 
 
-    \item Legion
-    \begin{itemize}
-        \item \enquote{Legion is a data-centric parallel programming system for writing portable, high-performance programs targeted at distributed heterogeneous architectures.}
-        \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
-        \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
-    \end{itemize}
+Over one year before the release of the first \gls{openmp} specification, including target offloading capabilities, in 2013, the first \gls{openacc} specification was released in November 2011~\cite{openacc_standard_openacc_2011, hutchison_openacc_2012}, and the most recent one in November 2022~\cite{openacc_standard_openacc_2022}. 
+The basic idea of \gls{openacc} is nearly identical to \gls{openmp}'s target offloading. 
+Both use a directive-based approach with optional library functions. 
+As with \gls{openmp}, different implementations, e.g., from NVIDIA or the GNU GCC compiler, exist. 
 
-    \item Domain-Specific Languages (DSLs)
+The first paper regarding Legion, a data-centric parallel programming model for writing performance and portable code for distributed heterogeneous architectures, was released in 2012 already including support for \glspl{cpu} and \glspl{gpu}~\cite{bauer_legion_2012}. 
+It supports various hardware platforms using Kokkos. 
+The current version, 24.12.0, was released in December 2024~\cite{stanford_release_2024}.
 
-    \item Alpaka
-    \begin{itemize}
-        \item based on master thesis~\cite{worpitz_investigating_2015}
-        \item initial paper May, 2016~\cite{zenker_alpaka_2016}
-        \item first release~\cite{alpaka-group_release_2016}
-        \item current release 1.2.0, October 4, 2024~\cite{alpaka-group_release_2024}
-    \end{itemize}
-\end{itemize}
+Alpaka was released in May 2016~\cite{zenker_alpaka_2016, alpaka-group_release_2016} and is based on a master's thesis from~\citet{worpitz_investigating_2015}. 
+The current version is v2024.07.0, released in June 2024~\cite{llnl_release_2024}. 
+Its design is comparable to that of Kokkos and can also target all major hardware platforms using one of the provided backends: \gls{openmp}, \gls{cuda}, \gls{hip}, or SYCL. 
+
+RAJA was also first released in 2016~\cite{llnl_release_2016}, with the current version 1.2.0 released in October 2024~\cite{alpaka-group_release_2024}. 
+Its basic idea is closer to the one provided by Kokkos, introducing higher abstraction layers for device and memory management. 
+Compared to Kokkos, RAJA achieves performance portability by directly abstracting parallel loops and reductions, compared to Kokkos's more general compute kernels. 
+It supports various hardware platforms through execution policies for \gls{openmp} (target offload), \gls{cuda}, \gls{hip}, or SYCL. 
+
+In addition to these more general performance portability frameworks, highly specialized \glspl{dsl} exist like, for example, NMODL~\cite{hines_expanding_2000} for computational neuroscience, the Tensor Contraction Engine~\cite{baumgartner_synthesis_2005} for quantum chemistry, \qdppp~\cite{edwards_chroma_2005} for lattice quantum chromo dynamics, or Ebb~\cite{bernstein_ebb_2016} for physical simulations. 

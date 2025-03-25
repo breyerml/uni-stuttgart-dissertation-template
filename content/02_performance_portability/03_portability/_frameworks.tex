@@ -631,3 +631,69 @@ std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=](con
 }{
     \item very high-level, i.e., some optimizations not possible
 }
+
+
+
+
+
+
+\newpage
+Other Frameworks:
+\begin{itemize}
+    \item OpenACC
+    \begin{itemize}
+        \item first specification November 2011~\cite{openacc_standard_openacc_2011}
+        \item first or one of the first OpenACC papers 2012~\cite{hutchison_openacc_2012}
+        \item current specification November 2022~\cite{openacc_standard_openacc_2022}
+        \item Implementations (\url{https://www.openacc.org/tools})
+        \begin{itemize}
+            \item HPE Cray Compiler Environment (CCE): OpenACC deprecated since CCE 10.0.0 for C and C++ as of 7 May 2020 (\url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00113907en_us&page=OpenACC_Use.html}, \url{https://support.hpe.com/hpesc/public/docDisplay?docId=a00115296en_us&page=About_the_Cray_Fortran_Reference_Manual.html})
+            \item NVIDIA
+            \item GCC (\url{https://gcc.gnu.org/wiki/OpenACC})
+            \item Omni Compiler Project (\url{https://omni-compiler.org/})
+            \item OpenHU (\url{https://github.com/uhhpctools/openuh})
+            \item OpenARC (\url{https://github.com/swiftcurrent2018/openarc})
+            \item RoseACC (\url{https://github.com/laudarch/RoseACC-workspace})
+        \end{itemize}
+    \end{itemize}
+    
+    \item RAJA:
+    \begin{itemize}
+        \item first release v0.1.0 June 22, 2016~\cite{llnl_release_2016}
+        \item first publication 2019~\cite{beckingsale_raja_2019}
+        \item current release v2024.07.0 July 24, 2024~\cite{llnl_release_2024}
+    \end{itemize}
+
+    \item thrust
+    \begin{itemize}
+        \item algorithms for NVIDIA GPU and multi-core CPU~\cite{bell_thrust_2012}
+        \item first thrust release 1.0.0 June, 2009~\cite{nvidia_corporation_thrust_2009}
+        \item current thrust release under the CUDA \cpp Core Libraries 2.8.0 March 03, 2025~\cite{cccl_development_team_release_2023}
+    \end{itemize}
+
+    \item Charm++
+    \begin{itemize}
+        \item GPU Manager library and Hybrid API (HAPI)
+        \item source repo~\cite{kale_uiuc-pplcharm_2021}
+        \item first release and paper October 1993~\cite{kale_charm_1993}
+        \item added support for GPUs~\cite{wesolowski_application_2008}
+        \item current release v8.0.0 June 4, 2024~\cite{noauthor_release_2024}
+    \end{itemize}
+
+    \item Legion
+    \begin{itemize}
+        \item \enquote{Legion is a data-centric parallel programming system for writing portable, high-performance programs targeted at distributed heterogeneous architectures.}
+        \item initial paper including GPU support November, 2012~\cite{bauer_legion_2012}
+        \item current release 24.12.0, December 20, 2024~\cite{stanford_release_2024}
+    \end{itemize}
+
+    \item Domain-Specific Languages (DSLs)
+
+    \item Alpaka
+    \begin{itemize}
+        \item based on master thesis~\cite{worpitz_investigating_2015}
+        \item initial paper May, 2016~\cite{zenker_alpaka_2016}
+        \item first release~\cite{alpaka-group_release_2016}
+        \item current release 1.2.0, October 4, 2024~\cite{alpaka-group_release_2024}
+    \end{itemize}
+\end{itemize}
