@@ -1,0 +1,11 @@
+\subsection{Estimating the Memory Bandwidth}
+\label{sec:perf:mem_bandwidth}
+
+
+If we are interested in the actually achieved memory bandwidth, we can use the same method as for the achieved \gls{flops}.
+The previously presented utilities can also be used to gather the attained memory bandwidth. 
+Alternatively, we can count the number of transferred bytes. 
+Again, we must be careful what to count since not all variable access results in a memory transfer. 
+
+Looking at the TRIAD function again \autoref{code:stream_triad}, we have to load three FP64 values per iteration, resulting in $\SI{24}{\byte}$ loaded per iteration and $\SI{240}{\giga\byte}$ in total. 
+Since the execution took $\SI{1.308}{\second}$, we have an achieved memory bandwidth of $\SI{183.49}{\giga\byte\per\second}$. 
