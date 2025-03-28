@@ -11,7 +11,7 @@ While SYCL is a standardized framework, Kokkos is not standardized; it is develo
 Its first official release was in May 2015~\cite{trott_kokkos_2015, carter_edwards_kokkos_2014}, with the current version being 4.5.1, released in December 2024~\cite{noauthor_release_2024}. 
 Additionally, Kokkos provides higher abstraction levels using execution spaces and views. 
 While this may be helpful for completely new programmers diving into \gls{hpc} and \gls{gpu} programming for the first time, it may be hindering for programmers that already have experience with \gls{cuda}. 
-As with SYCL, parallelism can be expressed in different ways in Kokkos and interoperated with specific backend libraries. 
+As with SYCL, parallelism can be expressed differently in Kokkos and interoperated with specific backend libraries. 
 In contrast to SYCL, Kokkos provides no way to portably retrieve device-specific information. 
 For example, vendor- or framework-specific functions must be used to check the amount of available device memory. 
 Kokkos has a large ecosystem of different libraries and even Python bindings~\cite{al_awar_performance_2021}.

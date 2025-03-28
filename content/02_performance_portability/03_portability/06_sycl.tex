@@ -6,7 +6,7 @@
 \end{quotebox}
 
 As with \gls{opencl}, SYCL is also a standard the Khronos working group develops. 
-The first provisional SYCL specification was released in March 2014~\cite{khronos_sycl_working_group_khronos_2014} followed by the first official release 1.2 in May 2015~\cite{khronos_sycl_working_group_khronos_2015}. 
+The first provisional SYCL specification was released in March 2014~\cite{khronos_sycl_working_group_khronos_2014}, followed by the first official release 1.2 in May 2015~\cite{khronos_sycl_working_group_khronos_2015}. 
 Back then, SYCL was tightly coupled to \gls{opencl}, including \gls{opencl} interoperability functionality. 
 However, \citet{alpay_sycl_2020} showed with his AdaptiveCpp (back then known as hipSYCL) implementation, which directly uses \gls{openmp}, \gls{cuda}, and \gls{hip} to target the respective hardware that this tight integration with \gls{opencl} is unnecessary and even hinders the future directions of SYCL. 
 Therefore, the current SYCL specification 2020, with its current Revision 9 from August 2024~\cite{khronos_sycl_working_group_sycl_2024}, lifted this restriction and officially allowed the usage of any backend to implement the SYCL specification. 
@@ -47,7 +47,7 @@ Therefore, the current SYCL specification 2020, with its current Revision 9 from
     \caption{%
         The available SYCL implementations. 
         Currently, three SYCL implementations are under active development, of which AdaptiveCpp and Intel's \dpcpp/icpx support the most hardware platforms. 
-        The other SYCL implementations are not under active development anymore or officially discontinued (ComputeCpp). 
+        The other SYCL implementations are not under active development anymore or have been officially discontinued (ComputeCpp). 
         Nevertheless, this table shows that SYCL supports a wide variety of different hardware platforms. 
     }
     \label{tab:sycl_implementations}

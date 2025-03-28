@@ -6,11 +6,11 @@
 \end{quotebox}
 
 \acrfull{hpx}~\cite{kaiser_hpx_2020} is high-performance many-task asynchronous tasking library. 
-Its development started in 2007~\cite{the_stear_group_history_nodate} with the current version being v1.10.0 from March 2024~\cite{kaiser_stellar-grouphpx_2024}.
+Its development started in 2007~\cite{the_stear_group_history_nodate}, with the current version being v1.10.0 from March 2024~\cite{kaiser_stellar-grouphpx_2024}.
 Although \gls{hpx} is not standardized where possible, its \gls{api} is closely modeled after the \cpp standard \gls{api}. 
 
 The execution model of \gls{hpx} is based on a task graph that is implicitly built in the source code and later executed asynchronously. 
-It implements custom schedulers that also incorporate work-stealing to automatically improve the load-balancing of applications using \gls{hpx}. 
+It implements custom schedulers incorporating work-stealing to improve applications' load-balancing automatically using \gls{hpx}. 
 This is especially useful for non-uniform problems that rely on good load balancing. 
 \gls{hpx} also supports distributed memory architectures using an \gls{agas} and different accelerators using executors. 
 Note that \gls{hpx} only portably incorporates kernel launches in its internal task graph; the actual compute kernels must still be written using other frameworks like \gls{cuda}, \gls{hip}, Kokkos, or SYCL.  
