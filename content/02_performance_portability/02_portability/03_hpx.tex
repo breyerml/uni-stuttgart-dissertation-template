@@ -2,22 +2,20 @@
 \label{sec:frameworks:hpx}
 
 \begin{quotebox}{\href{https://hpx-docs.stellar-group.org/latest/html/index.html\#what-is-hpx}{HPX Documentation}}
-    HPX is a C++ Standard Library for Concurrency and Parallelism. It implements all of the corresponding facilities as defined by the C++ Standard. Additionally, in HPX we implement functionalities proposed as part of the ongoing C++ standardization process. We also extend the C++ Standard APIs to the distributed case. HPX is developed by the STE||AR group.
+    HPX is a \cpp Standard Library for Concurrency and Parallelism. It implements all of the corresponding facilities as defined by the \cpp Standard. Additionally, in HPX we implement functionalities proposed as part of the ongoing \cpp standardization process. We also extend the \cpp Standard APIs to the distributed case. HPX is developed by the STE||AR group.
 \end{quotebox}
 
 \acrfull{hpx}~\cite{kaiser_hpx_2020} is high-performance many-task asynchronous tasking library. 
 Its development started in 2007~\cite{the_stear_group_history_nodate}, with the current version being v1.10.0 from March 2024~\cite{kaiser_stellar-grouphpx_2024}.
-Although \gls{hpx} is not standardized where possible, its \gls{api} is closely modeled after the \cpp standard \gls{api}. 
+Although \gls{hpx} is not standardized, where possible, its \gls{api} is closely modeled after the \cpp standard \gls{api}. 
 
 The execution model of \gls{hpx} is based on a task graph that is implicitly built in the source code and later executed asynchronously. 
-It implements custom schedulers incorporating work-stealing to improve applications' load-balancing automatically using \gls{hpx}. 
+It implements custom schedulers incorporating work-stealing to improve applications' load-balancing automatically. 
 This is especially useful for non-uniform problems that rely on good load balancing. 
 \gls{hpx} also supports distributed memory architectures using an \gls{agas} and different accelerators using executors. 
 Note that \gls{hpx} only portably incorporates kernel launches in its internal task graph; the actual compute kernels must still be written using other frameworks like \gls{cuda}, \gls{hip}, Kokkos, or SYCL.  
-Additionally, \gls{hpx} supports the \cpp{17} standard library parallel algorithms (also see~\autoref{sec:frameworks:stdpar}. 
-In the remainder of this thesis, only these standard algorithms are used with \gls{hpx}. 
-
-\todo{mention that parallel algorithms were only implemented after the \cpp draft}
+Additionally, \gls{hpx} supports the \cpp{17} standard library parallel algorithms (also see~\autoref{sec:frameworks:stdpar}) that were developed alongside \cpp's standardization process. 
+In the remainder of this dissertation, only these standard algorithms are used with \gls{hpx}, solely focusing on shared memory parallelization.  
 
 \begin{listing}
     \begin{moderncode}{cpp}
@@ -34,15 +32,19 @@ hpx::for_each(hpx::execution::par_unseq, indices.begin(), indices.end(), [&](con
 \end{listing}
 
 An example of these \cpp{17} standard parallel algorithms can be seen in \autoref{code:hpx_example}. 
-The only difference compared to \autoref{code:stdpar_example} is the usage of the \code{hpx::} namespace qualifiers instead of the \code{std::} ones. 
-In this code, the \code{for_each} loop is automatically parallelized across all available \gls{cpu} cores. 
+At first, we have to calculate the index set over which we want to parallelize. 
+Strictly speaking, that would not be necessary in the presented DAXPY example since DAXPY can be mapped to a call to \code{std::transform}/\code{hpx::transform}. 
+However, this is not always possible: simply by adding one or more nested for-loops, like in a general matrix-matrix multiplication, no \cpp standard algorithm is available anymore that can directly be used to solve this problem. 
+Therefore, iterating over a predefined index set that may be flattened for nested for-loops is the most straightforward way to map such a problem to \cpp's standard parallel algorithms. 
+The parallelization occurs when the \code{for_each} algorithm overload accepts a parallel execution policy.  
+In this case, \gls{hpx} automatically parallelizes the for-loop across all available \gls{cpu} cores. 
 
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{hpx}{
-    \item supports algorithms close to \cpp standard
+    \item supports algorithms close to the \cpp standard
     \item task-based abstraction more suitable for some problems
 }{
     \item not standardized
-    \item can only launch kernels, other frameworks still \textbf{necessary} to write the actual compute kernels 
+    \item can only portably launch kernels; other frameworks still \textbf{necessary} to write the actual kernels 
 }

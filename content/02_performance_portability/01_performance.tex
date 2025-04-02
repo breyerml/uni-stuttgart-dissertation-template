@@ -1,8 +1,8 @@
 \section{What Is Performance?}
 \label{sec:performance}
 
-Understanding the meaning of \textit{performance} is key to being able to assess performance portability. 
-When looking at the Cambridge Dictionary entry of the word performance, we can see a few different definitions based on the context\footnote{\url{https://dictionary.cambridge.org/dictionary/english/performance}}:
+Understanding the meaning of \textit{performance} is key to assessing performance portability. 
+When looking at the Cambridge Dictionary entry of the word performance, we can see a few different definitions based on the context\footnote{\url{https://dictionary.cambridge.org/dictionary/english/performance} (visited: 2025-03-31)}:
 \begin{description}
     \item[activity:] \enquote{how well a person, machine, etc. does a piece of work or an activity}
     \item[entertainment:] \enquote{the action of entertaining other people by dancing, singing, acting, or playing music}
@@ -11,14 +11,14 @@ When looking at the Cambridge Dictionary entry of the word performance, we can s
 \end{description}
 From these short examples, we can already see that \enquote{a good performance} heavily depends on the context. 
 This is also true for performance in the computer science domain. 
-For example, when asking Machine Learners about the performance of their \gls{ml} models, they will answer with different model metrics showing how well their model performs on new, unseen data. 
-On the other hand, if you ask a member of the \gls{hpc} community about the performance of their, e.g., simulation, we will most likely get an answer regarding the total wall time the simulation needed to complete or the achieved memory bandwidth. 
+For example, when asking machine learners about the performance of their \gls{ml} models, they will answer with different model metrics showing how well their model performs on new, unseen data. 
+On the other hand, if you ask a member of the \gls{hpc} community about the performance of their, e.g., simulation, we will most likely get an answer regarding the total walltime the simulation needed to complete or the achieved memory bandwidth. 
 \citet{pennycook_implications_2019} defined \textit{performance} in their work as   
 \begin{quotebox}{\citet{pennycook_implications_2019}}
     Any measurable property of an application’s correct execution of a problem on a platform.
 \end{quotebox}
 This definition is so broad that it can be used for both of the above computer science domain examples. 
-In the remainder of this dissertation, I will stick to the context of \gls{hpc} when talking about performance. 
+In the remainder of this dissertation, I will stick to the context of \gls{hpc} when discussing performance. 
 
 However, even in this context, there is no single widely agreed-upon definition or metric for describing the performance of some code. 
 Possible metrics can include, but are not limited to:
@@ -31,18 +31,15 @@ Possible metrics can include, but are not limited to:
 \end{description}
 When we look at this list, we can see that the transitions between the categories are fluent. 
 For example, a high efficiency most likely also correlates with a high compute utilization and a small walltime, while a high memory throughput also correlates with high memory utilization. 
-Additionally, most metrics need some baseline, like hardware-specific limits or another application we want our application to compare against. 
+Additionally, most metrics need some baseline to compare against, like hardware-specific limits or another application we want our application. 
 
-\todo{cite papers?}
-However, most of the time, one or more of three metrics are used: walltime, \glspl{flops}, and attained memory bandwidth. 
-Collecting walltimes is straightforward and can directly be done in the used programming language using some clock. 
+However, most of the time, one or more of three basic metrics are used: walltime, \glspl{flops}, and attained memory bandwidth. 
+Collecting walltimes is straightforward and can directly be done in the used programming language using built-in features like \cpp's date and time \code{<chrono>} library. 
 However, gathering the achieved \glspl{flops} or memory bandwidth is more difficult. 
-The theoretical peak performance must also be known to calculate the reached efficiency. 
-While this is generally easy for \glspl{gpu} since most vendors publish these performance values, it is more difficult for \glspl{cpu} since these values are generally not provided by the vendors. 
-
-\todo{Übergang}
+Additionally, the theoretical peak performance must also be known to calculate the reached compute or memory efficiency. 
+While this is generally easier for \glspl{gpu} since most vendors publish these performance values, it is more difficult for \glspl{cpu} since these values are generally not provided. 
+Therefore, in the following two sections, I will introduce how to estimate the theoretical and achieved \gls{flops} and memory bandwidth for a given compute node and application. 
+Both will be needed later to calculate the performance efficiency of the investigated applications. 
 
 \input{content/02_performance_portability/01_performance/01_estimate_flops}
 \input{content/02_performance_portability/01_performance/02_estimate_memory_bandwidth}
-\newpage
-\input{content/02_performance_portability/01_performance/03_performance_sampling}

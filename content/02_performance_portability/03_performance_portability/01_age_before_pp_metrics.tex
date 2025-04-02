@@ -2,7 +2,7 @@
 \label{sec:pre_pp_era}
 
 
-Already since more than three decades is the computer science community concerned with performance portability~\cite{bailey_nas_1991, irigoin_performance_1994, strazdins_high_1996, foster_performance_1996, reed_portability_1996, ngo_portable_1997, jiang_application_1997, cermele_performance_1998, zaafrani_performance_1999, michalakes_performance-portability_2001, goos_achieving_2001, ko_frame_2002, worley_performance_2005, jones_practical_2005, komatsu_evaluating_2010, gabriel_towards_2010} also indicated by the first Workshop on Portability and Performance for Parallel Processing in 1993~\cite{hey_portability_1994}. 
+Since more than three decades now is the computer science community concerned with performance portability~\cite{bailey_nas_1991, irigoin_performance_1994, strazdins_high_1996, foster_performance_1996, reed_portability_1996, ngo_portable_1997, jiang_application_1997, cermele_performance_1998, zaafrani_performance_1999, michalakes_performance-portability_2001, goos_achieving_2001, ko_frame_2002, worley_performance_2005, jones_practical_2005, komatsu_evaluating_2010, gabriel_towards_2010} also indicated by the first Workshop on Portability and Performance for Parallel Processing in 1993~\cite{hey_portability_1994}. 
 In this era, whenever a new computer architecture or paradigm emerged, like new \gls{cpu} architectures, the introduction of many-core processors, or distributed memory systems, the question arised whether it is possible to target these new systems in a portable but also performant way and if so how that could be achieved. 
 However, these concerns were never tackled formally until \citet{zhu_performance_2007} introduced the first quantitative formula regarding performance portability in their paper in \citeyear{zhu_performance_2007}. 
 However, this first metric was only usable in a very narrow setting. 
@@ -20,7 +20,7 @@ $$P^\mathcal{P}_n(b \rightarrow t) = \frac{S^T_n}{S^B_n} \times \SI{100}{\percen
 
 While this was the first quantitative performance portability definition, it lacks generalizability since it is really only meant for code running on compute clusters with multiple nodes. 
 \citeauthor{zhu_performance_2007} also mention this limitation in their paper as they define performance portability in the context of speedup since they argue that the performance is portable with an increasing number of compute nodes. 
-While this definition of performance portability may have been sufficient at the time, it lacks behind in the current time where computer scientist have not only to factor in different \glspl{cpu}, \gls{cpu} core counts, or number of compute nodes, but also completely different hardware architectures like \glspl{gpgpu}, \glspl{fpga}, or \glspl{tpu} from different vendors.
+While this definition of performance portability may have been sufficient at the time, it lacks behind in the current time where programmers have to not only factor in different \gls{cpu} architectures, \gls{cpu} core counts, or number of compute nodes, but also completely different hardware architectures like \glspl{gpgpu}, \glspl{fpga}, or \glspl{tpu} from different vendors.
 Since the computational power of these different hardware architectures varies significantly, and some architectures are vastly superior to others depending on the problem at hand, concerns about performance portability further increased. 
 
 To discuss performance portability in different contexts with different people, possibly from different domains, it is necessary to have a purely subjective, quantifiable metric on which everyone can agree. 
@@ -32,29 +32,29 @@ In \citeyear{edwards_kokkos_2013} in their original Kokkos paper \citet{edwards_
     Our performance portability objective is to maximize the amount of user code that can be compiled for diverse devices and obtain the same (or nearly the same) performance as a variant of the code that is written specifically for that device.
 \end{quotebox}
 Although this definition is already quite good, the problem is that \enquote{\textit{nearly the same}} can and will be interpreted differently by different people. 
-Therefore, this definition is not feasible for object performance portability measurement.
+Therefore, this definition is not feasible for object performance portability measurements.
 
-A year later, in 2014 \cite{kunkel_performance_2014} defined performance portability as:
+A year later, in 2014 \citet{kunkel_performance_2014} defined performance portability as:
 \begin{quotebox}{\citet{kunkel_performance_2014}}
     A code is performance portable if it can achieve a similar fraction of peak hardware performance on a range of different target architectures.
 \end{quotebox}
 As with the quote from \citeauthor{edwards_kokkos_2013}, the problem is the objectivity of the definition, namely how big the \enquote{\textit{similar fraction of}} should be. 
-Although \citeauthor{kunkel_performance_2014} stated that for them it is $\SI{20}{\percent}$ of the \enquote{best achievable performance} with respect to a hand-optimized native implementation, another person could argue that it should be $\SI{15}{\percent}$ or $\SI{25}{\percent}$ making this definition also highly subjective. 
+Although \citeauthor{kunkel_performance_2014} stated that for them it is $\SI{20}{\percent}$ of the best achievable performance with respect to a hand-optimized native implementation, another person could argue that it should be $\SI{15}{\percent}$ or $\SI{25}{\percent}$ making this definition also highly subjective. 
 
 In \citeyear{larkin_performance_2016}, \citet{larkin_performance_2016} defined performance portability as:
 \begin{quotebox}{\citet{larkin_performance_2016}}
     The same source code will run productively on a variety of different architectures.
 \end{quotebox}
-Again, \enquote{\textit{productively}} is highly subjective in a performance and portable or productive way since this definition can include that maintaining custom code paths for better performance may be okay if it is not too much work. 
+Again, \enquote{\textit{productively}} is highly subjective in a performance and portable or productive way since this definition can include that maintaining custom code paths for better performance may be okay if it is not too much work, defeating the portability aspect of performance portability. 
 
 
-Later that year, due to the increasing necessity of developing a performance portability definition, the \gls{doe} conducted a meeting~\cite{neely_doe_2016} specifically regarding performance portability. 
+Later that year, due to the increasing necessity of developing a performance portability definition, the \gls{doe} in the United States conducted a meeting~\cite{neely_doe_2016} specifically regarding performance portability. 
 There, a few attendees were asked to define performance portability in their own words:
 \begin{quotebox}{Rob Neely~\cite{neely_doe_2016}}
     For purposes of this meeting, it is the ability to run an application with acceptable performance across KNL and GPU-based systems with a single version of source code.
 \end{quotebox}
 \begin{quotebox}{Simon Pennycook~\cite{neely_doe_2016}}
-    An application is performance portable if it achieves a consistent level of performance (e.g. defined by execution time or other figure of merit, not percentage of peak flops across platforms relative to the best known implementation on each platform.
+    An application is performance portable if it achieves a consistent level of performance (e.g., defined by execution time or other figure of merit, not percentage of peak flops across platforms relative to the best known implementation on each platform.
 \end{quotebox}
 \begin{quotebox}{Adrian Pope, Vitali Morozov~\cite{neely_doe_2016}}
     Hard portability = no code changes and no tuning. Software portability = simple code mods with no algorithmic changes. Non-portable = algorithmic changes.
@@ -68,4 +68,4 @@ At the end of the \gls{doe} meeting, the attendees also created a working defini
     An application is performance portable if it achieves a consistent ratio of the actual time to solution to either the best-known or the theoretical best time to solution on each platform with minimal platform specific code required.
 \end{quotebox} % https://performanceportability.org/perfport/definition/
 As with all previous definitions, these quotes contain some objective part in one way or another and are not suited for an objective performance portability metric. 
-This led \citeauthor{pennycook_metric_2016} later in the same year to create the first general-purpose performance portability metric, making it for the first time ever possible to discuss the performance and portability of different applications on different hardware in an objective manner. 
+This led \citeauthor{pennycook_metric_2016} later in the same year to create the first general-purpose performance portability metric, making it for the first time ever possible to discuss the performance and portability of different applications on different hardware platforms in an objective manner. 

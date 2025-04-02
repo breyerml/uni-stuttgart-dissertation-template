@@ -1,11 +1,36 @@
 \subsection{Estimating the Memory Bandwidth}
 \label{sec:perf:mem_bandwidth}
 
+Although the peak memory bandwidth is more often provided by the vendors than the peak performance in \gls{flops}, I will provide a way to calculate it nonetheless. 
+The \textit{memory bandwidth per channel} directly depends on the used \gls{ddrsdram} and can be retrieved through its specification sheet or commands like \code{dmidecode}~\cite{cox_dmidecode8_nodate}. 
+Care must be taken when handling the double data rate in modern \gls{ram} hardware, although most \gls{ram} vendors already provide the double data rate values. 
+The \textit{channels per socket} depends on the used \gls{cpu} and \textit{sockets per node} on the compute node. 
 
-If we are interested in the actually achieved memory bandwidth, we can use the same method as for the achieved \gls{flops}.
-The previously presented utilities can also be used to gather the attained memory bandwidth. 
-Alternatively, we can count the number of transferred bytes. 
-Again, we must be careful what to count since not all variable access results in a memory transfer. 
+Putting everything together into one formula gives us \autoref{def:peak_memory_bandwidth}. 
 
-Looking at the TRIAD function again \autoref{code:stream_triad}, we have to load three FP64 values per iteration, resulting in $\SI{24}{\byte}$ loaded per iteration and $\SI{240}{\giga\byte}$ in total. 
-Since the execution took $\SI{1.308}{\second}$, we have an achieved memory bandwidth of $\SI{183.49}{\giga\byte\per\second}$. 
+\begin{definition}[Theoretical Peak Memory Bandwidth]\label{def:peak_memory_bandwidth}
+Given the architecture characteristics of a \gls{cpu} and the used \gls{ram} sticks, the theoretical peak memory bandwidth for a compute node can be calculated using
+$$ \frac{bandwidth}{node} = \frac{bandwidth}{channel} \cdot \frac{channels}{socket} \cdot \frac{sockets}{node} $$
+where the $\frac{bandwidth}{channel}$ is the \text{memory speed} multiplied by the \text{memory bus width} in byte.
+\end{definition}
+Again, this merely serves as a sensible upper bound value, and it is not guaranteed that an application may achieve it. 
+
+For example, to calculate the theoretical peak memory bandwidth, let's look again at our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node. 
+Our node is equipped with $\SI{386}{\gibi\byte}$ \acrshort{ddr}5 \acrshort{ram} with a speed of $\SI{4800}{\mega\transfer\per\second}$ and a memory bus width of $\SI{8}{\byte}$. 
+Each socket has $\num{12}$ memory channels. 
+Therefore, the theoretical peak memory bandwidth of our compete node according to \autoref{def:peak_memory_bandwidth} is: $(\num{4800} \cdot 8) \cdot 12 \cdot 2 = \SI{921.6}{\giga\byte\per\second}$, which matches the value provided by \gls{amd}~\cite{amd_amd_2022}.
+
+To get a more empirical upper bound value of the attainable memory bandwidth, we can use the standard STREAM benchmark~\cite{mccalpin_memory_1995}. 
+For our machine, I use the BabelStream~\cite{deakin_evaluating_2018} implementation in the same setup as in the previous section. 
+The BableStream benchmark reports a maximum memory bandwidth of $\SI{741.58}{\giga\byte\per\second}$ when using the DOT function $d = \langle a, b \rangle$. 
+Note that this corresponds to only $\SI{80}{\percent}$ of the theoretical peak memory bandwidth. 
+
+If we are interested in the achieved memory bandwidth of an application, we can use the same method as for the achieved \gls{flops} by either using one of the already presented utilities or by counting the number of transferred bytes. 
+Again, we must be careful what to count since not all variable accesses result in a memory transfer. 
+
+Looking again at the TRIAD function, we have to load or store three FP64 values per iteration, resulting in $\SI{24}{\byte}$ transferred per iteration, adding up to $\SI{240}{\giga\byte}$ in total for $\num{1e10}$ iterations. 
+Since the average execution time was $\SI{0.46969}{\second}$, we have an achieved memory bandwidth of $\SI{510.98}{\giga\byte\per\second}$. 
+This is slightly lower than the $\SI{518.487}{\giga\byte\per\second}$ reported by BableStream since BableStream uses the best iteration time instead of the average one to calculate its memory bandwidth. 
+Profiling the TRIAD function with likwid-perfctr's \code{MEM} metric results in a memory bandwidth of $\SI{0}{\giga\byte\per\second}$. 
+
+\todo{run likwid-perfctr with MEM group $\rightarrow$ currently insufficient privileges}

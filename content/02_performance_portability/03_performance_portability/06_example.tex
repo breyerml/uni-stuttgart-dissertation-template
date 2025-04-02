@@ -1,0 +1,128 @@
+\subsection{\pp vs. \mpp by Example}
+\label{sec:pp_example}
+
+Since the last sections were mainly of a theoretical nature, in this section, I want to compare the \pp and \mpp metrics and highlight their differences and shortcomings using an example. 
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] Q[c,m] *{4}{Q[r,m]}},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 row{1}={c},
+                 }
+        \toprule
+        Platform & {arch.\\class} & {theo. peak\\performance} & App. 1                    & App. 2                   & App. 3                   \\\midrule
+        A        & 1              & $\SI{9.75}{\tera\flops}$  & $\SI{7.1}{\tera\flops}$   & $\SI{4.6}{\tera\flops}$  & $\SI{0.4}{\tera\flops}$  \\
+        B        & 1              & $\SI{5.16}{\tera\flops}$  & $\SI{3.9}{\tera\flops}$   & $\SI{2.5}{\tera\flops}$  & $\SI{0.16}{\tera\flops}$ \\
+        C        & 1              & $\SI{22.63}{\tera\flops}$ & $\SI{16.4}{\tera\flops}$  & $\SI{10.8}{\tera\flops}$ & $\SI{5.3}{\tera\flops}$  \\
+        D        & 2              & $\SI{1.65}{\tera\flops}$  & $\SI{0.02}{\tera\flops}$  & $\SI{0.9}{\tera\flops}$  & $\SI{0.02}{\tera\flops}$ \\
+        E        & 2              & $\SI{1.32}{\tera\flops}$  & $\SI{0.01}{\tera\flops}$  & $\SI{0.7}{\tera\flops}$  & $\SI{0.03}{\tera\flops}$ \\
+        F        & 2              & $\SI{0.61}{\tera\flops}$  & $\SI{0.005}{\tera\flops}$ & ---                      & $\SI{0.01}{\tera\flops}$ \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    Architectural performance results for three example applications and six hardware platforms. 
+    Platforms A, B, and C belong to one architectural class, and platforms D, E, and F belong to another class. 
+    Application 1 had a very good performance in architectural class 1 but a very bad performance in class 2. 
+    Application 2 performs well across all platforms except for platform F, which is unsupported. 
+    Application 3 performs badly on all platforms. 
+    }
+    \label{tab:example_perfs}
+\end{table}
+
+\autoref{tab:example_perfs} shows six different platforms from two different architectural classes, for example, \glspl{gpu} and \glspl{cpu}. 
+Column 3 of \autoref{tab:example_perfs} shows the theoretical architectural peak performances of the six platforms in $\si{\tera\flops}$. 
+The remaining three columns show three different applications with different characteristics. 
+Application one performs great on architectural class one but poorly on class two; application two performs well on all platforms regardless of architectural class, except for platform F, which is completely unsupported; and application three performs very poorly across all platforms and architectural classes. 
+These example applications reflect the performance characteristics of real-world applications: application one may be specifically optimized for \glspl{gpu} but not for \glspl{cpu}, application two is optimized for \glspl{gpu} and \glspl{cpu}, but, e.g, some new ARM \gls{cpu} is unsupported, and application three is not optimized whatsoever. 
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[c,m] *{3}{Q[r,m]}},
+                 row{1} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt
+                 }
+        \toprule
+        Platform & App. 1        & App. 2        & App. 3 \\\midrule
+        A        & $\num{0.73}$  & $\num{0.47}$  & $\num{0.04}$  \\
+        B        & $\num{0.76}$  & $\num{0.48}$  & $\num{0.03}$  \\
+        C        & $\num{0.72}$  & $\num{0.48}$  & $\num{0.23}$  \\
+        D        & $\num{0.01}$  & $\num{0.55}$  & $\num{0.01}$  \\
+        E        & $\num{0.008}$ & $\num{0.53}$  & $\num{0.02}$  \\
+        F        & $\num{0.008}$ & $\num{0.0}$   & $\num{0.02}$  \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    The architectural efficiencies for the example applications, hardware platforms, and performance results in \autoref{tab:example_perfs}. 
+    The efficiency of application two on platform F is $\num{0.0}$ since the platform is unsupported. 
+    }
+    \label{tab:example_effs}
+\end{table}
+
+Based on the raw performance results on \autoref{tab:example_perfs}, we can calculate the architectural efficiency based on \autoref{def:arch_eff}.
+The resulting architectural efficiencies are shown in \autoref{tab:example_effs}. 
+As we can see, \autoref{tab:example_effs} reflects the previously discussed application characteristics. 
+Note that application two's architectural efficiency on platform F is zero since this platform is unsupported for application two. 
+
+\begin{table}[]
+    \centering
+    \begin{tblr}{colspec = {Q[l,m] *{7}{Q[c,m]}},
+                 row{1,2} = {font=\bfseries, bg=gray!50},
+                 row{odd[2]} = {bg=gray!25},
+                 rowsep=4pt,
+                 cell{1}{1}={r=2}{l},
+                 cell{1}{2}={r=2}{c},
+                 }
+        \toprule
+        Platform Sets $\mathbf{H}$     & $HS$      & \SetCell[c=2]{c} App. 1        && \SetCell[c=2]{c} App. 2        && \SetCell[c=2]{c} App. 3        &\\
+                                       & $\num{0}$ & \pp           & \mpp            & \pp           & \mpp            & \pp           & \mpp            \\\midrule
+        \{ A \}                        & $\num{0}$ & $\num{0.730}$ & $\num{0.730}$   & $\num{0.470}$ & $\num{0.470}$   & $\num{0.040}$ & $\num{0.040}$   \\
+        \{ A, B \}                     & $\num{0}$ & $\num{0.745}$ & $\num{0.745}$   & $\num{0.475}$ & $\num{0.475}$   & $\num{0.033}$ & $\num{0.035}$   \\
+        \{ A, B, C \}                  & $\num{0}$ & $\num{0.736}$ & $\num{0.737}$   & $\num{0.477}$ & $\num{0.477}$   & $\num{0.048}$ & $\num{0.100}$   \\
+        \{ A, B, C, D \}               & $\num{0.811}$ & $\num{0.038}$ & $\num{0.555}$   & $\num{0.493}$ & $\num{0.495}$   & $\num{0.025}$ & $\num{0.078}$   \\
+        \{ A, B, C, D, E \}            & $\num{0.971}$ & $\num{0.022}$ & $\num{0.446}$   & $\num{0.500}$ & $\num{0.502}$   & $\num{0.024}$ & $\num{0.066}$   \\
+        \{ A, B, C, D, E, F \}         & $\num{1}$ & $\num{0.017}$ & $\num{0.373}$   & $\num{0.0}$   & $\num{0.502}$   & $\num{0.023}$ & $\num{0.058}$   \\\midrule
+        \{ A, B, C \} (arch. 1)  & $\num{0}$ & $\num{0.736}$ & $\num{0.737}$   & $\num{0.477}$ & $\num{0.477}$   & $\num{0.048}$ & $\num{0.100}$   \\
+        \{ D, E, F \} (arch. 2)  & $\num{0}$ & $\num{0.009}$ & $\num{0.009}$   & $\num{0.0}$   & $\num{0.540}$   & $\num{0.015}$ & $\num{0.017}$   \\
+        \bottomrule
+    \end{tblr}
+    \caption{%
+    The performance portability scores of all three applications based on the architectural efficiency values from \autoref{tab:example_effs} for \pp and \mpp on different platform sets adding more and more platforms to the platform set $\mathbf{H}$ also showing the respective proposed heterogeneity score $HS$. 
+    Additionally, as \citet{marowka_toward_2021} proposed, separate performance portability scores for the different architectural classes are reported.  
+    }
+    \label{tab:example_pp}
+\end{table}
+
+Using the architectural efficiencies in \autoref{tab:example_effs}, we can calculate the performance portability metrics \pp and \mpp using their definitions \autoref{def:pp} and \autoref{def:mpp}, respectively. 
+We use different hardware platform sets, starting with a single hardware platform and gradually adding new platforms to see the change in the performance portability metrics until all six platforms are present. 
+In the last two rows, we additionally report the performance portability metric for the platform sets containing all platforms from one specific architectural class. 
+
+The second column contains the proposed heterogeneity score $HS$. 
+In the first three rows, the score is $0$ since the platforms $A$, $B$, and $C$ all belong to the same architectural class, completely neglecting the second class. 
+After adding platform $D$, the score increases since platforms from both architectural classes are now present. 
+The heterogeneity score is $1$ after all platforms are added because then both architectural classes are represented with three platforms each. 
+By construction, the last two rows only contain platforms from the same architectural class and, therefore, the heterogeneity score is also $0$. 
+
+For application one, both performance portability metrics have the same characteristics for the first three platforms. 
+However, if we add platform D with low architectural efficiency, we see that \pp directly drops to only $\num{0.038}$ since the harmonic mean used in \autoref{def:pp} over proportionally penalizes the newly added low value. 
+This does not happen with the \mpp metric, which still has a value of $\num{0.555}$, more closely representing the overall architectural efficiencies. 
+
+For application two, where the architectural efficiencies are of the same magnitude, the performance portability scores of \pp and \mpp are nearly identical. 
+Only after adding platform F, which is unsupported by application two, do the scores change: For \pp, the performance portability score immediately drops to zero based on its definition; for \mpp, however, since only supported platforms affect the \mpp score, the value does not change. 
+Therefore, looking only at the performance portability values for \mpp, it is impossible to see that application two does not support all hardware platforms. 
+
+For application three, which is not optimized for any of the target platforms, we see small performance portability scores across the board for both \pp and \mpp. 
+Again, the values do not diverge much since the architectural efficiencies are also close. 
+However, let's look at the final scores when all of the six platforms are added. 
+We see another problem with the \pp metric: applications one and three have nearly the same final scores, although they have completely different performance behaviors for the hardware platforms A, B, and C, indicating that information was lost. 
+
+If we follow the advice from \citet{marowka_toward_2021}, we get the performance portability scores shown in the last two rows. 
+The scores are nearly identical except for architectural class two and application two, as well as architectural class one and application three. 
+However, whether it is sufficient to calculate the scores for the different architectural classes separately depends heavily on the use case. 
+
+All in all, both metrics have their advantages and disadvantages. 
+For \pp, it is immediately clear when a hardware platform is unsupported since its score drops to zero; its over-emphasis on small values may be unintuitive and can lose information if only the final scores are reported. 
+On the other hand, \mpp tracks the scores in a more intuitive way but also loses information if a hardware platform in the set of all platforms is unsupported for an application. 
+In the remainder of this dissertation, I will compare both performance portability metrics \pp and \mpp on real-world problems.

@@ -1,23 +1,24 @@
 \subsection{The Current State of the Art}
 \label{sec:pp_sota}
 
-As a response to the critic from \citet{yokota_beginners_2018} and \citet{marowka_toward_2021, marowka_reformulation_2022}, \citet{pennycook_revisiting_2021} updated their \pp metric definition. 
-They still think that returning $0$ as \pp value if a platform is not supported is the way to go since always returning a numeric value is more intuitive. and also disagree with \cite{marowka_toward_2021, marowka_reformulation_2022} to remove outliers from the \pp calculation. 
+As a response to the critic from \citet{yokota_beginners_2018} and \citet{marowka_toward_2021, marowka_reformulation_2022}, \citet{pennycook_revisiting_2021} updated their \pp metric definition in \citeyear{pennycook_revisiting_2021}. 
+They still think that returning $0$ as \pp value if a platform is not supported is the way to go since always returning a numeric value is more intuitive. 
+They also disagree with \cite{marowka_toward_2021, marowka_reformulation_2022} to remove outliers from the \pp calculation. 
 Additionally, they advocate for not splitting the platforms into groups with the same architectural class since it is interesting to investigate an application's performance portability between those classes. 
 This can also help to encourage users to increase the performance across all platforms in the whole platform set. 
-While they also agree with \cite{marowka_toward_2021, marowka_reformulation_2022} that criteria $5$ from \autoref{def:pp_criteria}, they see the problem not in the \autoref{def:pp} of \pp but in the criteria itself and propose to remove criteria $5$ from their original definition. 
+While they also agree with \cite{marowka_toward_2021, marowka_reformulation_2022} that criteria $5$ from \autoref{def:pp_criteria} is violated, they see the problem not in the way \pp is calculated but in the criteria itself and propose to remove criteria $5$ from their original definition. 
 
-To make the \pp metric more interpretable, \cite{pennycook_revisiting_2021} also contains a systematic derivation of \pp from first-level principles. 
-There, \citeauthor{pennycook_revisiting_2021} showed that the \pp and \mpp metrics only differ in the weighting for the same underlying summation. 
+To make the \pp metric more interpretable, \citet{pennycook_revisiting_2021} perform a systematic derivation of \pp from first-level principles. 
+They showed that the \pp and \mpp metrics only differ in the weighting, given the same underlying summation. 
 They argue that \pp is more meaningful since it accounts for ideal performance and work distribution, whereas \mpp reflects an application's aggregate throughput when distributed across $\mathbf{H}$ rather than what it should achieve. 
 
 Based on the criticism from \citet{yokota_beginners_2018},  \citet{pennycook_revisiting_2021} also included a new \pp formula that not only accounts for a single problem $\mathbf{p}$ but all problems $\mathbf{p} \in \mathbf{P}$. 
 This can, for example, be used to factor in the performance of different problem sizes into the calculation \pp.
 
 
-After \citet{pennycook_revisiting_2021} addressed the criticism of \cite{marowka_toward_2021, marowka_reformulation_2022}, \cite{marowka_comparison_2023} also updated his definition of \mpp. 
-He disagrees with removing criteria $5$ from \autoref{def:pp_criteria} since the criteria is not violated when using the arithmetic mean, which he thinks is the superior method of aggregating performance efficiencies. 
-Also, while he still thinks setting \pp to zero if only one of the platforms in $\mathbf{H}$ is unsupported, he agrees that it should be zero and not \textit{not applicable} if no platform in $\mathbf{H}$ is supported. 
+After \citet{pennycook_revisiting_2021} addressed the criticism of \cite{marowka_toward_2021, marowka_reformulation_2022}, \cite{marowka_comparison_2023} also updated his definition of \mpp in \citeyear{marowka_comparison_2023}. 
+He disagrees with removing the criteria $5$ from \autoref{def:pp_criteria} since the criteria is not violated when using the arithmetic mean, which he thinks is the superior method of aggregating performance efficiencies. 
+Also, while he still thinks setting \pp to zero if only one of the platforms in $\mathbf{H}$ is unsupported makes no sense, he agrees that it should be zero and not \textit{not applicable} if no platform in $\mathbf{H}$ is supported. 
 \citeauthor{marowka_comparison_2023} therefore updated his performance portability metric \autoref{def:mpp_provisional}.
 
 \begin{definition}[Performance Portability \mpp~\cite{marowka_comparison_2023}]\label{def:mpp}
@@ -32,9 +33,6 @@ Also, while he still thinks setting \pp to zero if only one of the platforms in 
 
     where $S \coloneqq \{ i \in H | e_i(a, p) > 0 \}$ and $\mathbf{e_i}$ is the performance efficiency of $\mathbf{a}$ solving $\mathbf{p}$ on platform $\mathbf{i \in H}$.
 \end{definition}
+Besides setting \mpp to $0$ if no hardware platform is supported, the other main difference compared to his previous \autoref{def:mpp_provisional} is that now the supported hardware platforms are explicitly defined as $\mathbf{S}$.
 
 In the remainder of this work, I will focus on the original performance portability metric \pp (\autoref{def:pp}) proposed by \citet{pennycook_metric_2016} and the updated metric \mpp (\autoref{def:mpp}) proposed by \citet{marowka_comparison_2023} and compare their results. 
-For performance efficiency, I will use the $\dots$.
-\todo{state which performance efficiency}
-
-Therefore, as a next step, I want to compare both metrics using a simple example, again highlighting some of their advantages and disadvantages. 

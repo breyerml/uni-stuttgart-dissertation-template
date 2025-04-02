@@ -2,15 +2,16 @@
 \label{sec:frameworks:hip}
 
 \begin{quotebox}{\href{https://rocm.docs.amd.com/projects/HIP/en/latest/index.html\#hip-documentation}{HIP Documentation}}
-    The Heterogeneous-computing Interface for Portability (HIP) is a C++ runtime API and kernel language that lets you create portable applications for AMD and NVIDIA GPUs from a single source code.
+    The Heterogeneous-computing Interface for Portability (HIP) is a \cpp runtime API and kernel language that lets you create portable applications for AMD and NVIDIA GPUs from a single source code.
 \end{quotebox}
 
 \acrfull{hip} is \gls{amd}'s counterpart to NVIDIA's \gls{cuda} as their own vendor-provided framework. 
 The first public release of \gls{hip} was in March 2016~\cite{advanced_micro_devices_release_2016}, and the current version, 6.3.3, was released in February 2025~\cite{advanced_micro_devices_release_2025}. 
-While \gls{hip}'s main target is \gls{amd} \glspl{gpu}, it also supports NVIDIA \glspl{gpu} from the beginning~\cite{advanced_micro_devices_its_2016} using NVIDIA's own compiler stack.
+While \gls{hip}'s main target is \gls{amd} \glspl{gpu}, it also supported NVIDIA \glspl{gpu} from the beginning~\cite{advanced_micro_devices_its_2016} using NVIDIA's own compiler stack.
 More recently, additional projects tried to increase the hardware platforms that \gls{hip} can target by adding support for other low-level runtimes like \gls{opencl}~\cite{babej_hipcl_2020} or Intel's Level Zero~\cite{singer_hiplz_2023}.
 
-The \gls{hip} \gls{api} is extremely close to the one provided by NVIDIA: in most cases, conversions between \gls{cuda} and \gls{hip} can be achieved via a simple regex for more complex cases, the HIPIFY~\cite{advanced_micro_devices_rocmhipify_2025} tool can be used. 
+The \gls{hip} \gls{api} is extremely close to the one provided by NVIDIA: in most cases, conversions between \gls{cuda} and \gls{hip} can be achieved via a simple regex. 
+For more complex cases, the HIPIFY~\cite{advanced_micro_devices_rocmhipify_2025} tool can be used. 
 Additionally, the most common NVIDIA provided \gls{cuda} libraries are also available for \gls{hip} like hipBLAS, hipSPARSE, hipFFT, etc.
 
 \begin{listing}

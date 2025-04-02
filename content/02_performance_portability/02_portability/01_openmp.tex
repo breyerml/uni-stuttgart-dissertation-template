@@ -10,15 +10,16 @@ Back then, \gls{openmp} only supported \glspl{cpu}.
 This was changed with version 4.0 released in July 2013~\cite{openmp_architecture_review_board_openmp_2013}, which introduced \gls{openmp} target offloading constructs to also support accelerators like \glspl{gpgpu}. 
 The current \gls{openmp} version 6.0 was released in November 2024~\cite{openmp_architecture_review_board_openmp_2024}, showing that \gls{openmp} is still further improved and under active development. 
 Since \gls{openmp} is merely a specification, there is no single standard \gls{openmp} implementation but multiple implementations from different vendors targeting different hardware platforms. 
-These implementations include but are not limited to \gls{amd}, Intel, NVIDIA, LLVM, GNU GCC, ARM, etc. 
+These implementations include but are not limited to implementations from \gls{amd}, Intel, NVIDIA, LLVM, GNU GCC, ARM, etc. 
 
 \gls{openmp} consists of two main components: a runtime library and compiler pragmas or directives. 
 The runtime library contains functions to retrieve basic information like the total number of threads or the current thread ID in a parallel region but also to change the behavior of an \gls{openmp} program by, e.g., explicitly setting the number of available threads or specifying the used thread scheduling algorithm. 
-The actual parallelization in \gls{openmp} is done through the compiler pragmas. 
-These pragmas have the benefit that they are easy to use and non-intrusive. 
-Additionally, since these are only pragmas if a compiler does not support \gls{openmp}, he is free to ignore them. 
-This means that code parallelized with \gls{openmp} can also be compiled with compilers that do not support it, granted that no runtime library functions are used, but as a result, the executable also only runs single-threaded. 
-Internally, \gls{openmp} uses a fork-join model where an initial thread spawns a number of so-called work threads in a parallel region. 
+The actual parallelization in \gls{openmp} is done through compiler directives. 
+These directives have the benefit that they are easy to use and non-intrusive. 
+Additionally, since these are only directives if a compiler does not support \gls{openmp}, he is free to ignore them. 
+This means that code parallelized with \gls{openmp} can also be compiled with compilers that do not support it, granted that no runtime library functions are used. 
+However, the resulting code is then obviously only single-threaded.  
+Internally, \gls{openmp} uses a fork-join model where an initial thread spawns several so-called work threads in a parallel region. 
 For better performance, in general, \gls{openmp} implementations are based on a custom thread pool. 
 
 \begin{listing}
@@ -40,13 +41,16 @@ for (int idx = 0; idx < N; ++idx) {
     \label{code:openmp_example}
 \end{listing}
 
-\autoref{code:openmp_example} shows a simple DAXPY example using \gls{openmp} and \gls{openmp} target offloading. 
+\autoref{code:openmp_example} shows a simple DAXPY example in the first four lines. 
 Parallelizing a simple for loop with \gls{openmp} is as easy as annotating it with a simple \code{#pragma omp parallel for} directive. 
 This is also called loop parallelism in \gls{openmp}. 
-Additionally, \gls{openmp} also supports task parallelism, which is not shown here since it will not be used in the remainder of this thesis. 
+Additionally, \gls{openmp} also supports task parallelism, which is not shown here since it will not be used in the remainder of this dissertation. 
 \autoref{code:openmp_example} also shows a \gls{openmp} target offloading example of the same code at the bottom. 
-While the first code can only be executed on \glspl{cpu}, the target offloading code can also be executed on any supported \gls{gpu}. 
-However, the downside of \gls{openmp}'s high-level directive-based constructs is that low-level performance optimizations are generally impossible, resulting in worse performance than hand-tuned native codes. 
+While the first code can only be executed on \glspl{cpu}, the target offloading code can also be executed on any supported \gls{gpu}, automatically migrating memory from and to the \gls{gpu} when necessary. 
+
+One downside of \gls{openmp}'s high-level directive-based constructs is that low-level performance optimizations are generally impossible, resulting in worse performance than hand-tuned native codes. 
+Since the \gls{openmp} code must run on many different hardware platforms, its high-level \gls{api} can not include low-level optimizations that may be only available on a few hardware platforms. 
+In such cases, the programmer has to switch to another framework or hope the compiler translates the high-level construct to the desired low-level instructions. 
 
 
 %%% ADVANTAGES AND DISADVANTAGES

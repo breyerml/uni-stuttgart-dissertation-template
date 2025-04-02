@@ -39,6 +39,7 @@
     breaklines,%
     linenos,%
     escapeinside=@@,%
+    highlightcolor=GreenYellow,%
 }
 
 \usepackage{siunitx}
@@ -48,6 +49,7 @@
 }
 \DeclareSIUnit{\flop}{FLOP}
 \DeclareSIUnit{\flops}{FLOPS}
+\DeclareSIUnit{\transfer}{T}
 
 \usepackage{tikz}
 \usetikzlibrary{external, decorations.pathreplacing}
@@ -73,6 +75,8 @@
 \usepackage{fontawesome5}
 \usepackage[most]{tcolorbox}
 \usepackage{threeparttable}
+\usepackage{pgf}
+\usepackage{pgfplots}
 
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
@@ -92,7 +96,7 @@
 % Marowka Performance Portability Metric
 \newcommand{\mpp}{\ensuremath{\overline{\reflectbox{$\mathrm{P}$}\mkern-7mu\mathrm{P}}}\xspace}
 
-\newcommand{\code}[1]{\mintinline{c++}{#1}}
+\newmintinline[code]{cpp}{}
 
 \newcommand{\cpp}[1][]{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}#1\xspace}
 \newcommand{\dpcpp}{DPC\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bfseries +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bfseries +}\xspace}
@@ -104,29 +108,7 @@
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 % Define a custom box for advantages
-\newtcolorbox{advantagebox}{
-    colback=green!10!white,
-    colframe=green!50!black,
-    title=\textbf{Advantages},
-    fonttitle=\bfseries,
-    rounded corners,
-    boxrule=0.8pt
-}
-
-% Define a custom box for disadvantages
-\newtcolorbox{disadvantagebox}{
-    colback=red!10!white,
-    colframe=red!50!black,
-    title=\textbf{Disadvantages},
-    fonttitle=\bfseries,
-    rounded corners,
-    boxrule=0.8pt
-}
-
-% TODO: remove old ONES!
-
-% Define a custom box for advantages
-\newtcolorbox{advantagebox2}[1]{
+\newtcolorbox{advantagebox}[1]{
     colback=green!10!white,
     colframe=green!50!black,
     title=\textbf{Advantages},
@@ -137,7 +119,7 @@
 }
 
 % Define a custom box for disadvantages
-\newtcolorbox{disadvantagebox2}[1]{
+\newtcolorbox{disadvantagebox}[1]{
     colback=red!10!white,
     colframe=red!50!black,
     title=\textbf{Disadvantages},
@@ -147,6 +129,31 @@
     equal height group=#1
 }
 
+% Combine an advantage and a disadvantage box
+\newcommand{\AdvantagesAndDisadvantages}[3]{
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+    \vspace{0pt}
+    \begin{advantagebox}{#1}
+        \begin{itemize}[leftmargin=2.5mm]
+            \setlength\itemsep{0.0em}
+            #2
+        \end{itemize}
+    \end{advantagebox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
+    \vspace{0pt}
+    \begin{disadvantagebox}{#1}
+        \begin{itemize}[leftmargin=2.5mm]
+            \setlength\itemsep{0.0em}
+            #3
+        \end{itemize}
+    \end{disadvantagebox}
+\end{minipage}\newline
+}
+
+% nicely typeset quotes
 \NewDocumentEnvironment{quotebox}{m b}
 {%
     \vspace{0.2\baselineskip} % Top margin
@@ -159,29 +166,6 @@
 {%
 }%
 
-\newcommand{\AdvantagesAndDisadvantages}[3]{
-\noindent
-\begin{minipage}[t]{0.49\textwidth}
-    \vspace{0pt}
-    \begin{advantagebox2}{#1}
-        \begin{itemize}[leftmargin=2.5mm]
-            \setlength\itemsep{0.0em}
-            #2
-        \end{itemize}
-    \end{advantagebox2}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.49\textwidth}
-    \vspace{0pt}
-    \begin{disadvantagebox2}{#1}
-        \begin{itemize}[leftmargin=2.5mm]
-            \setlength\itemsep{0.0em}
-            #3
-        \end{itemize}
-    \end{disadvantagebox2}
-\end{minipage}\newline
-}
-
 % Define a modern-looking code block style
 \tcbuselibrary{minted}  % Unicode support for minted
 \newtcblisting{moderncode}[2][]{
@@ -192,10 +176,9 @@
     arc=3pt,              % Slightly rounded corners
     boxsep=5pt,           % Padding for readability
     listing only,         % Ensures only code is displayed
-    minted language=#2, % Default language (can be overridden)
+    minted language=#2,   % Default language (can be overridden)
     minted options={xleftmargin=8pt, #1},
 }
-
 
 
 % binding correction
@@ -307,12 +290,13 @@
 
 \include{content/01_introduction}
 \include{content/02_performance_portability}
-\include{content/03_hardware}
-\include{content/03_problem_category_blas_like}
-\include{content/04_problem_category_tree_based}
-\include{content/05_problem_category_hashing_based}
-\include{content/06_true_performance_portability}
-\include{content/07_conclusion}
+\include{content/03_performance_sampling_hws}
+\include{content/04_hardware}
+\include{content/05_problem_category_blas_like}
+\include{content/06_problem_category_tree_based}
+\include{content/07_problem_category_hashing_based}
+\include{content/08_true_performance_portability}
+\include{content/09_conclusion}
 
 %% --- References/Bibliography ---
 

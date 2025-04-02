@@ -1,11 +1,10 @@
+\chapter{The Hardware Sampling Library: hws}
+
+Also, in the age of \glspl{llm} with the ever-increasing number of parameters and supercomputers that get bigger and bigger~\cite{top500org_november_2024}, energy consumption gets more and more important~\cite{de_vries_growing_2023, luccioni_estimating_2023}. 
+Yet, gathering the energy consumption in a vendor-independent way for different hardware platforms is not as straightforward as initially seems. 
 
 
-
-
-\section{The Hardware Sampling Library: hws}
-
-In the remainder of this thesis, I will focus mostly on the \textbf{walltime} and \textbf{efficiency} mainly with respect to the energy efficiency of the code examples when I talk about performance portability. 
-Thereby, gathering basic \textbf{walltime} information is possible in a straightforward way with normal tools directly provided by \cpp, as shown in \autoref{code:walltime_measurement}.
+This is followed by introducing my hardware sampling library \textit{hws} to gather additional application characteristics like frequencies, memory consumption, temperatures, or energy consumption, which is hws's main use case in the remainder of this dissertation. 
 
 
 However, gathering efficiency metrics like energy consumption, but also memory, or compute utilization poses more challenges, especially if we want to get this information in a vendor-independent way for NVIDIA, AMD, and Intel \glspl{gpu} and \glspl{cpu}. 
@@ -13,7 +12,7 @@ While all hardware vendors provide some form of gathering this information throu
 As an example, to gather the total power consumption (since the last driver reload) for NVIDIA, AMD, and Intel \glspl{gpu}, the library functions shown in \autoref{code:vendor_labrier_calls} must be used.
 
 \begin{listing}
-    \begin{minted}{c++}
+    \begin{moderncode}[fontsize=\small]{c++}
 // NVML
 unsigned long long power{};  // mJ
 nvmlReturn_t errc = nvmlDeviceGetTotalEnergyConsumption(device_handle, &power);
@@ -31,7 +30,7 @@ std::uint32_t num_power_domains{ 0 };  // @$\mu$@J
 if (zesDeviceEnumPowerDomains(device_handle, &num_power_domains, nullptr) == ZE_RESULT_SUCCESS) {
     power_handles.resize(num_power_domains);
     if (zesDeviceEnumPowerDomains(device_handle, &num_power_domains, power_handles.data()) == ZE_RESULT_SUCCESS) {
-        // we found at least one power domain (can be empty if reading power related counters isn't supported on the device)
+        //We found at least one power domain (can be empty if reading power-related counters isn't supported on the device)
         if (!power_handles.empty()) {
             // get the total power consumption of the first power domain
             zes_power_energy_counter_t energy_counter{};
@@ -41,8 +40,8 @@ if (zesDeviceEnumPowerDomains(device_handle, &num_power_domains, nullptr) == ZE_
         }
     }
 }
-    \end{minted}
-    \caption{
+    \end{moderncode}
+    \caption{%
     Example library function calls to gather the total power consumption since the last driver reload from an NVIDIA \gls{gpu} using \gls{nvml}, an AMD \gls{gpu} using \gls{rocmsmi}, and Intel \gls{gpu} using Level Zero.
     Note that the respective environments must be initialized beforehand and that the \code{device_handle} points to a supported and available device.}
     \label{code:vendor_library_calls}
@@ -141,7 +140,7 @@ The general flow of the hws library looks as follows:
 
 
 \begin{listing}
-    \begin{minted}[highlightlines={2, 5-6, 18-19}]{python}
+    \begin{moderncode}[highlightlines={2, 5-6, 18-19}]{python}
 import plssvm
 import HardwareSampling as hws
 from sklearn.datasets import make_classification as mc
@@ -161,7 +160,7 @@ print(f"model accuracy: {svc.score(X, y)}")
 
 sampler.stop()
 sampler.dump_yaml("samples.yaml")
-    \end{minted}
+    \end{moderncode}
     \caption{%
     A code example showing the simplicity of the hws library. 
     With only five required lines of code, it is possible to gather information from the whole system during the classification task.%
@@ -171,9 +170,9 @@ sampler.dump_yaml("samples.yaml")
 \end{listing}
 
 \begin{listing}
-    \begin{minted}{yaml}
+    \begin{moderncode}{yaml}
 # a turbostat entry;
-# also contains the original turbostat column header name
+# contains the original turbostat column header name
 average_non_idle_frequency:
     turbostat_name: "Bzy_MHz"
     unit: "MHz"
@@ -183,7 +182,7 @@ average_non_idle_frequency:
 clock_gpu_max:
     unit: "MHz"
     values: 1440
-    \end{minted}
+    \end{moderncode}
     \caption{%
     Explanatory YAML entries.%
     Note that the comments are not output in the YAML file but are only added to this example as a means for easier explanation. 
@@ -245,10 +244,10 @@ This command samples all available information immediately (\texttt{-i 0.001}) e
 An example \texttt{turbostat} output with the mentioned command looks like displayed in \autoref{code:turbostat_output}. 
 
 \begin{listing}
-    \begin{minted}[fontsize=\setfontsize{6.5}]{text}
+    \begin{moderncode}[fontsize=\setfontsize{6.5}]{text}
 Avg_MHz  Busy%  Bzy_MHz  TSC_MHz  IPC   IRQ  POLL  C1   C2   POLL%  C1%   C2%     CorWatt  PkgWatt
 39       1.77   2212     4686     0.92  818  1     156  819  0.01   3.03  110.73  4.58     264.06
-    \end{minted}
+    \end{moderncode}
     \caption{%
     An example output of the command \texttt{sudo turbostat -n 1 -i 0.001 -S -q} with root privileges enabled for \texttt{turbostat} on an AMD EPYC 9274F \gls{cpu}.
     }

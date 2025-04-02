@@ -1,7 +1,7 @@
 \subsection{Other Portability Frameworks}
 \label{sec:frameworks:other}
 
-All previously mentioned libraries, frameworks, or programming languages will be used in the remainder of this dissertation, at least to some extent. 
+All previously mentioned libraries, frameworks, or programming languages will be used to some extent in the remainder of this dissertation. 
 However, additional frameworks exist, the usage of which was outside of the scope of this dissertation. 
 These frameworks will be touched upon in this section for completeness. 
 
@@ -10,25 +10,29 @@ It is a message-passing parallel language and runtime system.
 While it originally only supported \glspl{cpu}, support for \glspl{gpu} was added in 2008~\cite{wesolowski_application_2008} and later improved through \charmpp's \gls{gpu} manager and Hybrid \gls{api}. 
 However, currently, only NVIDIA \glspl{gpu} are supported, and the compute kernels must be written using native \gls{cuda}. 
 
+In 2008, the development of GPUOcelot started, and its first official release was created in June 2009~\cite{diamos_release_2009}. 
+However, the original development stopped a decade ago but was revitalized under new developers that published a new release in May 2023~\cite{noauthor_release_2023}. 
+GPUOcelot takes NVIDIA's \gls{ptx} \gls{isa} and uses the code generators from the \gls{llvm} infrastructure to dynamically translate it to other targets supported by \gls{llvm}~\cite{diamos_ocelot_2010}. 
+
 Two years after the first \gls{cuda} release, NVIDIA released their first version of the thrust library in 2009~\cite{nvidia_corporation_thrust_2009}, which is a library of parallel algorithms and data structures for NVIDIA \glspl{gpu} and multi-core \glspl{cpu}~\cite{bell_thrust_2012}. 
 Currently, thrust is released under the \gls{cuda} \cpp Core Libraries with the most recent version 2.8.0 released in March 2025~\cite{cccl_development_team_release_2025}. 
 
-Over one year before the release of the first \gls{openmp} specification, including target offloading capabilities, in 2013, the first \gls{openacc} specification was released in November 2011~\cite{openacc_standard_openacc_2011, hutchison_openacc_2012}, and the most recent one in November 2022~\cite{openacc_standard_openacc_2022}. 
+Over one year before the release of the first \gls{openmp} specification that included target offloading capabilities in 2013, the first \gls{openacc} specification was released in November 2011~\cite{openacc_standard_openacc_2011, hutchison_openacc_2012}, and the most recent one in November 2022~\cite{openacc_standard_openacc_2022}. 
 The basic idea of \gls{openacc} is nearly identical to \gls{openmp}'s target offloading. 
-Both use a directive-based approach with optional library functions. 
-As with \gls{openmp}, different implementations, e.g., from NVIDIA or the GNU GCC compiler, exist. 
+Both use a directive-based approach with optional library functions to target different hardware platforms. 
+As with \gls{openmp}, different \gls{openacc} implementations, e.g., from NVIDIA or the GNU GCC compiler, exist. 
 
 The first paper regarding Legion, a data-centric parallel programming model for writing performance and portable code for distributed heterogeneous architectures, was released in 2012 already including support for \glspl{cpu} and \glspl{gpu}~\cite{bauer_legion_2012}. 
 It supports various hardware platforms using Kokkos. 
 The current version, 24.12.0, was released in December 2024~\cite{stanford_release_2024}.
 
-Alpaka was released in May 2016~\cite{zenker_alpaka_2016, alpaka-group_release_2016} and is based on a master's thesis from~\citet{worpitz_investigating_2015}. 
-The current version is v2024.07.0, released in June 2024~\cite{llnl_release_2024}. 
-Its design is comparable to that of Kokkos and can also target all major hardware platforms using one of the provided backends: \gls{openmp}, \gls{cuda}, \gls{hip}, or SYCL. 
+\gls{alpaka} was released in May 2016~\cite{zenker_alpaka_2016, alpaka-group_release_2016} and is based on a master's thesis from~\citet{worpitz_investigating_2015}. 
+The current version is 1.2.0, released in October 2024~\cite{alpaka-group_release_2024}. 
+Its design is comparable to that of SYCL and can also target all major hardware platforms using one of the provided backends: \gls{openmp}, \gls{cuda}, \gls{hip}, or SYCL. 
 
-RAJA was also first released in 2016~\cite{llnl_release_2016}, with the current version 1.2.0 released in October 2024~\cite{alpaka-group_release_2024}. 
+RAJA was also first released in 2016~\cite{llnl_release_2016}, with the current version v2025.03.0 released in March 2025~\cite{llnl_release_2025}. 
 Its basic idea is closer to the one provided by Kokkos, introducing higher abstraction layers for device and memory management. 
 Compared to Kokkos, RAJA achieves performance portability by directly abstracting parallel loops and reductions, compared to Kokkos's more general compute kernels. 
-It supports various hardware platforms through execution policies for \gls{openmp} (target offload), \gls{cuda}, \gls{hip}, or SYCL. 
+It supports various hardware platforms through execution policies using \gls{openmp} (target offload), \gls{cuda}, \gls{hip}, or SYCL as backends. 
 
 In addition to these more general performance portability frameworks, highly specialized \glspl{dsl} exist like, for example, NMODL~\cite{hines_expanding_2000} for computational neuroscience, the Tensor Contraction Engine~\cite{baumgartner_synthesis_2005} for quantum chemistry, \qdppp~\cite{edwards_chroma_2005} for lattice quantum chromo dynamics, or Ebb~\cite{bernstein_ebb_2016} for physical simulations. 

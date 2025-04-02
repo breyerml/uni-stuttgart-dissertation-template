@@ -9,12 +9,12 @@
 It was first released in June 2007~\cite{nvidia_corporation_cuda_2007} and is, therefore, the oldest programming language able to target \glspl{gpu}. 
 In the beginning, \gls{cuda} could also target \glspl{cpu} in a device emulation mode, making it easier to debug compute kernels. 
 However, this feature was deprecated in \gls{cuda} version 3.0 in March 2010~\cite{nvidia_corporation_cuda_2010} and later removed, meaning that currently \gls{cuda} can only target NVIDIA \glspl{gpu}. 
-The most recent \gls{cuda} version was released in February 2025~\cite{nvidia_corporation_cuda_2025-1} together with the updated \gls{cuda} \cpp programming guide~\cite{nvidia_corporation_cuda_2025} which contains all necessary information to get started programming in \gls{cuda} including code samples, \gls{api} references, and optimization techniques. 
+The most recent \gls{cuda} version was released in February 2025~\cite{nvidia_corporation_cuda_2025-1} together with the updated \gls{cuda} \cpp programming guide~\cite{nvidia_corporation_cuda_2025} which contains all necessary information to get started with programming in \gls{cuda} including code samples, \gls{api} references, and optimization techniques. 
 
 \gls{cuda} exposes its main functionality using a C-like \gls{api} with custom extensions like \code{<<<...>>>} for compute kernel launches. 
 It supports interfacing with different other languages like \cpp, FORTRAN, Python, Matlab, Java, etc. 
 NVIDIA also provides many highly optimized libraries that can directly be used with \gls{cuda} like cuBLAS, cuSPARSE, cuFFT, etc. 
-Additionally, it exposes many low-level functions to the programmer that can be used to heavily optimize a code. 
+Additionally, it exposes many low-level functions that can be used to heavily optimize \gls{cuda} code. 
 
 \begin{listing}
     \begin{moderncode}{cpp}
@@ -31,7 +31,7 @@ cudaMemcpy(d_Y, Y, N * sizeof(double), cudaMemcpyHostToDevice);
 
 saxpy<<<(N + 255) / 256, 256>>>(alpha, d_X, d_Y, N);
 
-cudaMemcpy(Y, d_Y, N * sizeof(double), cudaMemcpyDeviceToHost);
+cudaMemcpy(Y, d_Y, N * sizeof(double), cudaMemcpyDeviceToHost);  // blocking
 cudaFree(d_X);
 cudaFree(d_Y);
     \end{moderncode}
@@ -41,9 +41,9 @@ cudaFree(d_Y);
     \label{code:cuda_example}
 \end{listing}
 
-\autoref{code:cuda_example} shows an example \gls{cuda} code for the DAXPY problem. 
+\autoref{code:cuda_example} shows an example \gls{cuda} code for the DAXPY kernel. 
 When targeting \glspl{gpu} (or other devices for that matter), the commonly used model is to have a host code that offloads some computations to one or more devices. 
-In general, the host is the \gls{cpu}, which is responsible for setting up all necessary data for the device and later retrieving the results from the device. 
+In general, the host is a \gls{cpu}, which is responsible for setting up all necessary data for the device and later retrieving its results. 
 \autoref{code:cuda_example} shows this typical workflow when targeting \glspl{gpu}, also adapted by other programming frameworks: allocate memory on the device (lines 7 + 8), copy the working data from the host to the device (lines 9 + 10), asynchronously call the device kernel (line 12), copy the result data from the device back to the host (line 14), and free the previously allocated device memory (lines 15 + 16). 
 The actual compute kernel implementation is shown in lines 1-4. 
 It is not that different from the previous \gls{openmp} implementation: the function must be annotated with \code{__global}, and the current index with respect to the current working thread must be calculated (line 2), everything else is identical to \gls{cpu}-only code. 

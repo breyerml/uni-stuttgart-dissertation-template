@@ -2,13 +2,13 @@
 \label{sec:frameworks:sycl}
 
 \begin{quotebox}{\href{https://www.khronos.org/sycl/}{Khronos SYCL}}
-    SYCL is an open, royalty-free, cross-platform abstraction layer that enables code for heterogeneous and offload processors to be written using modern ISO C++, and provides APIs and abstractions to find devices (CPUs, GPUs, FPGAs ...) on which code can be executed, and to manage data resources and code execution on those devices.
+    SYCL is an open, royalty-free, cross-platform abstraction layer that enables code for heterogeneous and offload processors to be written using modern ISO \cpp, and provides APIs and abstractions to find devices (CPUs, GPUs, FPGAs ...) on which code can be executed, and to manage data resources and code execution on those devices.
 \end{quotebox}
 
-As with \gls{opencl}, SYCL is also a standard the Khronos working group develops. 
+As with \gls{opencl}, SYCL is also a standard developed by the Khronos working group. 
 The first provisional SYCL specification was released in March 2014~\cite{khronos_sycl_working_group_khronos_2014}, followed by the first official release 1.2 in May 2015~\cite{khronos_sycl_working_group_khronos_2015}. 
 Back then, SYCL was tightly coupled to \gls{opencl}, including \gls{opencl} interoperability functionality. 
-However, \citet{alpay_sycl_2020} showed with his AdaptiveCpp (back then known as hipSYCL) implementation, which directly uses \gls{openmp}, \gls{cuda}, and \gls{hip} to target the respective hardware that this tight integration with \gls{opencl} is unnecessary and even hinders the future directions of SYCL. 
+However, \citet{alpay_sycl_2020} showed with their AdaptiveCpp (back then known as hipSYCL) implementation, which directly uses \gls{openmp}, \gls{cuda}, and \gls{hip} to target the respective hardware that this tight integration with \gls{opencl} is unnecessary and even hinders the future directions of SYCL. 
 Therefore, the current SYCL specification 2020, with its current Revision 9 from August 2024~\cite{khronos_sycl_working_group_sycl_2024}, lifted this restriction and officially allowed the usage of any backend to implement the SYCL specification. 
 
 \begin{table}[]
@@ -53,16 +53,17 @@ Therefore, the current SYCL specification 2020, with its current Revision 9 from
     \label{tab:sycl_implementations}
 \end{table}
 
-Since SYCL is also a standard like \gls{opencl}, many different implementations exist that can be seen in \autoref{tab:sycl_implementations}. 
+Since SYCL is also a standard like \gls{opencl}, many different implementations exist, as shown in \autoref{tab:sycl_implementations}. 
 The two most major and feature-complete SYCL implementations currently available are the open-source AdaptiveCpp~\cite{alpay_sycl_2020, alpay_one_2023, alpay_adaptivecppadaptivecpp_2025} developed at the University of Heidelberg and Intel's \dpcpp/icpx implementation~\cite{reinders_data_2021}. 
 AdaptiveCpp supports a \gls{sscp} compilation flow using a generic target that allows a single compiler invocation to generate a single binary containing custom \gls{ir} that is at runtime \gls{jit} compiled to the used target hardware. 
 It also directly supports \gls{aot} compilation using the respective targets. 
 However, the new \gls{sscp} is currently the recommended way to use AdaptiveCpp. 
 AdaptiveCpp supports NVIDIA \glspl{gpu} using the \gls{cuda} runtime \gls{api}, \gls{amd} \glspl{gpu} using ROCm, Intel \glspl{gpu} using Level Zero, and \glspl{cpu} using \gls{openmp}. 
+
 Intel has two slightly different versions of its SYCL compiler: \dpcpp as the fully open source compiler available on GitHub~\cite{noauthor_intelllvm_2025} and their closed source icpx compiler available directly on Intel's website~\cite{intel_compile_2025}. 
+The major difference between these two is that compared to \dpcpp, icpx contains additional compiler passes for better and more optimized support of \glspl{cpu}~\cite{brodman_dpc_2023}.
 \dpcpp/icpx supports \gls{jit} but also \gls{aot} compilation. 
 It supports NVIDIA \glspl{gpu} using the \gls{cuda} driver \gls{api}, \gls{amd} \glspl{gpu} using ROCm, Intel \glspl{gpu} using Level Zero, and \glspl{cpu} using \gls{opencl}. 
-The major difference between these two is that compared to \dpcpp, icpx contains additional compiler passes for better and more optimized support of \glspl{cpu}~\cite{brodman_dpc_2023}.
 Both of these SYCL implementations support all major hardware platforms. 
 
 Previously, ComputeCpp~\cite{misra_development_2019} was also one of the major SYCL implementations, but Intel bought the company, and the ComputeCpp SYCL implementation was incorporated into \dpcpp/icpx. 
@@ -73,12 +74,16 @@ For the remainder of this dissertation, only the AdaptiveCpp and \dpcpp/icpx SYC
 
 SYCL itself is a single-source programming model, i.e., host and device code can be written in the same file, allowing to target different hardware with only standard \cpp; no additional language extensions are necessary. 
 This means that, e.g., compared to \gls{cuda} or \gls{opencl}, the SYCL runtime \gls{api} is also purely based on \cpp enabling, e.g., first-class citizen support for \cpp features like exceptions or templates. 
-SYCL also provides a standard way for interoperability with the actual backend implementations. 
+SYCL also provides a standard way to ensure interoperability with the actual backend implementations. 
 Using this interoperability layer, it is, for example, easy to call highly-optimized vendor-specific library routines from SYCL code. 
 Compared to \gls{cuda}, SYCL also supports different ways to express parallelism (more on this in \autoref{sec:sycl_kernel_invocation_types}). 
-SYCL builds a task graph internally where all queue operations, like memory copies or kernel launches, are enqueued for which dependencies can be specified using SYCL events to be sure that, for example, two kernels are always executed after one another. 
+The SYCL specification also mandates two different \glspl{api} to interact with memory allocation and movement: the high-level buffer-accessor model and the low-level pointer-based \gls{api}. 
+While the former may be more convenient since it automatically handles read-write dependencies, only the latter will be used in this dissertation since it is generally more performant~\cite{crisci_sycl-bench_2024}. 
+SYCL internally builds a task graph where all queue operations, like memory copies or kernel launches, are enqueued. 
+Using SYCL events with the pointer-based \gls{api}, dependencies can be specified to be sure that, for example, two kernels are always executed one after another. 
 This task graph is processed asynchronously at runtime, automatically overlapping memory operations or kernel executions where possible. 
-Additionally, SYCL provides a portable way to gather device-specific information like the device name, number of cores, or available memory. 
+It should be noted that this asynchronous processing of the task graph can be disabled using the \code{sycl::property::queue::in_order} property provided to the SYCL queue constructor, which implicitly serializes all SYCL runtime calls.
+Additionally, SYCL provides a portable way to gather device-specific information, such as the device name, number of cores, or available memory. 
 
 \begin{listing}
     \begin{moderncode}{cpp}
@@ -107,10 +112,11 @@ sycl::free(d_Y, q);
 Again, this code is closely related to the \gls{cuda} code in \autoref{code:cuda_example}. 
 In fact, the mapping is so easy that there is also the SYCLomatic~\cite{huang_syclomatic_2023, noauthor_oneapi-srcsyclomatic_2025} conversion tool that can automatically convert \gls{cuda} code to SYCL. 
 The main difference compared to \gls{cuda} is that in SYCL, at first, we have to create a \code{sycl::queue} that represents the device we want our code to execute on: a \gls{cpu}, \gls{gpu}, \gls{fpga}, or any other device supported by an SYCL implementation. 
-Then, as was the case with \gls{cuda}, we have to allocate memory on the device and copy the data to it. 
-In SYCL, however, we can do this with a more \cpp like \gls{api}: in lines 3-6, we can see that, e.g., we do not have to calculate our sizes in bytes, removing an additional point of failure. 
+Here, we can also see the original close relationship between SYCL and \gls{opencl}: in the \gls{opencl} example in \autoref{code:opencl_example}, we also had to create a \code{cl_command_queue}. 
+However, we can also see the benefits of the more modern SYCL \gls{api}, since creating a \code{sycl::queue} can be done in a single line of code, whereas we needed six lines for \gls{opencl} in \autoref{code:opencl_example}.
+After that, as was the case with \gls{cuda}, we have to allocate memory on the device and copy the data to it. 
+In SYCL, however, we can do this with a more \cpp like \gls{api}: in lines 3-6, we can see that we do not have to calculate our sizes in bytes, removing an additional point of failure. 
 The actual compute kernel is defined in lines 5-10 as a simple \cpp lambda function (could also be an ordinary function object). 
-It should be noted that the previously mentioned asynchronous task graph processing can be disabled using the \code{sycl::property::queue::in_order} property provided to the SYCL queue constructor in line 1, which implicitly serializes all SYCL runtime calls. 
 This small example showcases the power of SYCL to target any device with purely standard \cpp code, especially when compared to the verbosity of \gls{opencl} shown in \autoref{code:opencl_example}. 
 
 
@@ -119,7 +125,7 @@ This small example showcases the power of SYCL to target any device with purely 
     \item standardized
     \item supports a wide variety of hardware platforms
     \item structure close to \gls{cuda}
-    \item builtin interoperability
+    \item builtin backend interoperability
 }{
     \item some low-level optimizations not possible directly in SYCL
 }

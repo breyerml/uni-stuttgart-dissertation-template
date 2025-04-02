@@ -9,7 +9,7 @@
 The first \gls{opencl} Khronos working group was created in 2008~\cite{khronos_opencl_working_group_khronos_2008}, shortly after the initial \gls{cuda} release, and the first official \gls{opencl} specification was released one year later in 2009~\cite{munshi_opencl_2009}. 
 The current \gls{opencl} version 3.0 revision 17 was published in October 2024~\cite{khronos_opencl_working_group_opencl_2024}. 
 As was the case with \gls{openmp}, since \gls{opencl} is a standard, there are many different implementations of \gls{opencl} targeting different hardware platforms. 
-These implementations include, among others, implementations of the \gls{opencl} 3.0 standard from Intel, Google, ARM, NVIDIA, or PoCL. 
+These implementations include, among others, implementations of the \gls{opencl} 3.0 standard from Intel, Google, ARM, NVIDIA, or PoCL~\cite{jaaskelainen_pocl_2015}. 
 Many more implementations exist for the \gls{opencl} 2.0 standard\footnote{\url{https://www.khronos.org/conformance/adopters/conformant-products/opencl} (visited: 2025-03-21)}.
 
 \begin{listing}
@@ -55,16 +55,15 @@ clReleaseContext(context);
     \label{code:opencl_example}
 \end{listing}
 
-\gls{opencl} follows the same host-to-device offloading model as \gls{cuda} including the mentioned general workflow. 
-However, as can be seen in \autoref{code:opencl_example}, \gls{opencl} is noticeably more verbose and involved than \gls{cuda}. 
+\gls{opencl} follows the same host-to-device offloading model as \gls{cuda} and is also based on a C-style \gls{api}. 
+However, as can be seen in \autoref{code:opencl_example}, \gls{opencl} is noticeably more verbose and complex than \gls{cuda}. 
 \gls{opencl} allows the programmer to dynamically specify to which device the code should be offloaded at runtime. 
 For that, the \code{cl_command_queue} (lines 8-13) has to be created, which is later used to enqueue the actual compute kernels. 
 Additionally, in \gls{opencl}, it is necessary to compile the kernel source, given as a simple C-style string, by hand, as well as setting the actual kernel arguments (lines 18-24). 
-This approach gives \gls{opencl} great flexibility since the compute kernels can easily be assembled and modified at runtime. 
-At the same time, however, the verbosity of \gls{opencl} also opens the doors for many more pitfalls and potential bugs. 
+This approach gives \gls{opencl} great flexibility since the compute kernels can easily be assembled and modified at runtime using simple string manipulations. 
+On the other side, some basic features that are directly supported by all other frameworks, like global constants used for optimization tuning a kernel to a specific hardware, must also be manually baked into the \gls{opencl} kernel string using a string find and replace approach. 
+This high verbosity of \gls{opencl} opens the doors for many more pitfalls and potential bugs. 
 Also, while \gls{opencl} is not as high-level as \gls{openmp}, not all vendor-specific optimizations are possible since one of the main goals of \gls{opencl} is to support as many platforms as possible. 
-
-\todo{different parallelism strategies?}
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{opencl}{

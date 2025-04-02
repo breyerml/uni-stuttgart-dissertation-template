@@ -1,25 +1,25 @@
 \chapter{Performance Portability}
 \label{chapter:pp}
 
-A still unsolved problem in computer science, and especially in the field of \gls{hpc}, are the three Ps: \textbf{P}erformance, \textbf{P}ortability, and \textbf{P}roductivity. 
+A still unsolved problem in computer science, and especially in the field of \gls{hpc}, are the three Ps: \textbf{P}erformance, \textbf{P}ortability, and \textbf{P}roductivity~\cite{anzt_then_2024}. 
 As a community, we strive for the best \textbf{P}erformance possible to efficiently utilize modern hardware and process the ever-increasing computational problems. 
 Especially in the age of \glspl{llm}, fully utilizing the hardware at hand is paramount. 
 Additionally, \textbf{P}ortability gets more and more important with the increasing landscape of different hardware platforms: multi-core \glspl{cpu} from different vendors with different architectures (x86-64, POWER, ARM, etc.), \glspl{gpu} from different vendors, \glspl{fpga}, or highly-specialized \glspl{tpu}. 
 For example, the ten fastest supercomputers in the TOP500 list of November 2024~\cite{top500org_november_2024} consist of five different hardware configurations. 
 It should be evident that writing the same code multiple times using different programming frameworks, libraries, or even languages to target all of the above hardware platforms is definitely not a future-proof approach. 
-Instead, in an ideal world, the goal should be to write your code once and be able to run it on all hardware platforms. 
+In an ideal world, the goal should be to write code once and be able to run it on all hardware platforms. 
 This also comes hand in hand with \textbf{P}roductivity: writing the same code multiple times reduces the overall productive output. 
 
-In the next sections, I will further define the terms \textbf{P}erformance and \textbf{P}ortability followed by Performance Portability as the combination of both since they go hand in hand in the three Ps: a high-performant code has only limited usability if it is not portable, i.e., it can only run on a specific hardware platform. 
+In the next sections, I will further define the terms performance and portability, followed by performance portability as the combination of both since they go hand in hand in the three Ps: a high-performant code has only limited usability if it is not portable, i.e., it can only run on a specific hardware platform. 
 On the other hand, highly portable code that can run everywhere but is not performant, i.e., utilizes only a small fraction of the available hardware performance, is also limited in the problem sizes it can solve.  
 
-I will not discuss in more detail the \textbf{P}roductivity aspect of the three Ps since it is generally highly subjective. 
-\citet{harrell_effective_2018} argue that in order to correctly assess productivity, productivity metrics should be tracked during the development process, which was, unfortunately, not done for the applications presented in this dissertation. 
+I will not discuss the productivity aspect of the three Ps in more detail since it is generally highly subjective. 
+\citet{harrell_effective_2018} argue that to correctly assess productivity, productivity metrics should be tracked during the development process, which was, unfortunately, not done for the applications presented in this dissertation. 
 Additionally, productivity also highly depends on the programmer. 
 For example, if we compare two programming frameworks, A and B, and a programmer that is already familiar with framework A but not with B, his/her productivity with framework A will likely be higher than with B. 
 However, can we conclude from this that framework A is generally more productive than B? 
 Or is framework A only more productive because the programmer already had years of experience with it? 
-Additionally, \citet{harrell_effective_2018} defined a code divergence as the cost of porting an application from one hardware platform to another. 
+Additionally, \citet{harrell_effective_2018} defined the code divergence as the cost of porting an application from one hardware platform to another. 
 \citet{pennycook_navigating_2021} used this code divergence to create their \gls{cbi} tool~\cite{sewall_code_2024} measuring the number of lines in a code base necessary to compile for a specific hardware platform. 
 If one platform requires additional lines of code, the code divergence is higher. 
 However, can we really correlate the number of lines with productivity? 
@@ -29,5 +29,5 @@ Drawing such conclusions is extremely difficult and subjective and, therefore, n
 
 
 \input{content/02_performance_portability/01_performance}
-%\input{content/02_performance_portability/02_portability}
-%\input{content/02_performance_portability/03_performance_and_portability}
+\input{content/02_performance_portability/02_portability}
+\input{content/02_performance_portability/03_performance_and_portability}

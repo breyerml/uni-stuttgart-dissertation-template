@@ -2,7 +2,7 @@
 \label{sec:frameworks:kokkos}
 
 \begin{quotebox}{\href{https://github.com/kokkos/kokkos}{Kokkos GitHub README}}
-    Kokkos Core implements a programming model in C++ for writing performance portable applications targeting all major HPC platforms. For that purpose it provides abstractions for both parallel execution of code and data management. Kokkos is designed to target complex node architectures with N-level memory hierarchies and multiple types of execution resources.
+    Kokkos Core implements a programming model in \cpp for writing performance portable applications targeting all major HPC platforms. For that purpose it provides abstractions for both parallel execution of code and data management. Kokkos is designed to target complex node architectures with N-level memory hierarchies and multiple types of execution resources.
 \end{quotebox}
 
 Kokkos'~\cite{trott_kokkos_2022} basic idea is close to the one provided by SYCL: writing portable code for different hardware platforms using modern \cpp. 
@@ -51,13 +51,13 @@ Additionally, in contrast to SYCL, where the two major implementations both rely
     \end{threeparttable}
     \caption{%
         The available Kokkos execution spaces. 
-        Currently, six execution spaces are fully supported, while three remain in an experimental state.  
-        Nevertheless, this table shows that Kokkos supports various hardware platforms with its different execution spaces. 
+        Currently, six execution spaces are fully supported, while three remain experimental.  
+        Nevertheless, this table shows that Kokkos supports all major hardware platforms with different execution spaces. 
     }
     \label{tab:kokkos_execution_spaces}
 \end{table}
 
-\autoref{tab:kokkos_execution_spaces} shows the currently supported Kokkos execution spaces. 
+\autoref{tab:kokkos_execution_spaces} shows the available Kokkos execution spaces. 
 Currently, this includes four \gls{cpu}-only execution spaces and five execution spaces that are able to target other devices. 
 Note that the \gls{hpx}, OpenMPTarget, and OpenACC execution spaces are still experimental. 
 Additionally, Kokkos only supports one \gls{gpu} related execution space at a time, i.e., it is not possible to mix, e.g., the \gls{cuda} and HIP execution spaces in a single application at the same time. 
@@ -87,9 +87,10 @@ Kokkos::deep_copy(host_view_type<double>{ Y.data(), N }, d_Y);
 \end{listing}
 
 \autoref{code:kokkos_example} shows a code example written in Kokkos. 
-The overall code structure, move data to the device, to your computation, move the data back to the host, is similar to, e.g., \gls{cuda} or SYCL. 
-However, as already mentioned, the abstraction level is a different one: the memory allocations are hidden behind the \code{Kokkos::View} (lines 4+5), and the device the code should be executed on is hidden behind the in this example implicitly used \code{Kokkos::DefaultExecutionSpace}. 
-The actual kernel is similar to SYCL written using a simple lambda function, whereby we have to note that normal \cpp lambda functions are not enough, but the Kokkos specific \code{KOKKOS_LAMBDA} macro must be used. 
+The overall host-to-device offload code structure \gls{cuda} or SYCL. 
+However, as already mentioned, the abstraction level is a different one: the memory allocations are hidden behind the \code{Kokkos::View} (lines 4+5), and the targeted device is hidden behind a Kokkos execution space which is in the provided example the implicit \code{Kokkos::DefaultExecutionSpace} since none was explicitly provided.  
+The actual kernel is similar to the one in SYCL written using a simple lambda function, whereby we have to note that normal \cpp lambda functions are not enough, but the Kokkos specific \code{KOKKOS_LAMBDA} macro must be used. 
+Due to the \code{Kokkos::View} abstraction, no manual resource cleanup must be done at the end of our code. 
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{kokkos}{

@@ -1,27 +1,26 @@
 \subsection{Performance Portability Metrics Revised (2017 -- 2022)}
 \label{sec:pp_revised}
-\todo{Übergänge + Jahreszahlen?}
 
-Many researchers adopted the \pp metric in their work in the following years, further underlining the necessity of such an objective performance portability metric. \todo{cite \pp usage papers here?}
+Many researchers adopted the \pp metric in their work in the following years~\cite{kirk_achieving_2017, hsu_performance_2018, pennycook_evaluating_2018, zhao_delivering_2018, yang_empirical_2018, yokota_beginners_2018, sedova_high-performance_2018, harrell_effective_2018, deakin_performance_2019, reguly_performance_2019, daniel_applying_2019, deakin_tracking_2020, bertoni_performance_2020, grete_k-athena_2021, deakin_analyzing_2021, ibrahim_performance_2022, dieguez_ml-based_2022, breyer_performance_2023, marowka_toward_2023, ernstsson_assessing_2023, rangel_performance-portable_2023, davis_taking_2024}, further underlining the necessity of such an objective performance portability metric. 
 But the \pp metric was not only used by other researchers; they also tried highlighting potential problems with \pp and solutions, as well as improvements and extensions. 
 
-For example, \citet{harrell_effective_2018} noted that \pp tracks performance and portability but completely ignores the third P, productivity. 
+For example, \citet{harrell_effective_2018} noted in \citeyear{harrell_effective_2018} that \pp tracks performance and portability but completely ignores the third P, productivity. 
 It especially does not penalize heroic optimization efforts, i.e., highly optimized divergent code paths for specific architectures, to increase the \pp score, which certainly would reduce the productivity due to the necessity to maintain said code paths. 
 Therefore, \citeauthor{harrell_effective_2018} extended the performance portability further to an \textit{effective performance portability} by introducing a \textit{code divergence} measurement. 
 However, since productivity is subjective, depends on a programmer's experience with the frameworks used, and should already be tracked during development either manually or using automatic tools~\cite{harrell_effective_2018}, I will only focus on the performance portability aspect in this work and ignore productivity. 
 
-The work of \citet{daniel_applying_2019} combines the \pp metric of \citet{pennycook_evaluating_2018} with the code divergence of \citet{harrell_effective_2018}. 
+The work of \citet{daniel_applying_2019} in \citeyear{daniel_applying_2019} combines the \pp metric of \citet{pennycook_evaluating_2018} with the code divergence of \citet{harrell_effective_2018}. 
 Their main interest was the observation that the performance and performance portability also depend on the input size of the problem $\mathbf{p}$, which \pp currently ignores. 
 Instead of using the code distance as \citeauthor{harrell_effective_2018} did, they define a \textit{performance distance} that can either be based on the architectural or application efficiencies. 
 \citeauthor{daniel_applying_2019} final \textit{performance portability divergence} $P_\mathcal{D}$ is then defined as the root mean squared error of all performance distances between the set of input sizes of interest with respect to the set of target platforms. 
 It should be noted that the optimal value of $P_\mathcal{D}$ is $0$, which is easier to reach than $1$ with \pp~\cite{daniel_applying_2019}. 
 
-\citet{sedova_high-performance_2018} also created a new performance portability metric measuring the performance portability on a programmatic level since they also argue that \pp does not penalize non-portable but highly optimized code paths. 
+In \citeyear{sedova_high-performance_2018}, \citet{sedova_high-performance_2018} also created a new performance portability metric measuring the performance portability on a programmatic level since they also argue that \pp does not penalize non-portable but highly optimized code paths. 
 If the value of their $PP_{MD_c}$ metric (here, $MD$ stands for molecular dynamics since \citeauthor{sedova_high-performance_2018} evaluated their metric on molecular dynamic codes) is close to $0$, it means that a large part of the code must be replaced with a portable version with the same performance level to achieve real performance portability. 
 However, since $PP_{MD_c}$ currently does not support results from multiple machines~\cite{sedova_high-performance_2018}, it is also excluded from this work. 
 
-\citet{yang_empirical_2018} also tried to improve \pp but not by changing or augmenting \pp itself but by proposing a new performance efficiency measurement in addition to the already existing architectural and application efficiency. 
-They argue that the architectural efficiency may skew the results because it uses vendor-provided theoretical and possibly over-optimistic peak performance values. 
+\citet{yang_empirical_2018} in \citeyear{yang_empirical_2018} also tried to improve \pp but not by changing or augmenting \pp itself but by proposing a new performance efficiency measurement in addition to the already existing architectural (\autoref{def:arch_eff}) and application (\autoref{def:app_eff}) efficiency. 
+They argue that the architectural efficiency may skew the results because it uses vendor-provided theoretical and possibly over-optimistic or unreachable peak performance values. 
 On the other hand, the Roofline model accounts for different architecture-specific performance bounds that may limit the observed sustained performance. 
 \citeauthor{yang_empirical_2018} define the Roofline performance efficiency as: 
 \begin{definition}[Roofline Performance Efficiency~\cite{yang_empirical_2018}]\label{def:roof_eff}
@@ -29,25 +28,25 @@ Given the observed code performance in floating point operations per second $\le
 
 $$e_i(a, p) = \frac{P_i(a, p)}{\min(F_i, B_i \times I_i(a, p))}$$
 \end{definition}
-However, the Roofline model and, therefore, the Roofline efficiency, suffer two major problems~\cite{bertoni_performance_2020, marowka_reformulation_2022}. 
+However, the Roofline model and, therefore, the Roofline efficiency, suffers two major problems~\cite{bertoni_performance_2020, marowka_reformulation_2022}. 
 First, establishing a correct theoretical Roofline model is highly non-trivial and an active research field~\cite{williams_roofline_2009, ilic_cache-aware_2014, yokota_novel_2018, taufer_applying_2016, hsu_performance_2018, grete_k-athena_2021, naraparaju_shifting_2024, antepara_performance_2024}. 
-Second, empirically created Roofline models, e.g., using the stream benchmark to determine the sustained memory bandwidth, may give different results on different machines even though the same hardware is used. 
+Second, empirically created Roofline models, e.g., using the STREAM benchmark~\cite{mccalpin_memory_1995} to determine the sustained memory bandwidth, may give different results on different machines even though the same hardware is used. 
 This makes it difficult to reproduce or compare results from different publications. 
 
 Regarding different performance efficiency measurements, \citet{siklosi_heterogeneous_2018} also argue that it becomes noticeably more difficult to get meaningful results for a heterogeneous application, i.e., an application that, e.g.,  does not only use \glspl{cpu} to offload some computation to an \gls{gpu} but that uses \glspl{cpu} and \glspl{gpu} simultaneously. 
 
-\citet{yokota_beginners_2018} analyzed the \pp metric using five case studies and highlighted some findings and problems, namely the tension between performance improvements and performance portability improvements. 
+In \citeyear{yokota_beginners_2018}, \citet{yokota_beginners_2018} analyzed the \pp metric using five case studies and highlighted some findings and problems, namely the tension between performance improvements and performance portability improvements. 
 They identified three ways to improve the performance portability value. 
 First, we can increase the number of platforms in the platform set $\mathbf{H}$. 
-Adding new platforms for already supported types with a good efficiency will improve the \pp value. 
+Adding new platforms for already supported types with a good efficiency will improve the value of \pp. 
 However, for the discussion of performance portability in general, it may be more interesting to add new platforms of a completely different type like \glspl{gpu} from a different vendor. 
 This platform heterogeneity is currently not included in the \pp metric but would be interesting when comparing the \pp scores of different platform sets. 
 Second, we can reduce the number of platforms by removing platform types that are not well supported, for example, \glspl{cpu} for an application mainly developed for \glspl{gpu}. 
 While this will increase the \pp score, it would also decrease the platform heterogeneity. 
 Whether this is desirable heavily depends on the application and use case. 
 Third, increasing the performance efficiency of the application on one or more platforms. 
-Improving performance efficiency on a platform can have multiple effects: improving efficiency on all platforms (best case) or improving efficiency only on this platform but decreasing it on all other platforms (worst case). 
-\citeauthor{yokota_beginners_2018} also highlight the architectural efficiency problem resulting in a good efficiency score, although the implementation may not be efficient. 
+Improving the performance efficiency on a platform can have multiple effects: improving efficiency on all platforms (best case) or improving efficiency only on this platform but decreasing it on all other platforms (worst case). 
+\citeauthor{yokota_beginners_2018} also highlight the already mentioned problem with the architectural efficiency where a good efficiency score must not necessarily correlate with an efficient implementation.  
 Therefore, they also used the application efficiency for their case studies, implementing five problems using OpenACC. 
 However, this also highlighted the main problem with the application efficiency. 
 They used a \gls{cuda} implementation as the best-performing baseline and implemented the same code with OpenACC. 
@@ -60,7 +59,7 @@ Consequently, when only reporting a small \pp score, it is impossible to determi
 The same problem has also been discussed by \citet{bertoni_performance_2020}. 
 They propose to additionally report the standard deviation of the achieved performance efficiencies. 
 
-Besides \citeauthor{yokota_beginners_2018}, \citet{marowka_toward_2021}, with an extended paper published at the beginning of 2022~\cite{marowka_reformulation_2022}, also thoroughly investigated the \pp metric and found some issues, the main one being the usage of the harmonic mean in the \pp \autoref{def:pp}. 
+Besides \citeauthor{yokota_beginners_2018}, in \citeyear{marowka_toward_2021} \citet{marowka_toward_2021}, with an extended paper published at the beginning of 2022~\cite{marowka_reformulation_2022}, also thoroughly investigated the \pp metric and found some issues, the main one being the usage of the harmonic mean in the \autoref{def:pp} of \pp. 
 He argues, and later proves, that using the harmonic mean violates the criteria $5$ from \autoref{def:pp_criteria} since \pp is not proportional to the sum of scores across $\mathbf{H}$. 
 Furthermore, he states that \pp being zero if any platform is unsupported, as noted in criteria $3$, is also a direct result of using the harmonic mean. 
 \citeauthor{marowka_toward_2021} concludes that the arithmetic mean is a better alternative to the harmonic mean and proposes his own performance portability metric. 
@@ -81,31 +80,34 @@ Furthermore, he states that \pp being zero if any platform is unsupported, as no
 Besides using the arithmetic mean instead of the harmonic mean, which also has the benefit of not disproportionately tracking lower values, \citeauthor{marowka_toward_2021} also changed four additional things compared to the \autoref{def:pp} of \pp. 
 First, if a platform is not supported, the \mpp score is not $0$ but reported as \textit{not applicable} to explicitly distinguish it from low-performance portability values approaching $0$. 
 He additionally states that setting the \pp score to $0$ only because a single platform in $\mathbf{H}$ is unsupported for the current implementation is unrealistic. 
-Second, he observed that in many real-world examples, there is a noticeable gap between the performance efficiency of \glspl{cpu} and \glspl{gpu} if \glspl{cpu} are even supported. 
-He, therefore, suggests that \mpp should only be calculated for platforms in the same architectural class, i.e., calculate different \mpp values for \glspl{cpu} and \glspl{gpu}. 
+Second, he observed that in many real-world examples, there is a noticeable gap between the performance efficiency of \glspl{cpu} and \glspl{gpu}. 
+He, therefore, suggests that \mpp should only be calculated for platforms in the same architectural class, i.e., one would have to calculate different \mpp values for \glspl{cpu} and \glspl{gpu}. 
 Third, for the application efficiency, if there is no known baseline implementation, the best-performing version of the current implementations is often used as a baseline and included in the \pp score, possibly skewing its results. 
 For \mpp, \citeauthor{marowka_toward_2021} proposes excluding these baseline values from its calculation. 
 Fourth, he states that clear outliers should be removed from the calculation but fails to specify what characterizes a clear outlier.
-While some of these changes can be justified, the question of whether points two and four are desirable is especially pertinent if the goal is to showcase performance portability across diverse architectures. 
+While some of these changes can be justified, the question of whether points two and four are desirable is especially questionable if the goal is to showcase performance portability across diverse architectures. 
 
-In \cite{marowka_performance_2022}, \citeauthor{marowka_performance_2022} also proposed a variation of his \mpp metric, which is not application but programming model-centric. 
+In the same year, \citet{marowka_performance_2022} also proposed a variation of his \mpp metric, which is not application but programming model-centric. 
 The basic idea is to report the achieved performance of a portable programming model $M$ as a fraction of the performance of a non-portable architecture-specific parallel programming model across various case studies. 
 However, since the number of case studies must be relatively large to draw meaningful conclusions, this metric is more suited for meta-studies. 
 
-Since \citeauthor{marowka_portability_2024} also criticized the architectural and application efficiencies, he also defined a new performance portability metric to tackle some of these problems~\cite{marowka_portability_2024}. 
+Since \citeauthor{marowka_portability_2024} also criticized the architectural and application efficiencies, in \citeyear{marowka_portability_2024} he also defined a new performance portability metric to tackle some of these problems~\cite{marowka_portability_2024}. 
 The current literature's use of application efficiency has the problem that in nearly all cases, the baseline was chosen from one of the current investigated implementations and not the best-known architecture-specific implementation. 
 One solution proposed by \citeauthor{marowka_portability_2024} is to only use application efficiency if such a baseline is known and agreed upon to have the best-known performance; otherwise, always use the architectural efficiency. 
 Also, it is advisable to always use a vendor and architecture-specific implementation as a baseline, assuming such an implementation is always faster than an implementation created with portability in mind. 
-He also proposes to create \enquote{Performance Portability Repositories} containing the optimal implementations for various different problems that can then be used as baselines for the application efficiency calculations. 
+He also suggests creating \enquote{Performance Portability Repositories} containing the optimal implementations for various different problems that can then be used as baselines for the application efficiency calculations. 
+He demonstrates the usefulness of such a repository using already existing benchmark suites from the \gls{spec} benchmark and proposes to extend it to also help with assessing performance portability~\cite{marowka_toward_2023}. 
 Since these solutions are difficult to achieve, \citeauthor{marowka_portability_2024} also proposes a new performance efficiency metric that does not suffer from the shortcomings of the application efficiency.
-The basic idea of the \textit{portability efficiency} describes the performance cost of a one-way migration of an application from a source to a target platform. 
+The \textit{portability efficiency} describes the performance cost of a one-way migration of an application from a source to a target platform. 
 Formally, the portability deficiency is defined as: 
 
 \begin{definition}[Portability Efficiency~\cite{marowka_portability_2024}]\label{def:pp_eff}
-For a given base platform $\mathbf{b}$ and a target platform $t$, the portability efficiency $\eta$ of application $\mathbf{a}$ solving problem $\mathbf{p}$ on platform $\mathbf{t}$, when it is transferred from platform $\mathcal{b}$, is defined as the achieved performance of application $\mathbf{a}$ on platform $\mathbf{t}$, with the best-performing application setting on platform $\mathbf{b}$, $C(b)$, as fraction of the best observed performance of application $\mathbf{a}$ on platform $\mathbf{t}$:
+For a given base platform $\mathbf{b}$ and a target platform $\mathbf{t}$, the portability efficiency $\eta$ of application $\mathbf{a}$ solving problem $\mathbf{p}$ on platform $\mathbf{t}$, when it is transferred from platform $\mathbf{b}$, is defined as the achieved performance of application $\mathbf{a}$ on platform $\mathbf{t}$, with the best-performing application setting on platform $\mathbf{b}$, $C(b)$, as fraction of the best observed performance of application $\mathbf{a}$ on platform $\mathbf{t}$:
 
 \[
     \eta(a, p, b \rightarrow t) = \frac{P_{d, C(a)}}{P_{t, C(t)}}
 \]
 \end{definition}
 Note that to integrate this portability efficiency into the \mpp metric, the cardinality, i.e., the number of possible permutations for the supported platform combinations, must be used in the arithmetic mean computation. 
+
+Based on these critiques, \citet{pennycook_revisiting_2021} revised their \pp definition, which directly leads me to the current state of the art regarding performance portability. 

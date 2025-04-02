@@ -1,10 +1,51 @@
 \subsection{Standard \cpp\ -- stdpar}
 \label{sec:frameworks:stdpar}
 
-Until now, only frameworks or libraries were mentioned that extend standard \cpp but starting in 2014, the \cpp Standardization Committee also worked on an \enquote{Extension for Parallelism} that should be added to the \cpp standard itself~\cite{hoberock_n3960_2014}. 
-This working draft was later standardized in the ISO \cpp{17} standard~\cite{hoberock_p0024r2_2016, international_organization_for_standardization_isoiec_2017} sometimes called \textit{stdpar}. 
+\begin{quotebox}{\citet{hoberock_parallel_2013} (N3554)}
+    This proposal is motivated by a strong desire to provide a standard model of parallelism enabling performance portability across the broadest possible range of parallel architectures. For this reason, we have exposed parallelism in the most abstract manner possible in order to avoid presuming the existence of a particular parallel machine model.
+\end{quotebox}
+
+Until now, only frameworks or libraries were mentioned that extend standard \cpp. 
+However, in 2013, the first draft to add parallelism to the \cpp standard library itself was proposed~\cite{hoberock_parallel_2013}, which was incorporated in 2014 into the \enquote{Extension for Parallelism} that should be added to the \cpp standard itself~\cite{hoberock_n3960_2014}. 
+This working draft was later standardized in the ISO \cpp{17} standard~\cite{hoberock_p0024r2_2016, international_organization_for_standardization_isoiec_2017}, sometimes also called \textit{stdpar}. 
 In \cpp{20}, the \cpp standard parallelism features were extended with a new execution policy \code{std::execution::unseq}~\cite{meredith_p1001r2_2019}. 
 Lately, efforts have been made to further improve the parallelism features in \cpp by voting senders and receivers in the \cpp{26} standard~\cite{dominiak_p2300r10_2024, baker_p3396r0_2024, niebler_p3325r5_2024}. 
+
+\begin{listing}
+    \begin{moderncode}{cpp}
+std::vector<int> indices(N);
+std::iota(indices.begin(), indices.end(), 0);
+
+std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=, d_X = X.data(), d_Y = Y.data()](const int idx) {
+    d_Y[idx] = alpha * d_X[idx] + d_Y[idx];
+});
+    \end{moderncode}
+    \caption{%
+    A simple DAXPY example using \cpp standard parallelism also called \textit{stdpar} (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:11,positionColumn:32,positionLineNumber:11,selectionStartColumn:32,selectionStartLineNumber:11,startColumn:32,startLineNumber:11),source:'\%23include+\%3Cexecution\%3E\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+the+indices+used+in+the+for_each+loop\%0A++std::vector\%3Cint\%3E+indices(N)\%3B\%0A++std::iota(indices.begin(),+indices.end(),+0)\%3B\%0A\%0A++//+the+stdpar+compute+kernel\%0A++std::for_each(std::execution::par_unseq,+indices.begin(),+indices.end(),+\%5B\%3D,+d_X+\%3D+X.data(),+d_Y+\%3D+Y.data()\%5D(const+int+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/evjYfPrrq}).
+    }
+    \label{code:stdpar_example}
+\end{listing}
+
+The basic idea of parallelizing code with \cpp standard functionality is shown in \autoref{code:stdpar_example}. 
+In \cpp{17}, many standard algorithms gained an additional overload accepting a \code{std::execution} policy. 
+This policy specifies how the algorithm should be parallelized. 
+As of \cpp{20}, four different execution policies are directly supported by the standard, whereby the \cpp standard explicitly allows implementations to add new specialized execution policies:
+\begin{description}
+    \item[\code{std::execution::seq}:] sequential execution, no additional assumptions
+    \item[\code{std::execution::par}:] parallel execution but no vectorization allowed
+    \item[\code{std::execution::par_unseq}:] parallel execution with vectorization
+    \item[\code{std::execution::unseq}:] sequential execution with vectorization
+\end{description}
+Providing \code{std::execution::seq} to a \cpp standard algorithm acts if no execution policy has been provided. 
+This high-level approach, however, suffers the same problem as \gls{openmp}: low-level optimizations are not possible since the \cpp standard has no notation to express all necessary concepts like different memory hierarchies. 
+
+\autoref{code:stdpar_example} is quite similar to the \gls{hpx} code example provided in \autoref{sec:frameworks:hpx}, which should not be of any surprise since \gls{hpx} parallel algorithms where modeled after the \cpp standard. 
+However, there is one difference due to the fact that stdpar implementations also support \glspl{gpu}: the compute kernel lambda must capture all used variables by-copy and if we want to use something like a \code{std::vector} inside the compute lambda, we have to explicitly capture their underlying pointers and use them inside the kernel. 
+The general capture-by-copy is necessary for the runtime to know when and how to migrate the data to the \gls{gpu} device, which is done by all stdpar implementations using \gls{usm}, creating one large address space spanning both host and device. 
+If we capture the variables by reference, we would use host-allocated variables inside a \gls{gpu} kernel, resulting in a runtime error. 
+Additionally, if we would not capture the \code{std::vector} using their underlying pointers, we would copy a whole \code{std::vector} to the device and later try to call its destructor \textit{on the device} which may or may not work depending on the stdpar implementation and target platform. 
+Therefore, it is safer to explicitly capture \code{std::vector} as pointers, fixing this problem since no destructors are called. 
+Note that this was not necessary in \gls{hpx} since \gls{hpx}'s parallel algorithm implementation inherently only supports \glspl{cpu} that do not suffer from this problem, i.e., it is always fine to call a destructor. 
 
 \begin{table}[]
     \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
@@ -36,41 +77,11 @@ Lately, efforts have been made to further improve the parallelism features in \c
     \label{tab:stdpar_implementations}
 \end{table}
 
-Since \textit{stdpar} is standardized, different implementations exist that all support different hardware platforms. 
-\autoref{tab:stdpar_implementations} shows the currently available stdpar implementation list, including the supported parallel execution policies. 
-All major hardware platforms can be targeted using solely \cpp standard parallelism. 
-Whether a vendor-provided implementation, like NVIDIA's nvhpc or \gls{amd}'s rocstdpar, or a more general SYCL-based implementation, like icpx or AdaptiveCpp, is used is up to the user. 
+Since stdpar is standardized in \cpp{17}, different implementations support different hardware platforms. 
+\autoref{tab:stdpar_implementations} shows the currently available stdpar implementations, including the supported parallel execution policies. 
+It can be seen that all major hardware platforms can be targeted using solely \cpp standard parallelism. 
+Whether the implementation in a general purpose compiler like GNU GCC~\cite{gnu_gcc_2025}, a \gls{gpu} vendor-provided implementation, like NVIDIA's nvhpc~\cite{nvidia_accelerating_2020} or \gls{amd}'s rocstdpar~\cite{voicu_rocmroc-stdpar_2024}, or a more general SYCL-based implementation, like icpx~\cite{intel_intel_2025} or AdaptiveCpp~\cite{alpay_adaptivecpp_2024}, is used is up to the user. 
 This again shows the power of a standardized framework: as long as the code adheres to the standard, the used software stack can be chosen based on the current application's needs. 
-
-\todo{cite different implementations, more detailed}
-
-\begin{listing}
-    \begin{moderncode}{cpp}
-std::vector<int> indices(N);
-std::iota(indices.begin(), indices.end(), 0);
-
-std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [=](const int idx) {
-    Y[idx] = alpha * X[idx] + Y[idx];
-});
-    \end{moderncode}
-    \caption{%
-    A simple DAXPY example using \cpp standard parallelism also called \textit{stdpar} (\href{https://godbolt.org/\#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:2,lang:c\%2B\%2B,selection:(endColumn:32,endLineNumber:11,positionColumn:32,positionLineNumber:11,selectionStartColumn:32,selectionStartLineNumber:11,startColumn:32,startLineNumber:11),source:'\%23include+\%3Cexecution\%3E\%0A\%23include+\%3Ciostream\%3E\%0A\%23include+\%3Cvector\%3E\%0A\%0Aint+main()+\%7B\%0A++const+int+N+\%3D+1024\%3B\%0A\%0A++//+create+and+fill+used+data\%0A++std::vector\%3Cdouble\%3E+X(N)\%3B\%0A++std::vector\%3Cdouble\%3E+Y(N)\%3B\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+N\%3B+\%2B\%2Bi)+\%7B\%0A++++X\%5Bi\%5D+\%3D+i\%3B\%0A++++Y\%5Bi\%5D+\%3D+2+*+i\%3B\%0A++\%7D\%0A++const+double+alpha+\%3D+0.5\%3B\%0A\%0A++//+create+the+indices+used+in+the+for_each+loop\%0A++std::vector\%3Cint\%3E+indices(N)\%3B\%0A++std::iota(indices.begin(),+indices.end(),+0)\%3B\%0A\%0A++//+the+stdpar+compute+kernel\%0A++std::for_each(std::execution::par_unseq,+indices.begin(),+indices.end(),+\%5B\%3D,+d_X+\%3D+X.data(),+d_Y+\%3D+Y.data()\%5D(const+int+idx)+\%7B\%0A++++++d_Y\%5Bidx\%5D+\%3D+alpha+*+d_X\%5Bidx\%5D+\%2B+d_Y\%5Bidx\%5D\%3B\%0A++\%7D)\%3B\%0A\%0A++for+(int+i+\%3D+0\%3B+i+\%3C+10\%3B+\%2B\%2Bi)+\%7B\%0A++++std::cout+\%3C\%3C+Y\%5Bi\%5D+\%3C\%3C+!'+!'\%3B\%0A++\%7D\%0A\%0A++return+0\%3B\%0A\%7D'),l:'5',n:'0',o:'C\%2B\%2B+source+\%232',t:'0')),header:(),k:52.66571512767246,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g142,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1',verboseDemangling:'0'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c\%2B\%2B,libs:!(),options:'-O3+-std\%3Dc\%2B\%2B17',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:2),l:'5',n:'0',o:'+x86-64+gcc+14.2+(Editor+\%232)',t:'0')),k:47.334284872327544,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compilerName:'x86+nvc\%2B\%2B+25.1',editorid:2,fontScale:14,fontUsePx:'0',j:1,wrap:'1'),l:'5',n:'0',o:'Output+of+x86-64+gcc+14.2+(Compiler+\%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:47.334284872327544,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4}{https://godbolt.org/z/evjYfPrrq}).
-    }
-    \label{code:stdpar_example}
-\end{listing}
-
-The basic idea of parallelizing code with \cpp standard functionality is shown in \autoref{code:stdpar_example}. 
-In \cpp{17}, many standard algorithms gained an additional overload accepting a \code{std::execution} policies. 
-This policy specifies how the algorithm should be parallelized. 
-AS of \cpp{20}, four different execution policies are supported by the standard, whereby the \cpp standard explicitly allowed implementations to add new specialized execution policies:
-\begin{description}
-    \item[\code{std::execution::seq}] sequential execution, no additional assumptions
-    \item[\code{std::execution::par}] parallel execution but no vectorization allowed
-    \item[\code{std::execution::par_unseq}] parallel execution with vectorization
-    \item[\code{std::execution::unseq}] sequential execution with vectorization
-\end{description}
-Providing \code{std::execution::seq} to a \cpp standard algorithm acts if no execution policy has been provided. 
-
 
 %%% ADVANTAGES AND DISADVANTAGES
 \AdvantagesAndDisadvantages{stdpar}{
