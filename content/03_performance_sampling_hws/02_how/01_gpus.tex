@@ -1,0 +1,9 @@
+\subsection{Implementation on GPUs}
+\label{sec:hws_impl_gpus}
+
+For implementing hws on the supported \glspl{gpu}, vendor-specific libraries are used. 
+To sample information on NVIDIA \glspl{gpu} \gls{nvml}~\cite{nvidia_nvml_2024} is used, on \gls{amd} \glspl{gpu} the \gls{rocmsmi} library~\cite{amd_rocm_2024}, and on Intel \glspl{gpu} the Level Zero library~\cite{intel_level_2024}. 
+While the \gls{nvml} and \gls{rocmsmi} \glspl{api} are relatively similar, Level Zero has a significantly different approach that can also be seen in \autoref{code:vendor_library_calls}. 
+All library functions return a status code indicating whether the \gls{api} call was successful. 
+If requested during CMake configuration, hws internally checks these status codes and raises an error if a function fails.  
+Additionally, the \gls{nvml} and Level Zero specific device handles are wrapped in a custom wrapper class to prevent implementation details from leaking into the public headers. 

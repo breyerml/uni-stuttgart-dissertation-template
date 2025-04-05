@@ -15,22 +15,85 @@ where the $\frac{bandwidth}{channel}$ is the \text{memory speed} multiplied by t
 \end{definition}
 Again, this merely serves as a sensible upper bound value, and it is not guaranteed that an application may achieve it. 
 
+% calculate theoretical peak GB/s of example hardware platform
 For example, to calculate the theoretical peak memory bandwidth, let's look again at our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node. 
 Our node is equipped with $\SI{386}{\gibi\byte}$ \acrshort{ddr}5 \acrshort{ram} with a speed of $\SI{4800}{\mega\transfer\per\second}$ and a memory bus width of $\SI{8}{\byte}$. 
 Each socket has $\num{12}$ memory channels. 
 Therefore, the theoretical peak memory bandwidth of our compete node according to \autoref{def:peak_memory_bandwidth} is: $(\num{4800} \cdot 8) \cdot 12 \cdot 2 = \SI{921.6}{\giga\byte\per\second}$, which matches the value provided by \gls{amd}~\cite{amd_amd_2022}.
 
+% get atainable peak GB/s via utilities
 To get a more empirical upper bound value of the attainable memory bandwidth, we can use the standard STREAM benchmark~\cite{mccalpin_memory_1995}. 
-For our machine, I use the BabelStream~\cite{deakin_evaluating_2018} implementation in the same setup as in the previous section. 
-The BableStream benchmark reports a maximum memory bandwidth of $\SI{741.58}{\giga\byte\per\second}$ when using the DOT function $d = \langle a, b \rangle$. 
-Note that this corresponds to only $\SI{80}{\percent}$ of the theoretical peak memory bandwidth. 
+For our machine, I use the BabelStream~\cite{deakin_evaluating_2018} implementation in the same setup as in the previous section and the same \gls{openmp} settings as in the previous section. 
+The BableStream benchmark reports a maximum memory bandwidth of $\SI{644.411}{\giga\byte\per\second}$ when using the DOT function $d = \langle a, b \rangle$. 
+Note that this corresponds to only $\SI{70}{\percent}$ of the theoretical peak memory bandwidth. 
+Running the dot kernel from likwid's benchmark suite using \code{likwid-bench -t stream -W M0:120GB:24:1:2 -W M1:120GB:24:1:2}, which uses all $\num{24}$ physical cores from each \gls{numa} domain allocating $\SI{120}{\giga\byte}$ per \gls{numa} domain, reports a maximum memory bandwidth of $\SI{721.99}{\giga\byte\per\second}$. 
+This is only $\SI{22}{\percent}$ worse than the theoretical peak memory bandwidth. 
 
+% how to get achieved GB/s for an application
 If we are interested in the achieved memory bandwidth of an application, we can use the same method as for the achieved \gls{flops} by either using one of the already presented utilities or by counting the number of transferred bytes. 
 Again, we must be careful what to count since not all variable accesses result in a memory transfer. 
 
-Looking again at the TRIAD function, we have to load or store three FP64 values per iteration, resulting in $\SI{24}{\byte}$ transferred per iteration, adding up to $\SI{240}{\giga\byte}$ in total for $\num{1e10}$ iterations. 
-Since the average execution time was $\SI{0.46969}{\second}$, we have an achieved memory bandwidth of $\SI{510.98}{\giga\byte\per\second}$. 
-This is slightly lower than the $\SI{518.487}{\giga\byte\per\second}$ reported by BableStream since BableStream uses the best iteration time instead of the average one to calculate its memory bandwidth. 
-Profiling the TRIAD function with likwid-perfctr's \code{MEM} metric results in a memory bandwidth of $\SI{0}{\giga\byte\per\second}$. 
+% example application
+Looking again at the TRIAD function, we have to load two and store one FP64 values, resulting in $\SI{24}{\byte}$ transferred per iteration, adding up to $\SI{240}{\giga\byte}$ in total for $\num{1e10}$ iterations. 
+Since the average execution time was $\SI{0.46023}{\second}$, we have an achieved memory bandwidth of $\SI{521.48}{\giga\byte\per\second}$. 
+This is slightly lower than the $\SI{528.511}{\giga\byte\per\second}$ reported by BableStream since BableStream uses the best iteration time instead of the average one to calculate its memory bandwidth. 
+Profiling the TRIAD function with likwid-perfctr's \code{MEMREAD} and \code{MEMWRITE} metric results in different memory bandwidths. 
+It reports $\SI{510.04}{\giga\byte\per\second}$ for the memory reads and $\SI{175.77}{\giga\byte\per\second}$ for the memory writes, totaling in a reported memory bandwidth of $\SI{685.81}{\giga\byte\per\second}$. 
+The reason for this discrepancy is how we and BabelStream counted the number of transferred bytes: we counted the access to \code{a[i]} as a single memory transfer. 
+However, in practice, this access results in a memory read \textbf{and} write operation, which is reported by likwid. 
 
-\todo{run likwid-perfctr with MEM group $\rightarrow$ currently insufficient privileges}
+This becomes clearer when we look at the NSTREAM function from BabelStream. 
+If we count the memory transfers of this function, we explicitly count it as three FP64 values loaded, due to the addition to \code{a[i]}, and one FP64 value stored, resulting in $\SI{32}{\byte}$ transferred per iteration. 
+Running this function with BableStream gives us a runtime of $\SI{0.45885}{\second}$ resulting in a memory bandwidth of $\SI{697.40}{\giga\byte\per\second}$ again closely matching the value of $\SI{707.794}{\giga\byte\per\second}$ directly reported by BableStream. 
+If we profile this function with likwid, we get nearly the same values as with the TRIAD kernel ($\SI{699.684}{\giga\byte\per\second}$) since, as far as likwid is concerned, we have the same amount of memory transfers. 
+These examples show us that we can also estimate the memory bandwidth by hand-counting the number of transferred bytes. 
+However, it also shows that we must be careful what we count as memory transfer since, in reality, more bytes may be transferred than initially thought. 
+
+% export OMP_NUM_THREADS=48
+% export OMP_PLACES="{0:1}:48:1"
+% export OMP_PROC_BIND=true
+% likwid-perfctr -C 0-47 -g MEMREAD -g MEMWRITE -m ./omp-stream -s 10000000000 -n 3 --only Triad --gigabytes
+% first repeat -> no instrumentation
+% second repeat -> MEMREAD
+% third repeat -> MEMWRITE
+
+% BableStream all: 
+% Copy        450.732     0.35498     0.37867     0.36682     
+% Mul         448.448     0.35679     0.38118     0.36899     
+% Add         526.074     0.45621     0.46474     0.46047     
+% Triad       529.266     0.45346     0.45410     0.45378     
+% Dot         644.411     0.24829     0.24998     0.24913
+% Nstream     706.992     0.45262     0.46608     0.45935
+
+% likwid-bench: 
+% likwid-bench -W M0:120GB:24:1:2 -W M1:120GB:24:1:2
+% copy_avx512: 438.531
+% ddot_avx512: 709.686
+% ddot: 721.989
+% load_avx512: 687.228
+% stream_avx512_fma: 502.396
+% stream: 514.989
+% stream_mem: 682.254
+% stream_mem_avx_fma: 692.154
+% triad_mem_avx512_fma: 693.054
+% store_mem_avx512: 458.661
+
+% TRIAD
+% avg runtime (BableStream without likwid): 0.46023
+% BableStream without likwid: 528.511
+% avg runtime (BableStream without likwid): 0.49659
+% BableStream with likwid: 491.655
+% likwid-perfctr:
+%    MEMREAD: 510.042
+%    MEMWRITE: 175.765
+%    SUM: 685.807
+
+% NSTREAM
+% avg runtime (BableStream without likwid): 0.45885
+% BableStream without likwid: 707.794
+% avg runtime (BableStream without likwid): 0.49827
+% BableStream with likwid: 658.530
+% likwid-perfctr:
+%    MEMREAD: 532.183
+%    MEMWRITE: 167.501
+%    SUM: 699.684

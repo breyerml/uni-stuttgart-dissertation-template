@@ -33,32 +33,50 @@ Note that this calculated theoretical peak \gls{flops} only serves as a sensible
 A real-world example will not be guaranteed or even likely to achieve the calculated theoretical peak performance. 
 Nevertheless, if all researchers agree on one way to calculate the theoretical peak \gls{flops}, it can be used as a baseline, making results between different publications more easily comparable. 
 
+% calculate theoretical peak FLOPS of example hardware platform
 As an example, we compute the theoretical peak \gls{flops} for double precision floating point types and a node with dual-socket \gls{amd} EPYC 9274F \glspl{cpu}~\cite{amd_amd_2022}, which will also be used as a hardware platform in the later chapters. 
 This \gls{cpu} supports \gls{fma}3 ($\frac{2}{1}$) and \gls{avx}-512 ($\frac{8}{1}$) instructions. 
 However, in Zen4 \gls{avx}-512 is implemented by \enquote{double-pumping} two $\SI{256}{\bit}$ registers. 
 This means that the \gls{avx}-512 unit can compute one \gls{fma} instruction in two consecutive clock cycles, resulting in a count of $\frac{2}{2}$~\cite{amd_amd_2023}. 
 Additionally, the EPYC 9274F \gls{cpu} has an all-core frequency of $\SI{4.1}{\giga\hertz}$ and $\num{24}$ physical cores. 
-Therefore, according to \autoref{def:peak_flops}, the theoretical peak \gls{flops} of the example machine's dual-socket \glspl{cpu} are: $2 \cdot 8 \cdot 1 \cdot 4.1 \cdot 24 \cdot 2 = \SI{3148.8}{\giga\flops}$.
+Therefore, according to \autoref{def:peak_flops}, the theoretical peak \gls{flops} of the example machine's dual-socket \glspl{cpu} are: $\frac{2}{1} \cdot \frac{8}{1} \cdot \frac{2}{2} \cdot 4.1 \cdot 24 \cdot 2 = \SI{3148.8}{\giga\flops}$.
 
+% get atainable peak FLOPS via AMD's HPL version
 To get a more empirical upper bound and to verify if our theoretical peak \gls{flops} do indeed make sense, we can use one of the standard \gls{hpc} benchmarks like the \gls{hpl} benchmark~\cite{petitet_hpl_2018}. 
-In the case of the EPYC 9274F \gls{cpu}, I used the \gls{amd} provided pre-built \gls{hpl} version~\cite{amd_pre-built_2025} and ran it with the default settings. 
+In the case of our dual-socket \gls{amd} EPYC 9274F \gls{cpu} node, I used the \gls{amd} provided pre-built \gls{hpl} version~\cite{amd_pre-built_2025} and ran it with the default settings. 
 As a result, the utility reported a performance of $\SI{2765.6}{\giga\flops}$, which is only $\SI{12}{\percent}$ worse than our theoretically calculated value. 
 This shows that our theoretical peak \gls{flops} are not too conservative and do not dramatically overestimate the possible real-world performance of our compute node. 
 
+% how to get achieved FLOPS for an application
 Often, we are not only interested in the theoretical peak \gls{flops} of our hardware but also the achieved \gls{flops} of a specific application.
 If this is the case, we have two options that work for both \glspl{cpu} and \glspl{gpu}. 
 First, we can use a tool that automatically provides us with the \gls{flops} values when we execute our code, like NVIDIA's nvprof~\cite{nvidia_corporation_cuda_2025}, \gls{amd}'s rocprofv3~\cite{amd_using_2024}, or likwid-perfctr~\cite{thomas_gruber_likwid_2023}. 
 Alternatively, if no such tool is available or the current programming framework or hardware platform is not supported, we can count the necessary floating point operations by hand and divide it by the elapsed walltime. 
 However, we must be careful when doing so. 
-For example, if our target hardware supports \gls{fma} operations, we have to count code that looks like, e.g., \code{c[i] += a[i] * b[i]} as a single floating point operation. 
+For example, even if our target hardware supports \gls{fma} operations, most of the time, code like \code{c[i] += a[i] * b[i]} is counted as two floating point operations. 
 Additionally, counting the number of floating point instructions for non-trivial operations like floating point divisions, square roots, or exponential functions is difficult. 
 Such operations can be translated into a single machine instruction with higher-than-normal latency or throughput, a fixed number of machine instructions, or even a variable number of machine instructions~\cite{dolbeau_theoretical_2018}. 
 In practice, these operations are often counted as a single instruction. 
 To get a better estimate, we would have to examine the generated assembly code to count the number of floating-point instructions that are actually generated. 
 
+% example application
 For example, let's look at the TRIAD function calculating $\vec{a} = \vec{b} + q \cdot \vec{c}$ for the vectors $\vec{a}, \vec{b}, \vec{c} \in \mathbb{R}^N$ and a scalar $q \in \mathbb{R}$ from the STREAM benchmark suite~\cite{mccalpin_memory_1995}. 
-It contains two floating point operations, a multiplication and an addition, which must be counted as one instruction since the  \gls{amd} EPYC 9274F \gls{cpu} supports \gls{fma} operations. 
-Therefore, the number of floating point operations of the TRIAD function is directly based on the size of the vectors. 
-Running the TRIAD implementation from the BabelStream benchmark suite~\cite{deakin_evaluating_2018} with the \gls{openmp} implementation setting \code{export OMP_NUM_THREADS=48;export OMP_PLACES=cores} to make sure that only physical cores are used and a vector size of $\num{1e10}$ on our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node results in an average runtime of $\SI{0.46969}{\second}$ for five repetitions.
-This corresponds to a performance of $\SI{21.29}{\giga\flop}$. 
-The same code profiled with likwid-perfctr's \code{FLOP_DP} metric, augmented with likwid's marker \gls{api}, reports $\SI{19.7}{\giga\flop}$, which is a discrepancy of only $\SI{4}{\percent}$ compared to the hand-counted variant. 
+It contains two floating point operations, a multiplication and an addition per iteration. 
+% Therefore, the number of floating point operations of the TRIAD function is directly based on the size of the vectors. 
+Running the TRIAD implementation from the BabelStream benchmark suite~\cite{deakin_evaluating_2018} using its \gls{openmp} implementation, with the \gls{openmp} specific settings \code{export OMP_NUM_THREADS=48;export OMP_PLACES="{0:1}:48:1";export OMP_PROC_BIND=true} to make sure that only physical cores are used, and a vector size of $\num{1e10}$ on our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node results in an average runtime of $\SI{0.46023}{\second}$ for ten repetitions.
+This corresponds to a performance of $\SI{43.46}{\giga\flop}$. 
+The same code profiled with likwid-perfctr's \code{FLOPS_DP} metric, augmented with likwid's marker \gls{api}, reports $\SI{42.29}{\giga\flop}$, which is a discrepancy of only $\SI{3}{\percent}$ compared to the hand-counted variant. 
+
+As another example, we can look at the NSTREAM function from the BableStream benchmark suite calculating $\vec{a} += \vec{b} + q \cdot \vec{c}$ for the vectors $\vec{a}, \vec{b}, \vec{c} \in \mathbb{R}^N$ and a scalar $q \in \mathbb{R}$
+This kernel now contains three floating point operations (an additional addition compared to the TRIAD function). 
+Run with the same vector size and \gls{openmp} settings, this results in a average runtime of $\SI{0.45885}{\second}$ for ten repetitions which corresponds to a performance of $\SI{65.38}{\giga\flops}$.
+Profiling the same code again with likwid-perfctr reports $\SI{64.74}{\giga\flop}$, a discrepancy of only $\SI{1}{\percent}$. 
+Both these examples show that hand-counting floating point operations and dividing them by the runtime can effectively estimate the \gls{flops} when no appropriate tool is available.  
+
+% likwid-perfctr FLOPS_DP
+% Triad: FLOP_DP: 42.290
+% Nstream: FLOP_DP: 64.735
+
+% BableStream runtimes
+% Triad: 0.46023
+% Nstream: 0.45885

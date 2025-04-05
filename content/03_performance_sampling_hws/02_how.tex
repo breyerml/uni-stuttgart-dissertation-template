@@ -1,0 +1,57 @@
+\section{How does sampling work?}
+\label{sec:hws_how}
+
+While the last section was concerned with \textit{what} the hws library can sample, this section explains \textit{how} it is implemented. 
+If one is only interested in how to use the hws library, the next \autoref{sec:hws_example} will showcase an example usage of the hws library. 
+
+The general internal flow of the hws library looks as follows. 
+When the first hardware sampler for a specific hardware platform is constructed, the required environment from the respective vendor library is initialized. 
+Using an atomic reference count also ensures that the environments are only initialized once, even when multiple hardware samplers for the same hardware type are used. 
+
+The general flow of the hws library looks as follows:
+\begin{enumerate}
+    % \item%
+    % A new hardware sampler is constructed, initializing the required environment from the respective vendor library. 
+    % An atomic reference count is used to ensure that the respective environments are only initialized once. 
+    % Note that it is supported to start as many hardware samplers as one wishes and that combination of different hardware samplers is supported. 
+    % If everything should be sampled, it is easiest to use a \code{system_hardware_sampler}.
+    \item%
+    A hardware sampler is then started using the \code{start_sampling()} function which internally spawns a new \code{std::thread}. 
+    The actual sampling process then takes place asynchronously in this newly created thread. 
+    Note that one thread is created for each hardware sampler. 
+    The \code{system_hardware_sampler} also starts as many threads as it encapsulates other hardware samplers. 
+    \item%
+    All supported hardware samples are initialized: The fixed samples to their final values and the running samples to their first value. 
+    This step is also used to determine which hardware samples are supported on the current hardware. 
+    All theoretically by hws supported samples are queried and if the respective vendor function returns with an error, i.e., a sample is not supported, the value will be set to an \code{std::nullopt} indicating that it can be ignored in future sampling attempts during the sampling loop. 
+    \item%
+    The actual sampling loop is started. 
+    Here, a new value is added to every supported running sample. 
+    At the end, the current thread sleeps for the amount of time specified by the sampling interval before it starts again to sample new values. 
+    Using the \code{pause_sampling()} and \code{resume_sampling()} functions, the sampling of new values can temporarily be paused using an atomic flag as a signaling variable. 
+    \item%
+    At the end, one must call the \code{stop_sampling()} function which waits until the current sampling loop has finished and then joins on the previously spawned \code{std::thread}. 
+    Note that once a hardware sampler has been stopped, it cannot be started again. 
+    \item%
+    Only after the hardware sampler has been stopped, all samples can be saved to a YAML file using the \code{dump_yaml(filename)} function. 
+    Note that it is still possible to retrieve the current hardware samples programmatically during the program execution.
+    \item%
+    At the end of the lifetime of a hardware sampler, in its constructor the previously mentioned reference count is decreased and only if it reaches zero, the respective vendor specific environment is shut down ensuring this only happens once. 
+\end{enumerate}
+
+\todo{remake plot (new runtimes with more data points)}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/03_performance_sampling_hws/hws_sampling_interval_overhead.pdf}
+    \caption{%
+    The overhead when using the hws library, depends on the specified sampling interval. 
+    The red dashed line at the bottom is the baseline version without hws. 
+    We can see, that the overhead when using hws is noticeable for smaller sampling intervals. 
+    However, increasing the sampling interval also drastically decreases the overhead. 
+    }
+    \label{fig:hws_overhead}
+\end{figure}
+
+
+\input{content/03_performance_sampling_hws/02_how/01_gpus}
+\input{content/03_performance_sampling_hws/02_how/02_cpus}

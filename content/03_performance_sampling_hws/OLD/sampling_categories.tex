@@ -1,0 +1,23 @@
+\todo{here or in implementation?}
+\begin{itemize}
+    \item \cpp with Python bindings using Pybind11 \cite{jakob_pybind11_2024}
+    \item YAML vs programmatically
+    \item same names + units if possible
+    \item not all samples on all hardware platforms
+    \item fixed vs sampled
+    \item actual categories
+    \item categories can be enabled/disabled at runtime
+    \item sampling interval can be changed
+    \item special samplers for special hardware or the whole system
+    \item multi-GPU support
+\end{itemize}
+
+The hws library supports many different samples that can be collected. 
+Two major design considerations were made when deciding on the supported samples. 
+First, if a sample is supported by all hardware platforms, its name should be consistent across them. 
+Note that there are samples that are not supported by all hardware platforms. 
+In this case, the sample names were inspired by others available for all hardware platforms. 
+Second, the used physical units should be the same regardless of the used hardware platform. 
+For example, in the previous example in \autoref{code:vendor_library_calls}, the vendor-specific libraries report the total power consumption in $\si{\milli\joule}$ or $\si{\micro\joule}$. 
+The hws library unifies the units such that the same unit is used across all hardware platforms. 
+In the above example, the total power consumption is reported in $\si{\joule}$. 

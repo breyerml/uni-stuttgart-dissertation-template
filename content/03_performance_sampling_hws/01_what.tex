@@ -1,0 +1,64 @@
+\section{What can be sampled?}
+\label{sec:hws_what}
+
+The hws library is written in modern \cpp{17} and can be used to retrieve information from other user code using its library interface~\cite{breyer_hws_2024}. 
+Additionally, Python bindings that are closely modeled after the \cpp functions and classes are exposed using pybind11~\cite{jakob_pybind11_2024}. 
+It supports gathering hardware information from \glspl{cpu}, and \glspl{gpu} from NVIDIA, \gls{amd}, and Intel.  
+The different hardware is abstracted away using different hardware samplers. 
+These samplers can be used to sample only a specific hardware platform in a machine, e.g., only a single \gls{gpu}. 
+Additionally, for convenience, a system-wide hardware sampler is exposed that automatically samples information from all available and supported hardware platforms in the compute node, i.e., any number of \glspl{cpu} and \glspl{gpu}. 
+The gathered samples can be retrieved in two ways: programmatically using getter functions or by dumping all samples into a machine-readable YAML file. 
+Retrieving the samples programmatically can, for example, be used in hyper-parameter tuning frameworks to tune your application for energy efficiency. 
+Dumping the results to a YAML file is more convenient for later post-processing steps. 
+
+In contrast to many other libraries that mainly support gathering power-related information, hws supports collecting different hardware samples, ranging from utilization, frequencies, or memory consumption to power consumptions and temperatures. 
+The main goal of hws was to enable this in a vendor-independent way. 
+However, the different vendor libraries use different names and even units for the same hardware samples. 
+We tried to unify them in hws, i.e., hardware samples that gather the same information across the different hardware platforms will have the same name. 
+Additionally, the different physical units are also unified, e.g., the different power draw units, $\si{\milli\joule}$ and $\si{\micro\joule}$, shown in \autoref{code:vendor_library_calls} will be reported as $\si{\joule}$ independent of the hardware platform. 
+This makes the post-processing step much easier. 
+There are also samples that are only supported by specific hardware platforms. 
+For example, \gls{amd}'s \gls{rocmsmi} library allows us to gather temperature information of the \gls{gpu}'s HBM memory modules, which is not supported in NVIDIA's \gls{nvml} or via Intel's Level Zero. 
+Especially on \glspl{cpu}, many hardware samples are supported that are not available on \glspl{gpu} and vice versa. 
+Additionally, some samples are not even supported on all hardware platforms from the same vendor. 
+For example, since normally data center \glspl{gpu} have no dedicated fans, the respective hardware samples are only available on consumer \glspl{gpu}. 
+In hws, this problem is solved by wrapping all samples in \cpp's \code{std::optional} type. 
+At the start of the sampling process, for each possible sample, it is checked whether the current hardware platform supports it. 
+If this is the case, the initial sample value is set and later, during sampling, taken into account; otherwise, it is set to a \code{std::nullopt} and later ignored. 
+
+
+In general, two different kinds of samples are supported by hws: fixed and sampled. 
+The \textit{fixed} samples are only gathered once during the program execution since their values will never change during execution. 
+These samples include, for example, the architecture, maximum frequencies or temperatures, or the total amount of available memory. 
+The \textit{sampled} samples are gathered during the whole program's execution since their values, such as utilization, frequencies, memory usage, or power draw, will change during the execution.  
+The interval in which these hardware samples are collected can be changed in the hardware sampler constructors. 
+By default, if not changed during the CMake configuration, samples are gathered each $\SI{100}{\milli\second}$. 
+
+Since hws supports many different hardware samples, they are split into different categories according to the information they sample for better usability. 
+By default, all categories are sampled. 
+Using the hardware sampler constructor, categories can be selectively disabled and excluded from the sampling process, reducing the sampling overhead and the YAML file size. 
+The different sample categories are:
+\begin{description}
+    \item[general:]%
+    The general category includes samples identifying the current hardware architecture, its name, or its current compute and/or memory utilization.
+    \item[clock-related:]%
+    The clock-related category is responsible for samples related to any clock, including memory clocks. 
+    It stores minimum and maximum clock frequencies, as well as the running values gathered during sampling. 
+    Additionally, information regarding hardware throttling and its reasons are collected.
+    \item[power-related:]%
+    The power-related category gathers information like the power limit, the current power draw, or the total power consumption. 
+    Note that on the \gls{cpu}, the total power consumption is always calculated using an integral of the measured current power draws. 
+    \item[memory-related:]%
+    The memory-related category gathers information about the current main memory usage like total, free, and used memory, but in the case of \glspl{gpu}, information about the used \gls{pcie} interconnect or for \glspl{cpu} information about the cache hierarchy and sizes. 
+    \item[temperature-related:]%
+    The temperature-related category gathers information about the current and maximum allowed temperatures, as well as potential fan information. 
+    \item[gfx-related:]% 
+    On \glspl{cpu} only, this category collects i\gls{gpu}-related information if an i\gls{gpu} is available. 
+    \item[\enquote{idle states}:]%
+    Also, on \glspl{cpu} only, this category saves the idle state information output by turbostat.
+\end{description}
+For more information about all possible hardware samples for each category, including the sample name, its physical unit, and on which hardware it is supported, refer to hws's GitHub README repository\footnote{\url{https://github.com/SC-SGS/hardware_sampling\#available-samples}}.
+
+In addition to the hardware samples, hws allows users to insert as many events as they wish. 
+These events can mark special points of execution in a program, such as the start of a solver iteration. 
+During post-processing, these events can be used to better understand peaks or other characteristics in the resulting plots and identify which part of the code caused the respective behavior. 

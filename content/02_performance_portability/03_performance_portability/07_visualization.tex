@@ -40,6 +40,8 @@ First, each application's \pp and efficiency values are gathered using all hardw
 Afterward, the platform with the smallest remaining efficiency is removed and the now-reduced platform set as a new baseline to calculate the next \pp score. 
 This process is repeated until only one platform, the best-performing platform for the current application, is left in the platform set. 
 These values are then plotted from right to left, resulting in a monotonically decreasing plot of the performance portability scores and efficiencies. 
+Alternatively, the new \enquote{P3 explorer} project can be used to automate the creation of a efficiency cascade plot~\cite{smith_p3_2024, smith_p3-explorerp3-explorergithubio_2024}. 
+
 As discussed by \citet{sewall_interpreting_2020, pennycook_navigating_2021}, this plot can be used to draw many different conclusions from the raw \pp and performance efficiency values. 
 Applications for which the efficiency cascade plot extends further to the right support more hardware platforms and are, therefore, more portable. 
 Also, we can directly see how many platforms are supported and which platforms have the highest performance efficiencies. 
