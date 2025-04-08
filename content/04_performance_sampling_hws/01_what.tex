@@ -1,7 +1,7 @@
 \section{What can be sampled?}
 \label{sec:hws_what}
 
-The hws library is written in modern \cpp{17} and can be used to retrieve information from other user code using its library interface~\cite{breyer_hws_2024}. 
+The hws library is written in modern \cpp{17} and can be used to retrieve hardware-related information from user code using its library interface~\cite{breyer_hws_2024}. 
 Additionally, Python bindings that are closely modeled after the \cpp functions and classes are exposed using pybind11~\cite{jakob_pybind11_2024}. 
 It supports gathering hardware information from \glspl{cpu}, and \glspl{gpu} from NVIDIA, \gls{amd}, and Intel.  
 The different hardware is abstracted away using different hardware samplers. 
@@ -10,6 +10,7 @@ Additionally, for convenience, a system-wide hardware sampler is exposed that au
 The gathered samples can be retrieved in two ways: programmatically using getter functions or by dumping all samples into a machine-readable YAML file. 
 Retrieving the samples programmatically can, for example, be used in hyper-parameter tuning frameworks to tune your application for energy efficiency. 
 Dumping the results to a YAML file is more convenient for later post-processing steps. 
+All related functions are available in the custom \code{hws} namespace. 
 
 In contrast to many other libraries that mainly support gathering power-related information, hws supports collecting different hardware samples, ranging from utilization, frequencies, or memory consumption to power consumptions and temperatures. 
 The main goal of hws was to enable this in a vendor-independent way. 
@@ -23,7 +24,7 @@ Especially on \glspl{cpu}, many hardware samples are supported that are not avai
 Additionally, some samples are not even supported on all hardware platforms from the same vendor. 
 For example, since normally data center \glspl{gpu} have no dedicated fans, the respective hardware samples are only available on consumer \glspl{gpu}. 
 In hws, this problem is solved by wrapping all samples in \cpp's \code{std::optional} type. 
-At the start of the sampling process, for each possible sample, it is checked whether the current hardware platform supports it. 
+At the start of the sampling process, it is checked which available hardware samples are supported on the current hardware platform. 
 If this is the case, the initial sample value is set and later, during sampling, taken into account; otherwise, it is set to a \code{std::nullopt} and later ignored. 
 
 
@@ -60,5 +61,5 @@ The different sample categories are:
 For more information about all possible hardware samples for each category, including the sample name, its physical unit, and on which hardware it is supported, refer to hws's GitHub README repository\footnote{\url{https://github.com/SC-SGS/hardware_sampling\#available-samples}}.
 
 In addition to the hardware samples, hws allows users to insert as many events as they wish. 
-These events can mark special points of execution in a program, such as the start of a solver iteration. 
+These events can mark special execution points in a program, such as the start of a solver iteration. 
 During post-processing, these events can be used to better understand peaks or other characteristics in the resulting plots and identify which part of the code caused the respective behavior. 

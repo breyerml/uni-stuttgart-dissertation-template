@@ -63,7 +63,13 @@ To get a better estimate, we would have to examine the generated assembly code t
 For example, let's look at the TRIAD function calculating $\vec{a} = \vec{b} + q \cdot \vec{c}$ for the vectors $\vec{a}, \vec{b}, \vec{c} \in \mathbb{R}^N$ and a scalar $q \in \mathbb{R}$ from the STREAM benchmark suite~\cite{mccalpin_memory_1995}. 
 It contains two floating point operations, a multiplication and an addition per iteration. 
 % Therefore, the number of floating point operations of the TRIAD function is directly based on the size of the vectors. 
-Running the TRIAD implementation from the BabelStream benchmark suite~\cite{deakin_evaluating_2018} using its \gls{openmp} implementation, with the \gls{openmp} specific settings \code{export OMP_NUM_THREADS=48;export OMP_PLACES="{0:1}:48:1";export OMP_PROC_BIND=true} to make sure that only physical cores are used, and a vector size of $\num{1e10}$ on our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node results in an average runtime of $\SI{0.46023}{\second}$ for ten repetitions.
+I run the TRIAD implementation from the BabelStream benchmark suite~\cite{deakin_evaluating_2018} using its \gls{openmp} implementation, with the \gls{openmp} specific settings to make sure that only physical cores are used: 
+\begin{itemize}
+    \item \code{export OMP_NUM_THREADS=48}
+    \item \code{export OMP_PLACES="{0:1}:48:1"}
+    \item \code{export OMP_PROC_BIND=true}
+\end{itemize}
+Together with a vector size of $\num{1e10}$ on our dual-socket \gls{amd} EPYC 9274F \glspl{cpu} node, this resulted in an average runtime of $\SI{0.46023}{\second}$ for ten repetitions.
 This corresponds to a performance of $\SI{43.46}{\giga\flop}$. 
 The same code profiled with likwid-perfctr's \code{FLOPS_DP} metric, augmented with likwid's marker \gls{api}, reports $\SI{42.29}{\giga\flop}$, which is a discrepancy of only $\SI{3}{\percent}$ compared to the hand-counted variant. 
 

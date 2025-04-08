@@ -6,7 +6,8 @@ However, to gain more insights into an application's performance and especially 
 Only with knowledge about these can we answer questions like: Do we utilize our hardware as we expected? Are we subject to clock or thermal throttling? How much power do we use on the \gls{cpu} or \gls{gpu}? Does my application need more memory than expected? Do we have too many memory allocations? 
 Especially gathering information about energy consumption gets more and more important in the age of \glspl{llm}, with the ever-increasing number of parameters and supercomputers that get bigger and bigger~\cite{de_vries_growing_2023, luccioni_estimating_2023}. 
 For example, the current top three supercomputers in the TOP500 list~\cite{top500org_november_2024} have an accumulated power draw of nearly $\SI{93}{\mega\watt}$. 
-To put this into perspective, that \todo{example}.
+To put this into perspective, one would need $\num{34}$ average onshore wind turbines, having a capacity of $\SI{2.75}{\mega\watt}$ each, to fulfill this power capacity. 
+Note that in practice in the US, on average, only $\SI{42}{\percent}$ of this theoretical capacity is achieved, meaning that in reality, this number would be closer to $\num{80}$ wind turbines to operate the three biggest supercomputers if they are running at their peak capacity~\cite{usgs_how_2022}. 
 Yet, gathering this information in a vendor-independent way for different hardware platforms, especially if we consider any \gls{cpu}, or \glspl{gpu} from NVIDIA, \gls{amd}, or Intel, is not as straightforward as it initially seems. 
 
 \begin{listing}
@@ -73,9 +74,8 @@ Through its \code{var_monitor}, it also supports sampling information of a whole
 However, none of these libraries support vendor-independent sampling of hardware information for all major hardware platforms so that the user can programmatically specify what should be sampled and when sampling should be paused or stopped. 
 
 Therefore, I wrote the hardware sampling library \textit{hws}~\cite{breyer_hws_2024-1, breyer_hardware-independent_2024, breyer_hws_2024} that also wraps the low-level functions from all major hardware vendors and additionally exposes an easy-to-use sampling interface to be able to automatically gather all necessary information during the whole program execution. 
-In the following subsections, I will introduce the hws library \todo{more precise after structure is clearer}
-
-% This is followed by introducing my hardware sampling library \textit{hws} to gather additional application characteristics like frequencies, memory consumption, temperatures, or energy consumption, which is hws's main use case in the remainder of this dissertation. 
+In the following subsections, I will introduce what the hws library can sample and how it is implemented. 
+This chapter is concluded with a small example of how to use hws. 
 
 % \begin{table}[]
 %     \newcommand{\supported}{\textcolor{ForestGreen}{\faCheckCircle}}
@@ -111,6 +111,6 @@ In the following subsections, I will introduce the hws library \todo{more precis
 %     \label{tab:sampling_libraries}
 % \end{table}
 
-\input{content/03_performance_sampling_hws/01_what}
-\input{content/03_performance_sampling_hws/02_how}
-\input{content/03_performance_sampling_hws/03_example}
+\input{content/04_performance_sampling_hws/01_what}
+\input{content/04_performance_sampling_hws/02_how}
+\input{content/04_performance_sampling_hws/03_example}

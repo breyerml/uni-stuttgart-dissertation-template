@@ -1,0 +1,125 @@
+\section{How does sampling work?}
+\label{sec:hws_how}
+
+\begin{figure}
+    \centering
+    \resizebox{0.8\textwidth}{!}{%
+    \begin{tikzpicture}[font=\small]
+        \tikzstyle{normal}=[anchor=center, fill=white, draw]
+        \tikzstyle{circ}=[normal, circle]
+        \tikzstyle{dia}=[normal, diamond, aspect=1.5]
+        \tikzstyle{linestyle}=[-{Latex[]}]
+
+        \begin{scope}
+            %%% background: user code vs sampling loop
+            \fill[red, draw=red, fill opacity=0.2] (-3.9, 1.2) rectangle (3.4, -16.3);
+            \node[red, anchor=east] at (3.1, -16) {user code};
+            
+            \fill[blue, draw=blue, fill opacity=0.2] (3.44, 1.2) rectangle (9.8, -16.3);
+            \node[blue, anchor=west] at (3.7, -16) {asynchronous sampling loop};
+        \end{scope}
+    
+        %%% main program
+        \begin{scope}
+            \node[normal] (construct) at (0, 0) (construct) {\code{system_hardware_sampler(@$\dots$@)}};
+            \node[below = of construct, normal] (hws_start) {\code{start_sampling()}};
+            \node[below =  of hws_start, circ] (thread_spawn) {spawn};
+            \node[below right = .35cm and 1.65cm of thread_spawn, normal, dashed, fill=white!80!gray, anchor=east, rotate=90] (hws_pause) {\code{pause_sampling()}};
+            \node[below left = 5.3cm and 1.5cm of hws_start, normal, dashed, fill=white!80!gray, rotate=90] (hws_event) {\code{add_event(@$\dots$@)}};
+            \node[below = 8.0cm of thread_spawn, normal] (hws_stop) {\code{stop_sampling()}};
+            \node[below = of hws_stop, circ] (join) {join};
+            \node[above right = .35cm and .62cm of hws_stop, normal, dashed, fill=white!80!gray, anchor=west, rotate=90] (hws_resume) {\code{resume_sampling()}};
+            \node[below = of join, normal] (hws_dump) {\code{dump_yaml(@$\dots$@)}};
+            \node[below = of hws_dump, normal] (destruct) {\code{~system_hardware_sampler()}};
+    
+            \draw[linestyle, solid] (construct) -- (hws_start);
+            \draw[linestyle, solid] (hws_start) -- (thread_spawn);
+            \draw[linestyle, dashed] (thread_spawn.south) --  (hws_stop.north);
+            
+            \draw[linestyle, dashed] (thread_spawn.east) -- (hws_pause.east);
+            \draw[linestyle, dashed] ([xshift=-0.1cm]hws_resume.east) -- ([xshift=-0.1cm]hws_pause.west);
+            \draw[linestyle, dashed] ([xshift=0.1cm]hws_pause.west) -- ([xshift=0.1cm]hws_resume.east);
+
+            \draw[linestyle, dashed] (construct) -| ([xshift=0.1cm]hws_event.east);
+            \draw[linestyle, dashed] ([xshift=0.1cm]hws_event.west) |- (destruct);
+
+            \coordinate[above left = 0.4cm and 0.5cm of hws_event.east] (hws_event_dummy_1);
+            \coordinate[below left = 0.4cm and 0.5cm of hws_event.west] (hws_event_dummy_2);
+            \draw[linestyle, dashed] ([xshift=-0.1cm]hws_event.east) |- (hws_event_dummy_1) -- (hws_event_dummy_2) -| ([xshift=-0.1cm]hws_event.west);
+
+            \draw[linestyle, solid, thick] ([yshift=0.6cm]construct.north) -- (construct.north); 
+            \draw[linestyle, solid, thick] (destruct.south) -- ([yshift=-0.6cm]destruct.south); 
+            
+            \draw[linestyle, dashed] (hws_resume.west) -- (hws_stop.east);
+            \draw[linestyle, dashed] (hws_stop) -- (join);
+            \draw[linestyle, solid] (join) -- (hws_dump);
+            \draw[linestyle, solid] (hws_dump) -- (destruct);
+        \end{scope}
+    
+        %%% sampling thread
+        \begin{scope}
+            \node[below right = 1.75cm and 5cm of thread_spawn, normal] (init_samples) {init samples};
+            \node[below = 1.5cm of init_samples, dia] (decision) {\code{is_sampling}?};
+            \node[right = 2cm of decision, circ, anchor=center] (wait) {wait};
+            \node[below = 1.5cm of wait, normal, anchor=center] (sample) {sample};
+    
+            \draw[linestyle, solid] (init_samples) -- (decision);
+            \draw[linestyle, solid] (decision.south) |- node[below, xshift=1.54cm] {sampling} (sample);
+            \draw[linestyle, solid] ([yshift=0.1cm]decision.east) -- node[above] {paused} ([yshift=0.1cm]wait.west); 
+            \draw[linestyle, solid] ([yshift=-0.1cm]wait.west) -- ([yshift=-0.1cm]decision.east);
+            \draw[linestyle, solid] (sample) -- (wait);
+        \end{scope}
+    
+        %%% paths between
+        \draw[linestyle, dotted] (thread_spawn.east) -| (init_samples.north);
+        \draw[linestyle, dotted] ([xshift=-.4cm, yshift=0.28cm]decision.south) |- node[left, xshift=-1.75cm, yshift=0.3cm] {stopped} (join.east);
+        \draw[linestyle, dotted] (hws_pause.south) -- (decision.west);
+        \draw[linestyle, dotted] (hws_resume.south) -- (decision.west);
+        \draw[linestyle, dotted] (hws_stop.east) -| ([xshift=0cm]decision.west);
+        
+    \end{tikzpicture}
+    }
+    \caption{%
+    An overview of the program flow of the hws hardware sampling library using the \cpp function names. 
+    Constructing a hardware sampler initializes the respective vendor library environment. 
+    A call to \code{start_sampling()} spawns a new \code{std::thread} of execution that contains the actual sampling loop. 
+    This thread of execution is then notified and joined after a call to \code{stop_sampling()}. 
+    Afterward, the gathered hardware samples can be saved to a YAML file. 
+    During the application execution, hardware sampling can be paused and resumed using the respective functions. 
+    Additionally, special points in the execution can be marked using custom events. 
+    }
+    \label{fig:program_flow}
+\end{figure}
+
+While the last section was concerned with \textit{what} the hws library can sample, this section explains \textit{how} it is implemented. 
+If one is only interested in how to use the hws library, the next \autoref{sec:hws_example} will showcase an example usage of the hws library. 
+
+The general internal flow of the hws library looks as follows. 
+When the first hardware sampler for a specific hardware platform is constructed, the required environment from the respective vendor library is initialized. 
+Using an atomic reference count also ensures that the environments are only initialized once, even when multiple hardware samplers for the same hardware type are used. 
+The hardware sampling can then be started using the \code{start_sampling()} member function, which internally spawns a new \code{std::thread}. 
+This newly created asynchronous thread is responsible for the actual sampling process. 
+Each hardware sampler spawns its own thread, so it is advisable to use as few hardware samplers as possible to reduce overheads. 
+The \code{system_hardware_sampler} also starts as many threads as it encapsulates other hardware samplers. 
+
+For each hardware sampler, the sampling process starts with initializing all supported hardware samples: the fixed samples to their final values and the sampled samples to their first values. 
+This step is also used to determine which hardware samples are actually supported by the current hardware platform. 
+All theoretically supporters samples are queried with the respective vendor functions. 
+If the function returns with an error code, the value will be set to an \code{std::nullopt}, indicating that it can be ignored in future sampling attempts during the sampling loop. 
+
+Afterward, the actual sampling loop is started, adding a new value to every supported sampled sample in each iteration. 
+At the end of one sampling iteration, the current thread sleeps for the amount of time specified by the sampling interval before it starts to sample new values again. 
+Using the \code{pause_sampling()} and \code{resume_sampling()} functions, the sampling loop can be temporarily paused using an atomic flag as a signaling variable. 
+
+If the hardware sampling should be completely stopped instead of only paused, the \code{stop_sampling()} member function must be called, which waits until the current sampling loop has finished and then joins on the previously spawned \code{std::thread}. 
+Note that once a hardware sampler has been stopped, it can not be started again. 
+Only after a hardware sampler has been stopped can all samples be saved to a YAML file using the \code{dump_yaml()} function. 
+Note that it is still possible to retrieve the current hardware samples programmatically during the application's execution. 
+At the end of the hardware sampler's lifetime, its destructor decreases the previously mentioned reference count. 
+Only after the reference count reaches zero is the respective vendor-specific environment shut down, ensuring this happens only once. 
+
+During the whole hardware sampling, the \code{add_event()} member function can be used to mark special points in the execution. 
+This function accepts an event name, which is internally stored alongside the respective timestamp. 
+
+\input{content/04_performance_sampling_hws/02_how/01_gpus}
+\input{content/04_performance_sampling_hws/02_how/02_cpus}

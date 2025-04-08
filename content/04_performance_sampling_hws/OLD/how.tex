@@ -1,0 +1,82 @@
+
+\begin{figure}
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[font=\small]
+        \tikzstyle{normal}=[anchor=west, fill=white, draw]
+        \tikzstyle{circ}=[normal, circle]
+        \tikzstyle{dia}=[normal, diamond, aspect=2.5]
+        \tikzstyle{linestyle}=[-{Latex[]}]
+    
+        %%% main program
+        \begin{scope}
+            \node[normal] (construct) at (0, 0) (construct) {\code{system_hardware_sampler(@$\dots$@)}};
+            \node[right = .45cm of construct, normal, align=center] (hws_start) {\code{start_sampling()}};
+            \node[right = .45cm of hws_start, circ] (thread_spawn) {spawn};
+            \node[above right = .15cm and .75cm of thread_spawn, normal, dashed, fill=white!80!gray] (hws_pause) {\code{pause_sampling()}};
+            \node[below right = .55cm and 4.5cm of hws_start, normal, dashed, fill=white!80!gray] (hws_event) {\code{add_event(@$\dots$@)}};
+            
+            \node[right = .45cm of hws_pause, normal, dashed, fill=white!80!gray] (hws_resume) {\code{resume_sampling()}};
+            \node[right = 5.0cm of thread_spawn, normal] (hws_stop) {\code{stop_sampling()}};
+            \node[right = .45cm of hws_stop, circ] (join) {join};
+            \node[right = .45cm of join, normal] (hws_dump) {\code{dump_yaml(@$\dots$@)}};
+            \node[right = .45cm of hws_dump, normal] (destruct) {\code{~system_hardware_sampler()}};
+    
+            \draw[linestyle, solid] (construct) -- (hws_start);
+            \draw[linestyle, solid] (hws_start) -- (thread_spawn);
+            \draw[linestyle, dashed] (thread_spawn.east) -- (hws_pause.west);
+            \draw[linestyle, dashed] (thread_spawn.east) --  (hws_stop.west);
+            \draw[linestyle, dashed] ([yshift=-0.1cm]hws_resume.west) -- ([yshift=-0.1cm]hws_pause.east);
+            \draw[linestyle, dashed] ([yshift=0.1cm]hws_pause.east) -- ([yshift=0.1cm]hws_resume.west);
+
+            \draw[linestyle, dashed] (construct) |- ([yshift=0.1cm]hws_event.west);
+            \draw[linestyle, dashed] ([yshift=0.1cm]hws_event) -| (destruct);
+
+            \coordinate[below right = 0.2cm and 0.2cm of hws_event] (hws_event_dummy_1);
+            \coordinate[below left = 0.2cm and 0.4cm of hws_event] (hws_event_dummy_2);
+            \draw[linestyle, dashed] ([yshift=-0.1cm]hws_event.east) -| (hws_event_dummy_1) -- (hws_event_dummy_2) |- ([yshift=-0.1cm]hws_event.west);
+
+            
+            \draw[linestyle, solid, thick] ([yshift=0.6cm]construct.north) -- (construct.north); 
+            \draw[linestyle, solid, thick] (destruct.north) -- ([yshift=0.6cm]destruct.north); 
+            
+            \draw[linestyle, dashed] (hws_resume.east) -- (hws_stop.west);
+            \draw[linestyle, dashed] (hws_stop) -- (join);
+            \draw[linestyle, solid] (join) -- (hws_dump);
+            \draw[linestyle, solid] (hws_dump) -- (destruct);
+        \end{scope}
+    
+        %%% sampling thread
+        \begin{scope}
+            \node[above right = 1.75cm and 1.323cm of thread_spawn, normal] (init_samples) {init samples};
+            \node[right = .5cm of init_samples, dia] (decision) {sampling?};
+            \node[right = 1.75cm of decision, normal] (sample) {sample};
+            \node[above = 1cm of decision, circ, anchor=center] (wait) {wait};
+    
+            \draw[linestyle, solid] (init_samples) -- (decision);
+            \draw[linestyle, solid] (decision) -- node[below] {sampling} (sample);
+            \draw[linestyle, solid] ([xshift=0.1cm]decision.north) -- node[right] {paused} ([xshift=0.1cm]wait.south); 
+            \draw[linestyle, solid] ([xshift=-0.1cm]wait.south) -- ([xshift=-0.1cm]decision.north);
+            \draw[linestyle, solid] (sample) |- (wait);
+        \end{scope}
+    
+        %%% paths between
+        \draw[linestyle, dotted] (thread_spawn) |- (init_samples);
+        \draw[linestyle, dotted] ([xshift=1.3cm]decision) -- node[below, xshift=0.65cm, yshift=0.4cm] {stopped} (join);
+        \draw[linestyle, dotted] (hws_pause.north) -- ([xshift=-0cm]decision.south);
+        \draw[linestyle, dotted] (hws_resume.north) -- (decision.south);
+        \draw[linestyle, dotted] (hws_stop.north) -- ([xshift=0cm]decision.south);
+        
+    \end{tikzpicture}
+    }
+    \caption{%
+    An overview of the program flow of the hws hardware sampling library using the \cpp function names. 
+    Constructing a hardware sampler initializes the respective vendor library environment. 
+    A call to \code{start_sampling()} spawns a new \code{std::thread} of execution that contains the actual sampling loop. 
+    This thread of execution is then notified and joined after a call to \code{stop_sampling()}. 
+    Afterward, the gathered hardware samples can be saved to a YAML file. 
+    During the application execution, hardware sampling can be paused and resumed using the respective functions. 
+    Additionally, special points in the execution can be marked using custom events. 
+    }
+    \label{fig:program_flow}
+\end{figure}

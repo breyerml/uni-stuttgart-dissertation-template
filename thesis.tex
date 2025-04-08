@@ -52,16 +52,17 @@
 \DeclareSIUnit{\transfer}{T}
 
 \usepackage{tikz}
-\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{shapes, arrows.meta, positioning, decorations.pathreplacing, trees, patterns, calligraphy, mindmap, shapes.geometric, positioning, decorations, decorations.text,}
 % \usepackage{tikz}
 % \usetikzlibrary{external, decorations.pathreplacing}
 % \tikzexternalize[prefix=tikz/]
 
-%use TODO with \todo{}
+
 \setlength {\marginparwidth }{2cm}
 \usepackage{todonotes}
 \LetLtxMacro{\oldtodo}{\todo}
-\renewcommand{\todo}[2][]{\tikzexternaldisable\oldtodo[inline, #1]{#2}\tikzexternalenable}
+\renewcommand{\todo}[2][]{\oldtodo[inline, #1]{#2}}
+% \renewcommand{\todo}[2][]{\tikzexternaldisable\oldtodo[inline, #1]{#2}\tikzexternalenable}
 
 
 
@@ -79,6 +80,8 @@
 \usepackage{threeparttable}
 \usepackage{pgf}
 \usepackage{pgfplots}
+\usepackage{rotating}
+
 
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
@@ -194,12 +197,8 @@
 
 
 
+\includeonly{content/03_hardware_and_software, content/04_performance_sampling_hws}
 
-
-%\includeonly{content/03_performance_sampling_hws}
-\includeonly{content/02_performance_portability}
-
-%\input{commands}
 
 \bibliography{bibliography}
 
@@ -293,8 +292,8 @@
 
 \include{content/01_introduction}
 \include{content/02_performance_portability}
-\include{content/03_performance_sampling_hws}
-\include{content/04_hardware}
+\include{content/03_hardware_and_software}
+\include{content/04_performance_sampling_hws}
 \include{content/05_problem_category_blas_like}
 \include{content/06_problem_category_tree_based}
 \include{content/07_problem_category_hashing_based}
